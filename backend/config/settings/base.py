@@ -35,6 +35,9 @@ INSTALLED_APPS = [
     "apps.organization",
     "apps.identity_access",
     "apps.audit_governance",
+    "apps.master_data",
+    "apps.style_technical",
+    "apps.workcenters",
     "apps.demo_seed",
 ]
 

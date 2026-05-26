@@ -1,6 +1,6 @@
 # Eratex Planning and Scheduling Platform
 
-Phase 0 bootstraps the Eratex monorepo into a runnable full-stack foundation.
+Phase 0 bootstraps the Eratex monorepo into a runnable full-stack foundation. Phase 1 adds the common platform layer, and Phase 2 adds controlled master data and technical product foundations.
 
 ## Stack
 
@@ -22,10 +22,10 @@ Start the full stack:
 docker compose up --build
 ```
 
-Seed Phase 1 platform data:
+Seed Phase 2 data, which idempotently validates/loads the Phase 1 foundation first:
 
 ```powershell
-docker compose exec backend python manage.py seed_phase1
+docker compose exec backend python manage.py seed_phase2
 ```
 
 Primary local endpoints:
@@ -70,3 +70,16 @@ Local seeded users:
 |---|---|---|
 | `planner` | `planning123` | Production Planner |
 | `supervisor` | `planning123` | Line Supervisor |
+
+## Phase 2 Baseline
+
+Phase 2 adds governed master data, versioned style technical records, BOMs, operation bulletins, wash routes, line/machine capability, readiness services, technical workbenches, and seed scenarios.
+
+Additional local seeded users:
+
+| Username | Password | Role |
+|---|---|---|
+| `ie_user` | `planning123` | Industrial Engineering |
+| `business_admin` | `planning123` | Business Admin |
+
+Phase 2 intentionally excludes order lifecycle, procurement transactions, fabric QC execution, PCD execution, planning algorithms, production output, WIP behavior, shipment workflow, and offline/mobile behavior.

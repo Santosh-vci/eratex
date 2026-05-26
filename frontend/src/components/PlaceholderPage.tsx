@@ -2,9 +2,17 @@ type PlaceholderPageProps = {
   eyebrow: string;
   title: string;
   description: string;
+  phase?: string;
+  scope?: string;
 };
 
-export function PlaceholderPage({ eyebrow, title, description }: PlaceholderPageProps) {
+export function PlaceholderPage({
+  eyebrow,
+  title,
+  description,
+  phase = "Phase 1",
+  scope = "Platform foundation only",
+}: PlaceholderPageProps) {
   return (
     <section className="max-w-5xl">
       <div className="border border-grid-border bg-white p-5">
@@ -22,13 +30,13 @@ export function PlaceholderPage({ eyebrow, title, description }: PlaceholderPage
             <dt className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
               Phase
             </dt>
-            <dd className="mt-1 text-sm font-semibold text-slate-900">Phase 1</dd>
+            <dd className="mt-1 text-sm font-semibold text-slate-900">{phase}</dd>
           </div>
           <div className="border border-grid-border bg-surface-muted p-3">
             <dt className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
               Scope
             </dt>
-            <dd className="mt-1 text-sm font-semibold text-slate-900">Platform foundation only</dd>
+            <dd className="mt-1 text-sm font-semibold text-slate-900">{scope}</dd>
           </div>
         </dl>
       </div>

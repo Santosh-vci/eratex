@@ -6,17 +6,22 @@ import {
   Boxes,
   CalendarDays,
   ClipboardCheck,
+  ClipboardList,
+  Database,
   Factory,
+  FileText,
   Gauge,
   Home,
   LogOut,
   Menu,
   PackageCheck,
   PanelRight,
+  Route,
   ScanLine,
   Settings,
   Shirt,
   User,
+  UsersRound,
   Waves,
 } from "lucide-react";
 import Link from "next/link";
@@ -45,6 +50,41 @@ const navItems: NavItem[] = [
     icon: Settings,
     group: "Foundation",
     permission: "foundation.view",
+  },
+  {
+    href: "/master-data/governance",
+    label: "Governance",
+    icon: Database,
+    group: "Technical",
+    permission: "master_data.view",
+  },
+  {
+    href: "/technical/styles",
+    label: "Styles",
+    icon: FileText,
+    group: "Technical",
+    permission: "master_data.view",
+  },
+  {
+    href: "/technical/bom",
+    label: "BOM",
+    icon: ClipboardList,
+    group: "Technical",
+    permission: "master_data.view",
+  },
+  {
+    href: "/technical/operation-bulletins",
+    label: "Bulletins",
+    icon: Route,
+    group: "Technical",
+    permission: "bulletin.view",
+  },
+  {
+    href: "/technical/operator-skill-capacity",
+    label: "Skills",
+    icon: UsersRound,
+    group: "Technical",
+    permission: "skill_matrix.view",
   },
   { href: "/orders", label: "Orders", icon: ClipboardCheck, group: "Operations", permission: "orders.view" },
   { href: "/pcd-readiness", label: "PCD", icon: Gauge, group: "Operations", permission: "pcd.view" },
@@ -138,9 +178,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             </div>
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
-                Eratex Phase 1
+                Eratex Phase 2
               </p>
-              <h1 className="text-lg font-semibold leading-7">Common Platform Foundation</h1>
+              <h1 className="text-lg font-semibold leading-7">Master Data Foundation</h1>
             </div>
           </div>
           <div className="flex items-center gap-2 text-xs text-slate-600">

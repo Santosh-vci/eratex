@@ -8,15 +8,17 @@ Current implemented boundary:
 
 - Phase 0: repository, Docker, backend/frontend skeleton, CI.
 - Phase 1: common platform foundation only.
+- Phase 2: controlled master data and technical product foundation only.
 
-Do not add business modules, production dashboards, master-data workflows, planning algorithms, WIP domain behavior, wash execution logic, or offline PWA behavior while working inside Phase 1.
+Do not add order lifecycle, procurement transactions, fabric QC execution, PCD checklist execution, planning algorithms, production output, WIP domain behavior, wash execution logic, shipment workflow, production dashboards, or offline/mobile behavior while working inside Phase 2.
 
 ## Backend Rules
 
 - Use Django apps under `backend/apps`.
 - Keep business rules in services, not views or serializers.
 - Use explicit API endpoints and the standard envelope: `{ "data": ..., "meta": {}, "errors": [] }`.
-- Use Django Admin for Phase 1 writes to users, roles, permissions, and organization masters.
+- Use Django Admin for Phase 2 writes to users, roles, permissions, organization masters, master data, style technical records, machines, and skill matrix baseline.
+- Keep approved BOM, operation bulletin, and wash route versions immutable; clone to a new draft for changes.
 - Keep audit events business-readable and append-only.
 - Run backend checks before handoff:
 
@@ -24,6 +26,7 @@ Do not add business modules, production dashboards, master-data workflows, plann
 cd backend
 ..\.venv\Scripts\python -m ruff check .
 ..\.venv\Scripts\python manage.py makemigrations --check --dry-run
+..\.venv\Scripts\python manage.py check
 ..\.venv\Scripts\python -m pytest
 ```
 
@@ -58,6 +61,12 @@ After starting the stack, seed Phase 1 data:
 
 ```powershell
 docker compose exec backend python manage.py seed_phase1
+```
+
+Seed Phase 2 master and technical data:
+
+```powershell
+docker compose exec backend python manage.py seed_phase2
 ```
 
 ## Git Handoff

@@ -24,6 +24,11 @@ const plannerUser = {
     "master_data.view",
     "bulletin.view",
     "skill_matrix.view",
+    "procurement.view",
+    "fabric_qc.view",
+    "pcd.view",
+    "pcd.request_conditional_release",
+    "pcd.release_to_cutting",
   ],
   scopes: [],
   featureFlags: {},
@@ -39,6 +44,28 @@ const ieUser = {
   displayName: "Industrial Engineer",
   roles: [{ id: "role-3", code: "IE_USER", name: "Industrial Engineering", factoryId: null }],
   permissions: ["foundation.view", "master_data.view", "bulletin.view", "skill_matrix.view"],
+};
+
+const planningHeadUser = {
+  ...plannerUser,
+  id: 4,
+  username: "planning_head",
+  email: "planning.head@example.com",
+  firstName: "Planning",
+  lastName: "Head",
+  displayName: "Planning Head",
+  roles: [{ id: "role-4", code: "PLANNING_HEAD", name: "Planning Head", factoryId: null }],
+  permissions: [
+    ...plannerUser.permissions,
+    "orders.release_to_cutting",
+    "procurement.update_eta",
+    "procurement.close_shortage",
+    "fabric_qc.create_inspection",
+    "fabric_qc.waive",
+    "pcd.update_item",
+    "pcd.approve_conditional_release",
+    "pcd.view_audit",
+  ],
 };
 
 async function setupAuthMocks(page: Page, currentUser: typeof plannerUser) {
@@ -232,14 +259,233 @@ async function setupTechnicalMocks(page: Page) {
   });
 }
 
+async function setupPreProductionMocks(page: Page) {
+  let pcdStatus = "BLOCKED";
+  let releaseAllowed = false;
+  let releaseBlockers = ["TRIMS_AVAILABLE: PENDING"];
+  const pcdItems = [
+    {
+      id: "pcd-item-1",
+      itemCode: "FABRIC_QC_PASSED",
+      itemLabel: "Fabric QC passed",
+      isMandatory: true,
+      status: "PASSED",
+      ownerId: null,
+      dueDate: "2026-06-01",
+      waiverReason: "",
+      evidenceUrl: "",
+      remarks: "Passed by QC",
+    },
+    {
+      id: "pcd-item-2",
+      itemCode: "TRIMS_AVAILABLE",
+      itemLabel: "Trims available",
+      isMandatory: true,
+      status: "PENDING",
+      ownerId: null,
+      dueDate: "2026-06-01",
+      waiverReason: "",
+      evidenceUrl: "",
+      remarks: "Awaiting zipper ETA",
+    },
+  ];
+
+  const pcdRecord = () => ({
+    id: "pcd-1",
+    orderId: "order-pcd-1",
+    orderNo: "ORD-PCD-001",
+    styleCode: "STY-DEN-BASIC",
+    customerName: "Northstar Retail",
+    plannedPcdDate: "2026-06-01",
+    readinessStatus: pcdStatus,
+    conditionalRelease: pcdStatus === "CONDITIONALLY_READY",
+    conditionalReleaseReason: pcdStatus === "CONDITIONALLY_READY" ? "Approved for cutting only." : "",
+    conditionalReleaseExpiry: pcdStatus === "CONDITIONALLY_READY" ? "2099-01-01" : null,
+    approvedBy: pcdStatus === "CONDITIONALLY_READY" ? 4 : null,
+    approvedAt: pcdStatus === "CONDITIONALLY_READY" ? "2026-05-27T00:00:00Z" : null,
+    releasedToCuttingAt: pcdStatus === "RELEASED" ? "2026-05-27T00:10:00Z" : null,
+    releaseAllowed,
+    releaseBlockers,
+    items: pcdItems,
+    conditionalReleases: [],
+  });
+
+  const orderRecord = () => ({
+    id: "order-pcd-1",
+    orderNo: "ORD-PCD-001",
+    poNumber: "PO-PCD-001",
+    customer: { id: "cust-1", code: "NSR", name: "Northstar Retail", isActive: true },
+    buyer: null,
+    style: {
+      id: "style-1",
+      styleCode: "STY-DEN-BASIC",
+      productType: "DENIM",
+      washComplexity: "BASIC",
+      sewingComplexity: "BASIC",
+    },
+    productType: "DENIM",
+    orderQty: 1200,
+    plannedPcdDate: "2026-06-01",
+    plannedShipDate: "2026-06-30",
+    committedShipDate: "2026-06-30",
+    currentStage: "PCD_PENDING",
+    lifecycleStatus: "PCD_PENDING",
+    riskStatus: releaseAllowed ? "WATCH" : "ACTION",
+    pcdStatus,
+    materialReadinessStatus: "READY",
+    fabricQcStatus: "PASSED",
+    shipmentReadinessStatus: "NOT_STARTED",
+    owner: { id: 1, displayName: "Production Planner" },
+    nextAction: releaseAllowed ? "Release to cutting" : releaseBlockers[0],
+    openExceptionCount: 0,
+    releaseAllowed,
+    releaseBlockers,
+    lastUpdatedAt: "2026-05-27T00:00:00Z",
+  });
+
+  await page.route("**/api/v1/orders", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders,
+      body: JSON.stringify({ data: [orderRecord()], meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/orders/order-pcd-1", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders,
+      body: JSON.stringify({
+        data: { ...orderRecord(), lines: [{ id: "line-1", size: "32", color: "Indigo", quantity: 1200 }], pcdReadiness: pcdRecord() },
+        meta: {},
+        errors: [],
+      }),
+    });
+  });
+  await page.route("**/api/v1/orders/order-pcd-1/timeline", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders,
+      body: JSON.stringify({
+        data: [
+          {
+            id: "evt-1",
+            eventCode: "ORDER_CREATED",
+            fromStage: "",
+            toStage: "PCD_PENDING",
+            message: "Order created",
+            metadata: {},
+            performedBy: { id: 1, displayName: "Production Planner" },
+            createdAt: "2026-05-27T00:00:00Z",
+          },
+        ],
+        meta: {},
+        errors: [],
+      }),
+    });
+  });
+  await page.route("**/api/v1/pcd-readiness", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders,
+      body: JSON.stringify({ data: [pcdRecord()], meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/pcd-readiness/pcd-1/approve-conditional-release", async (route) => {
+    if (route.request().method() === "OPTIONS") {
+      await route.fulfill({ status: 204, headers: corsHeaders, body: "" });
+      return;
+    }
+    pcdStatus = "CONDITIONALLY_READY";
+    releaseAllowed = true;
+    releaseBlockers = [];
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders,
+      body: JSON.stringify({ data: pcdRecord(), meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/orders/order-pcd-1/release-to-cutting", async (route) => {
+    if (route.request().method() === "OPTIONS") {
+      await route.fulfill({ status: 204, headers: corsHeaders, body: "" });
+      return;
+    }
+    pcdStatus = "RELEASED";
+    releaseAllowed = false;
+    releaseBlockers = ["Order already released to cutting"];
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders,
+      body: JSON.stringify({ data: pcdRecord(), meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/material-readiness", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders,
+      body: JSON.stringify({ data: [], meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/procurement/purchase-orders", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders,
+      body: JSON.stringify({ data: [], meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/fabric-qc", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders,
+      body: JSON.stringify({ data: { lots: [], inspections: [] }, meta: {}, errors: [] }),
+    });
+  });
+}
+
 test("home route renders the foundation shell", async ({ page }) => {
   await setupAuthMocks(page, plannerUser);
   await login(page);
 
-  await expect(page.getByRole("heading", { name: "Master Data Foundation" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Order Readiness Foundation" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Eratex Operating Spine" })).toBeVisible();
   await expect(page.getByRole("link", { name: /Orders/ })).toBeVisible();
   await expect(page.getByRole("link", { name: /Planning/ })).toBeVisible();
+});
+
+test("planner can inspect blocked order and PCD readiness gate", async ({ page }) => {
+  await setupAuthMocks(page, plannerUser);
+  await setupPreProductionMocks(page);
+  await login(page);
+
+  await page.getByRole("link", { name: /Orders/ }).click();
+  await expect(page.getByRole("heading", { name: "Order Lifecycle Explorer" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "ORD-PCD-001" })).toBeVisible();
+
+  await page.getByRole("link", { name: "ORD-PCD-001" }).click();
+  await expect(page.getByRole("heading", { name: "ORD-PCD-001" })).toBeVisible();
+  await expect(page.getByRole("cell", { name: "TRIMS_AVAILABLE: PENDING" })).toBeVisible();
+
+  await page.getByRole("link", { name: "PCD", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "PCD Readiness" })).toBeVisible();
+  await page.locator("tbody tr").first().click();
+  await expect(page.getByText("Awaiting zipper ETA")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Release to cutting" })).toBeDisabled();
+});
+
+test("planning head can approve conditional release and release order gate", async ({ page }) => {
+  await setupAuthMocks(page, planningHeadUser);
+  await setupPreProductionMocks(page);
+  await login(page, "planning_head");
+
+  await page.getByRole("link", { name: "PCD", exact: true }).click();
+  await page.locator("tbody tr").first().click();
+  await page.getByRole("button", { name: "Approve conditional" }).click();
+  await page.getByRole("button", { name: "Confirm" }).click();
+  await expect(page.getByRole("status")).toContainText("Conditional release approved.");
+  await expect(page.getByRole("button", { name: "Release to cutting" })).toBeEnabled();
+
+  await page.getByRole("button", { name: "Release to cutting" }).click();
+  await page.getByRole("button", { name: "Release", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText("Order released to cutting.");
 });
 
 test("ie user can open technical style and routing workbenches", async ({ page }) => {

@@ -38,6 +38,10 @@ INSTALLED_APPS = [
     "apps.master_data",
     "apps.style_technical",
     "apps.workcenters",
+    "apps.orders",
+    "apps.materials_procurement",
+    "apps.fabric_qc",
+    "apps.pcd_readiness",
     "apps.demo_seed",
 ]
 

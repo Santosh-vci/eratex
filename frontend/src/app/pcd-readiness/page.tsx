@@ -1,12 +1,5 @@
-import { PlaceholderPage } from "@/components/PlaceholderPage";
+import { PcdReadinessWorkbenchPage } from "@/features/pre-production/PreProductionPages";
 
 export default function PcdReadinessPage() {
-  return (
-    <PlaceholderPage
-      eyebrow="EOS-03"
-      title="PCD Readiness"
-      description="Placeholder route for production readiness gates."
-    />
-  );
+  return <PcdReadinessWorkbenchPage />;
 }
-

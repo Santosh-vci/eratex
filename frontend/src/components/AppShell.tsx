@@ -86,8 +86,34 @@ const navItems: NavItem[] = [
     group: "Technical",
     permission: "skill_matrix.view",
   },
-  { href: "/orders", label: "Orders", icon: ClipboardCheck, group: "Operations", permission: "orders.view" },
-  { href: "/pcd-readiness", label: "PCD", icon: Gauge, group: "Operations", permission: "pcd.view" },
+  {
+    href: "/orders",
+    label: "Orders",
+    icon: ClipboardCheck,
+    group: "Pre-Production",
+    permission: "orders.view",
+  },
+  {
+    href: "/procurement/vendor-follow-up",
+    label: "Procurement",
+    icon: PackageCheck,
+    group: "Pre-Production",
+    permission: "procurement.view",
+  },
+  {
+    href: "/fabric/qc",
+    label: "Fabric QC",
+    icon: ScanLine,
+    group: "Pre-Production",
+    permission: "fabric_qc.view",
+  },
+  {
+    href: "/pcd-readiness",
+    label: "PCD",
+    icon: Gauge,
+    group: "Pre-Production",
+    permission: "pcd.view",
+  },
   {
     href: "/planning/weekly",
     label: "Planning",
@@ -178,9 +204,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             </div>
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
-                Eratex Phase 2
+                Eratex Phase 3
               </p>
-              <h1 className="text-lg font-semibold leading-7">Master Data Foundation</h1>
+              <h1 className="text-lg font-semibold leading-7">Order Readiness Foundation</h1>
             </div>
           </div>
           <div className="flex items-center gap-2 text-xs text-slate-600">

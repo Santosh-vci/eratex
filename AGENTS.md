@@ -9,16 +9,19 @@ Current implemented boundary:
 - Phase 0: repository, Docker, backend/frontend skeleton, CI.
 - Phase 1: common platform foundation only.
 - Phase 2: controlled master data and technical product foundation only.
+- Phase 3: orders, procurement readiness, fabric QC, and PCD release-gate readiness only.
 
-Do not add order lifecycle, procurement transactions, fabric QC execution, PCD checklist execution, planning algorithms, production output, WIP domain behavior, wash execution logic, shipment workflow, production dashboards, or offline/mobile behavior while working inside Phase 2.
+Do not add planning algorithms, daily release execution, cutting output, bundles, production output, WIP movement, sewing execution, wash execution, shipment workflow, full exception management, imports, or offline/mobile behavior while working inside Phase 3.
 
 ## Backend Rules
 
 - Use Django apps under `backend/apps`.
 - Keep business rules in services, not views or serializers.
 - Use explicit API endpoints and the standard envelope: `{ "data": ..., "meta": {}, "errors": [] }`.
-- Use Django Admin for Phase 2 writes to users, roles, permissions, organization masters, master data, style technical records, machines, and skill matrix baseline.
+- Use Django Admin for master correction, user/role administration, and seed/admin correction.
+- Frontend owns operational Phase 3 updates for PCD items, ETA updates, fabric QC inspection capture, conditional release, and release-to-cutting.
 - Keep approved BOM, operation bulletin, and wash route versions immutable; clone to a new draft for changes.
+- Release-to-cutting must update only PCD/order lifecycle state and audit. Do not create cutting execution, WIP, bundles, sewing, wash, or production output records.
 - Keep audit events business-readable and append-only.
 - Run backend checks before handoff:
 
@@ -67,6 +70,12 @@ Seed Phase 2 master and technical data:
 
 ```powershell
 docker compose exec backend python manage.py seed_phase2
+```
+
+Seed Phase 3 order readiness scenarios:
+
+```powershell
+docker compose exec backend python manage.py seed_phase3
 ```
 
 ## Git Handoff

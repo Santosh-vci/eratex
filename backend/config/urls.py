@@ -3,6 +3,12 @@ from django.urls import path
 
 from apps.audit_governance.api import entity_audit_view
 from apps.common.views import health_view, ping_view
+from apps.fabric_qc.api import (
+    fabric_qc_inspection_create_view,
+    fabric_qc_inspection_waive_view,
+    fabric_qc_view,
+    order_fabric_qc_status_view,
+)
 from apps.identity_access.api import csrf_view, login_view, logout_view, me_view, permissions_view
 from apps.master_data.api import (
     buyers_view,
@@ -13,7 +19,28 @@ from apps.master_data.api import (
     thresholds_view,
     vendors_view,
 )
+from apps.materials_procurement.api import (
+    close_material_shortage_view,
+    material_readiness_view,
+    order_material_readiness_view,
+    purchase_order_eta_update_view,
+    purchase_orders_view,
+)
+from apps.orders.api import (
+    order_detail_view,
+    order_release_to_cutting_view,
+    order_timeline_view,
+    orders_collection_view,
+)
 from apps.organization.api import departments_view, factories_view, lines_view, workcenters_view
+from apps.pcd_readiness.api import (
+    order_pcd_readiness_view,
+    pcd_approve_conditional_release_view,
+    pcd_item_update_view,
+    pcd_readiness_detail_view,
+    pcd_readiness_list_view,
+    pcd_request_conditional_release_view,
+)
 from apps.style_technical.api import (
     bom_detail_view,
     boms_view,
@@ -103,6 +130,81 @@ urlpatterns = [
         name="api-line-capability",
     ),
     path("api/v1/workcenters/capacity-days", capacity_days_view, name="api-capacity-days"),
+    path("api/v1/orders", orders_collection_view, name="api-orders"),
+    path("api/v1/orders/<uuid:order_id>", order_detail_view, name="api-order-detail"),
+    path(
+        "api/v1/orders/<uuid:order_id>/timeline",
+        order_timeline_view,
+        name="api-order-timeline",
+    ),
+    path(
+        "api/v1/orders/<uuid:order_id>/release-to-cutting",
+        order_release_to_cutting_view,
+        name="api-order-release-to-cutting",
+    ),
+    path("api/v1/material-readiness", material_readiness_view, name="api-material-readiness"),
+    path(
+        "api/v1/orders/<uuid:order_id>/material-readiness",
+        order_material_readiness_view,
+        name="api-order-material-readiness",
+    ),
+    path(
+        "api/v1/procurement/purchase-orders",
+        purchase_orders_view,
+        name="api-procurement-purchase-orders",
+    ),
+    path(
+        "api/v1/procurement/purchase-orders/<uuid:purchase_order_id>/eta-updates",
+        purchase_order_eta_update_view,
+        name="api-procurement-eta-update",
+    ),
+    path(
+        "api/v1/material-readiness/<uuid:requirement_id>/close-shortage",
+        close_material_shortage_view,
+        name="api-material-shortage-close",
+    ),
+    path("api/v1/fabric-qc", fabric_qc_view, name="api-fabric-qc"),
+    path(
+        "api/v1/orders/<uuid:order_id>/fabric-qc-status",
+        order_fabric_qc_status_view,
+        name="api-order-fabric-qc",
+    ),
+    path(
+        "api/v1/fabric-qc/inspections",
+        fabric_qc_inspection_create_view,
+        name="api-fabric-qc-inspections",
+    ),
+    path(
+        "api/v1/fabric-qc/inspections/<uuid:inspection_id>/waive",
+        fabric_qc_inspection_waive_view,
+        name="api-fabric-qc-waive",
+    ),
+    path("api/v1/pcd-readiness", pcd_readiness_list_view, name="api-pcd-readiness"),
+    path(
+        "api/v1/pcd-readiness/<uuid:readiness_id>",
+        pcd_readiness_detail_view,
+        name="api-pcd-readiness-detail",
+    ),
+    path(
+        "api/v1/orders/<uuid:order_id>/pcd-readiness",
+        order_pcd_readiness_view,
+        name="api-order-pcd-readiness",
+    ),
+    path(
+        "api/v1/pcd-readiness/<uuid:readiness_id>/items/<uuid:item_id>",
+        pcd_item_update_view,
+        name="api-pcd-item-update",
+    ),
+    path(
+        "api/v1/pcd-readiness/<uuid:readiness_id>/request-conditional-release",
+        pcd_request_conditional_release_view,
+        name="api-pcd-request-conditional",
+    ),
+    path(
+        "api/v1/pcd-readiness/<uuid:readiness_id>/approve-conditional-release",
+        pcd_approve_conditional_release_view,
+        name="api-pcd-approve-conditional",
+    ),
     path(
         "api/v1/audit/<str:entity_type>/<str:entity_id>", entity_audit_view, name="api-audit-entity"
     ),

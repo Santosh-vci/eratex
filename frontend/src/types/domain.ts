@@ -281,3 +281,222 @@ export type WorkcenterCapacityDay = {
   capacityValue: number;
   source: string;
 };
+
+export type OrderStage =
+  | "CREATED"
+  | "PRE_PRODUCTION"
+  | "PCD_PENDING"
+  | "PCD_READY"
+  | "CUTTING"
+  | "SEWING"
+  | "WASHING"
+  | "FINISHING"
+  | "PACKING"
+  | "SHIPMENT_READY"
+  | "SHIPPED"
+  | "ON_HOLD"
+  | "CANCELLED";
+
+export type ReadinessStatus =
+  | "IN_REVIEW"
+  | "READY"
+  | "CONDITIONALLY_READY"
+  | "BLOCKED"
+  | "ESCALATED"
+  | "RELEASED";
+
+export type ChecklistItemStatus = "PENDING" | "PASSED" | "FAILED" | "WAIVED" | "NOT_APPLICABLE";
+
+export type FabricQcStatus = "PENDING" | "PASSED" | "FAILED" | "HOLD" | "WAIVED";
+
+export type OrderOwner = {
+  id: number;
+  displayName: string;
+};
+
+export type ProductionOrder = {
+  id: string;
+  orderNo: string;
+  poNumber: string;
+  customer: EntityRef;
+  buyer: EntityRef | null;
+  style: {
+    id: string;
+    styleCode: string;
+    productType: string;
+    washComplexity: string;
+    sewingComplexity: string;
+  };
+  productType: string;
+  orderQty: number;
+  plannedPcdDate: string;
+  plannedShipDate: string | null;
+  committedShipDate: string;
+  currentStage: OrderStage;
+  lifecycleStatus: OrderStage;
+  riskStatus: "ON_TRACK" | "WATCH" | "ACTION" | "CRITICAL";
+  pcdStatus: ReadinessStatus | "NOT_STARTED";
+  materialReadinessStatus: string;
+  fabricQcStatus: FabricQcStatus;
+  shipmentReadinessStatus: string;
+  owner: OrderOwner | null;
+  nextAction: string;
+  openExceptionCount: number;
+  releaseAllowed: boolean;
+  releaseBlockers: string[];
+  lastUpdatedAt: string;
+  lines?: OrderLine[];
+  summary?: Record<string, number>;
+  pcdReadiness?: PcdReadiness | null;
+  materialReadiness?: MaterialReadiness;
+  openBlockers?: Array<{ category: string; severity: string; message: string }>;
+};
+
+export type OrderLine = {
+  id: string;
+  size: string;
+  color: string;
+  quantity: number;
+};
+
+export type OrderTimelineEvent = {
+  id: string;
+  eventCode: string;
+  fromStage: string;
+  toStage: string;
+  message: string;
+  metadata: Record<string, unknown>;
+  performedBy: OrderOwner | null;
+  createdAt: string;
+};
+
+export type MaterialReadinessItem = {
+  id: string;
+  orderId: string;
+  orderNo: string;
+  materialId: string;
+  materialCode: string;
+  materialName: string;
+  requiredQty: number;
+  shortageQty: number;
+  requiredDate: string | null;
+  requiredStage: string;
+  status: string;
+  latestEta: string | null;
+  etaAfterPcd: boolean;
+  vendorCode: string | null;
+};
+
+export type MaterialReadiness = {
+  orderId: string;
+  orderNo: string;
+  readinessStatus: string;
+  riskStatus: "ON_TRACK" | "WATCH" | "ACTION" | "CRITICAL";
+  items: MaterialReadinessItem[];
+  blockedCount: number;
+};
+
+export type MaterialPurchaseOrder = {
+  id: string;
+  poNo: string;
+  orderId: string | null;
+  orderNo: string | null;
+  vendorCode: string;
+  vendorName: string;
+  materialCode: string;
+  materialName: string;
+  orderedQty: number;
+  acknowledgedQty: number | null;
+  expectedArrivalDate: string | null;
+  revisedEta: string | null;
+  actualArrivalDate: string | null;
+  status: string;
+};
+
+export type FabricRoll = {
+  id: string;
+  rollNo: string;
+  rollLength: number;
+  width: number | null;
+  gsm: number | null;
+  shade: string;
+  qcStatus: FabricQcStatus;
+};
+
+export type FabricLot = {
+  id: string;
+  orderId: string | null;
+  orderNo: string | null;
+  lotNo: string;
+  shadeLot: string;
+  receivedQty: number;
+  receivedDate: string;
+  status: string;
+  rolls: FabricRoll[];
+};
+
+export type FabricQcInspection = {
+  id: string;
+  fabricRollId: string;
+  rollNo: string;
+  lotNo: string;
+  orderNo: string | null;
+  inspectionDate: string;
+  fourPointScore: number | null;
+  widthResult: number | null;
+  gsmResult: number | null;
+  shrinkagePercent: number | null;
+  status: FabricQcStatus;
+  remarks: string;
+  waiverReason: string;
+};
+
+export type FabricQcDashboard = {
+  lots: FabricLot[];
+  inspections: FabricQcInspection[];
+};
+
+export type PcdReadinessItem = {
+  id: string;
+  itemCode: string;
+  itemLabel: string;
+  isMandatory: boolean;
+  status: ChecklistItemStatus;
+  ownerId: number | null;
+  dueDate: string | null;
+  waiverReason: string;
+  evidenceUrl: string;
+  remarks: string;
+};
+
+export type ConditionalRelease = {
+  id: string;
+  status: "REQUESTED" | "APPROVED" | "EXPIRED" | "REJECTED";
+  openItemCodes: string[];
+  reason: string;
+  riskNote: string;
+  expiryDate: string;
+  requestedBy: number | null;
+  approvedBy: number | null;
+  approvedAt: string | null;
+};
+
+export type PcdReadiness = {
+  id: string;
+  orderId: string;
+  orderNo: string;
+  styleCode: string;
+  customerName: string;
+  plannedPcdDate: string;
+  readinessStatus: ReadinessStatus;
+  conditionalRelease: boolean;
+  conditionalReleaseReason: string;
+  conditionalReleaseExpiry: string | null;
+  approvedBy: number | null;
+  approvedAt: string | null;
+  releasedToCuttingAt: string | null;
+  releaseAllowed: boolean;
+  releaseBlockers: string[];
+  items: PcdReadinessItem[];
+  conditionalReleases: ConditionalRelease[];
+};

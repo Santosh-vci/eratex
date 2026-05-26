@@ -19,4 +19,9 @@ export const queryKeys = {
   washRoutes: ["technical", "wash-routes"] as const,
   lineCapability: ["technical", "line-capability"] as const,
   capacityDays: ["technical", "capacity-days"] as const,
+  orders: ["pre-production", "orders"] as const,
+  pcdReadiness: ["pre-production", "pcd-readiness"] as const,
+  materialReadiness: ["pre-production", "material-readiness"] as const,
+  purchaseOrders: ["pre-production", "purchase-orders"] as const,
+  fabricQc: ["pre-production", "fabric-qc"] as const,
 };

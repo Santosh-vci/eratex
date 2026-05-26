@@ -751,10 +751,10 @@ class Command(BaseCommand):
             },
         )
         for sequence, code, label, owner in [
-            (10, "STYLE_APPROVED", "Style approved", "MERCHANDISER"),
-            (20, "BOM_APPROVED", "BOM approved", "TECHNICAL"),
-            (30, "BULLETIN_APPROVED", "Operation bulletin approved", "IE"),
-            (40, "WASH_ROUTE_APPROVED", "Wash route approved", "WASH"),
+            (8010, "STYLE_APPROVED", "Style approved", "MERCHANDISER"),
+            (8020, "BOM_APPROVED", "BOM approved", "TECHNICAL"),
+            (8030, "BULLETIN_APPROVED", "Operation bulletin approved", "IE"),
+            (8040, "WASH_ROUTE_APPROVED", "Wash route approved", "WASH"),
         ]:
             ChecklistTemplateItem.objects.update_or_create(
                 template=template,

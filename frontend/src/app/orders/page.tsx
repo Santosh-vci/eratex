@@ -1,12 +1,5 @@
-import { PlaceholderPage } from "@/components/PlaceholderPage";
+import { OrdersWorkbenchPage } from "@/features/pre-production/PreProductionPages";
 
 export default function OrdersPage() {
-  return (
-    <PlaceholderPage
-      eyebrow="EOS-03"
-      title="Orders"
-      description="Placeholder route for order lifecycle and risk surfaces."
-    />
-  );
+  return <OrdersWorkbenchPage />;
 }
-

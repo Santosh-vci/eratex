@@ -36,10 +36,10 @@ export default function LoginPage() {
     <main className="grid min-h-screen place-items-center bg-surface-muted p-4">
       <form onSubmit={handleSubmit} className="w-full max-w-sm border border-grid-border bg-white p-5">
         <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
-          Eratex Phase 2
+          Eratex Phase 3
         </p>
         <h1 className="mt-2 text-xl font-semibold text-slate-950">Sign in</h1>
-        <p className="mt-1 text-sm text-slate-600">Use seeded Phase 2 credentials for local validation.</p>
+        <p className="mt-1 text-sm text-slate-600">Use seeded Phase 3 credentials for local validation.</p>
         <label className="mt-5 block text-sm font-medium text-slate-700">
           Username
           <input

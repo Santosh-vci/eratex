@@ -1,6 +1,6 @@
 # Eratex Planning and Scheduling Platform
 
-Phase 0 bootstraps the Eratex monorepo into a runnable full-stack foundation. Phase 1 adds the common platform layer, and Phase 2 adds controlled master data and technical product foundations.
+Phase 0 bootstraps the Eratex monorepo into a runnable full-stack foundation. Phase 1 adds the common platform layer, Phase 2 adds controlled master data and technical product foundations, and Phase 3 adds order readiness control before planning execution.
 
 ## Stack
 
@@ -22,10 +22,10 @@ Start the full stack:
 docker compose up --build
 ```
 
-Seed Phase 2 data, which idempotently validates/loads the Phase 1 foundation first:
+Seed Phase 3 data, which idempotently validates/loads the Phase 1 and Phase 2 foundations first:
 
 ```powershell
-docker compose exec backend python manage.py seed_phase2
+docker compose exec backend python manage.py seed_phase3
 ```
 
 Primary local endpoints:
@@ -83,3 +83,37 @@ Additional local seeded users:
 | `business_admin` | `planning123` | Business Admin |
 
 Phase 2 intentionally excludes order lifecycle, procurement transactions, fabric QC execution, PCD execution, planning algorithms, production output, WIP behavior, shipment workflow, and offline/mobile behavior.
+
+## Phase 3 Baseline
+
+Phase 3 adds confirmed production orders, order lifecycle trace, procurement ETA and material readiness, fabric lot/roll QC state, PCD readiness gates, conditional release, release-to-cutting validation, Phase 3 APIs, and pre-production frontend workbenches.
+
+Additional local seeded users:
+
+| Username | Password | Role |
+|---|---|---|
+| `merchandiser` | `planning123` | Merchandiser |
+| `procurement_user` | `planning123` | Procurement User |
+| `fabric_qc_user` | `planning123` | Fabric QC User |
+| `planning_head` | `planning123` | Planning Head |
+
+Seeded Phase 3 orders:
+
+```text
+ORD-HP-001
+ORD-PCD-001
+ORD-FABQC-001
+ORD-MAT-001
+ORD-MDATA-001
+```
+
+Phase 3 local validation:
+
+```powershell
+docker compose config
+docker compose up --build -d
+docker compose exec -T backend python manage.py seed_phase3
+docker compose down
+```
+
+Phase 3 intentionally excludes planning algorithms, daily release execution, cutting output, WIP movement, sewing/wash execution, shipment workflow, full exception management, imports, and offline/mobile behavior.

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>What-If Simulation Workbench | OpsCockpit</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+        .gantt-grid { background-image: linear-gradient(to right, #E2E8F0 1px, transparent 1px); background-size: 80px 100%; }
+        .ripple-line { stroke-dasharray: 4; animation: dash 20s linear infinite; }
+        @keyframes dash { to { stroke-dashoffset: -1000; } }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#35260c",
+                        "on-surface": "#1b1b1d",
+                        "surface-container-low": "#f5f3f4",
+                        "outline-variant": "#c5c6cd",
+                        "surface-container-highest": "#e4e2e3",
+                        "grid-border": "#E2E8F0",
+                        "primary": "#091426",
+                        "on-background": "#1b1b1d",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#ddc39d",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "surface-variant": "#e4e2e3",
+                        "risk-watch": "#F59E0B",
+                        "surface-tint": "#545f73",
+                        "on-primary-container": "#8590a6",
+                        "surface-muted": "#F8FAFC",
+                        "inverse-on-surface": "#f3f0f2",
+                        "risk-action": "#EF4444",
+                        "primary-container": "#1e293b",
+                        "error": "#ba1a1a",
+                        "surface-container": "#f0edef",
+                        "surface": "#fbf8fa",
+                        "risk-critical": "#111827",
+                        "on-error-container": "#93000a",
+                        "on-primary": "#ffffff",
+                        "surface-bright": "#fbf8fa",
+                        "on-tertiary-fixed": "#271902",
+                        "secondary-container": "#d5e3fd",
+                        "on-primary-fixed": "#111c2d",
+                        "secondary-fixed": "#d5e3fd",
+                        "inverse-primary": "#bcc7de",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "inverse-surface": "#303032",
+                        "tertiary-fixed": "#fadfb8",
+                        "surface-container-lowest": "#ffffff",
+                        "outline": "#75777d",
+                        "error-container": "#ffdad6",
+                        "on-tertiary": "#ffffff",
+                        "background": "#fbf8fa",
+                        "surface-dim": "#dcd9db",
+                        "on-tertiary-fixed-variant": "#564427",
+                        "risk-on-track": "#10B981",
+                        "surface-container-high": "#eae7e9",
+                        "secondary": "#515f74",
+                        "on-tertiary-container": "#a38c6a",
+                        "tertiary": "#1e1200",
+                        "on-surface-variant": "#45474c",
+                        "on-secondary-container": "#57657b",
+                        "primary-fixed-dim": "#bcc7de",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#d8e3fb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "nav-collapsed-width": "64px",
+                        "margin-md": "16px",
+                        "drawer-width": "400px",
+                        "gutter": "12px",
+                        "nav-expanded-width": "240px",
+                        "grid-row-height": "32px",
+                        "margin-sm": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "mono-data": ["JetBrains Mono"],
+                        "data-tabular": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface-muted text-on-surface selection:bg-secondary-container">
+<!-- TopNavBar -->
+<header class="fixed top-0 z-50 flex justify-between items-center w-full px-margin-md h-12 bg-surface border-b border-outline-variant">
+<div class="flex items-center gap-8">
+<span class="text-headline-lg font-headline-lg font-bold text-primary">OpsCockpit</span>
+<div class="flex gap-6">
+<a class="text-body-md font-body-md text-primary border-b-2 border-primary py-3 transition-colors" href="#">Workbench</a>
+<a class="text-body-md font-body-md text-on-surface-variant hover:bg-surface-container-low px-2 py-3 transition-colors" href="#">Alerts</a>
+<a class="text-body-md font-body-md text-on-surface-variant hover:bg-surface-container-low px-2 py-3 transition-colors" href="#">Resources</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2 top-1.5 text-[20px] text-on-surface-variant">search</span>
+<input class="bg-surface-container-low border-none rounded-lg pl-9 h-8 w-64 text-body-sm focus:ring-2 focus:ring-primary" placeholder="Search orders..." type="text"/>
+</div>
+<div class="flex gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span></button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined text-[20px]">help</span></button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined text-[20px]">account_circle</span></button>
+</div>
+</div>
+</header>
+<!-- SideNavBar (Collapsed by default, Hover to expand) -->
+<aside class="fixed left-0 top-12 bottom-0 z-40 bg-surface-container-lowest border-r border-outline-variant w-nav-collapsed-width hover:w-nav-expanded-width transition-all duration-300 group overflow-hidden flex flex-col py-4 gap-2">
+<div class="px-4 mb-6 flex flex-col opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="text-label-caps font-label-caps text-on-surface-variant">PLANNER CONSOLE</span>
+<span class="text-body-sm text-on-surface-variant font-medium">Active Shift: A</span>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-4 px-5 h-12 text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="opacity-0 group-hover:opacity-100 text-label-caps font-label-caps whitespace-nowrap">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-5 h-12 bg-secondary-container text-on-secondary-container font-bold transition-all border-r-4 border-primary" href="#">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="opacity-0 group-hover:opacity-100 text-label-caps font-label-caps whitespace-nowrap">Simulation</span>
+</a>
+<a class="flex items-center gap-4 px-5 h-12 text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">factory</span>
+<span class="opacity-0 group-hover:opacity-100 text-label-caps font-label-caps whitespace-nowrap">Workcenters</span>
+</a>
+<a class="flex items-center gap-4 px-5 h-12 text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="opacity-0 group-hover:opacity-100 text-label-caps font-label-caps whitespace-nowrap">Inventory</span>
+</a>
+<a class="flex items-center gap-4 px-5 h-12 text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="opacity-0 group-hover:opacity-100 text-label-caps font-label-caps whitespace-nowrap">Reports</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 border-t border-outline-variant">
+<a class="flex items-center gap-4 px-5 h-12 text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="opacity-0 group-hover:opacity-100 text-label-caps font-label-caps whitespace-nowrap">Settings</span>
+</a>
+<a class="flex items-center gap-4 px-5 h-12 text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+<span class="opacity-0 group-hover:opacity-100 text-label-caps font-label-caps whitespace-nowrap">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-nav-collapsed-width mt-12 mr-drawer-width min-h-[calc(100vh-48px)] flex flex-col">
+<!-- Simulation Comparison Header -->
+<div class="bg-surface border-b border-grid-border p-4 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="flex flex-col">
+<span class="text-label-caps font-label-caps text-on-surface-variant uppercase">Active Scenario</span>
+<h1 class="text-headline-md font-headline-md text-primary">Simulation: Split Shipment + OT</h1>
+</div>
+<div class="h-8 w-px bg-outline-variant mx-2"></div>
+<div class="flex items-center bg-surface-container-low border border-outline-variant rounded p-1">
+<button class="px-3 py-1 text-label-caps font-label-caps text-on-surface-variant hover:text-primary transition-colors">Current Baseline</button>
+<button class="px-3 py-1 bg-white text-primary font-bold rounded shadow-sm text-label-caps font-label-caps">Sim: Split + OT</button>
+<button class="px-3 py-1 text-label-caps font-label-caps text-on-surface-variant hover:text-primary transition-colors">Sim: B (Max Thruput)</button>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex items-center gap-2 px-3 py-1.5 border border-outline-variant rounded text-body-sm hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">picture_as_pdf</span> Export PDF
+                </button>
+<button class="flex items-center gap-2 px-3 py-1.5 border border-error text-error rounded text-body-sm hover:bg-error-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">delete</span> Discard
+                </button>
+<button class="flex items-center gap-2 px-4 py-1.5 bg-primary text-white rounded text-body-sm hover:bg-primary-container transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[18px]">check_circle</span> Commit to Plan
+                </button>
+</div>
+</div>
+<div class="flex flex-1 overflow-hidden">
+<!-- Left Pane: Controls -->
+<div class="w-72 border-r border-grid-border flex flex-col bg-surface-muted overflow-y-auto custom-scrollbar">
+<div class="p-4 border-b border-grid-border bg-white">
+<h2 class="text-label-caps font-label-caps mb-3">SCENARIO CONTROLS</h2>
+<div class="space-y-4">
+<!-- Control Block: Order Splits -->
+<div class="space-y-2">
+<label class="text-body-sm font-semibold flex items-center justify-between">
+                                ORD-7291 Split (Denim)
+                                <input checked="" class="rounded text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+</label>
+<p class="text-[11px] text-on-surface-variant leading-tight">Split 5000 units into 2x 2500 batches to avoid 5-day wash delay.</p>
+</div>
+<!-- Control Block: Shift Adjustment -->
+<div class="space-y-2">
+<label class="text-body-sm font-semibold">Sewing Line 04 Shift</label>
+<select class="w-full h-8 text-body-sm border-outline-variant rounded bg-surface-container-low focus:ring-primary">
+<option>8h (Standard)</option>
+<option selected="">12h (Overtime)</option>
+<option>16h (Double)</option>
+</select>
+</div>
+<!-- Control Block: Fabric ETA -->
+<div class="space-y-2">
+<label class="text-body-sm font-semibold">Fabric ETA Adjustment</label>
+<div class="flex items-center gap-2">
+<input class="w-full h-8 text-body-sm border-outline-variant rounded bg-surface-container-low focus:ring-primary" type="number" value="2"/>
+<span class="text-body-sm">Days</span>
+</div>
+</div>
+<!-- Control Block: Priorities -->
+<div class="space-y-2">
+<label class="text-body-sm font-semibold">Priority Sequence</label>
+<div class="p-2 border border-outline-variant bg-surface rounded space-y-1">
+<div class="flex items-center justify-between p-1 bg-white border border-outline-variant rounded text-[12px] cursor-move">
+<span>1. ORD-7291 (Sim)</span>
+<span class="material-symbols-outlined text-[16px]">drag_indicator</span>
+</div>
+<div class="flex items-center justify-between p-1 bg-white border border-outline-variant rounded text-[12px] cursor-move">
+<span>2. ORD-8012 (Fixed)</span>
+<span class="material-symbols-outlined text-[16px]">drag_indicator</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-white mt-4 border-t border-b border-grid-border">
+<h2 class="text-label-caps font-label-caps mb-3">STALE DATA</h2>
+<div class="flex items-center gap-2 text-mono-data text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-risk-on-track"></span>
+                        SYNC: 42s ago
+                    </div>
+</div>
+</div>
+<!-- Center Pane: Simulation Canvas (Gantt) -->
+<div class="flex-1 bg-surface-muted overflow-auto custom-scrollbar relative">
+<!-- Timeline Header -->
+<div class="sticky top-0 z-10 flex h-10 bg-white border-b border-grid-border">
+<div class="w-48 border-r border-grid-border flex items-center px-4 shrink-0">
+<span class="text-label-caps font-label-caps">Workcenter</span>
+</div>
+<div class="flex flex-1 items-center">
+<div class="flex-1 border-r border-grid-border text-center text-[11px] font-bold">MON 14 OCT</div>
+<div class="flex-1 border-r border-grid-border text-center text-[11px] font-bold">TUE 15 OCT</div>
+<div class="flex-1 border-r border-grid-border text-center text-[11px] font-bold">WED 16 OCT</div>
+<div class="flex-1 border-r border-grid-border text-center text-[11px] font-bold">THU 17 OCT</div>
+<div class="flex-1 border-r border-grid-border text-center text-[11px] font-bold">FRI 18 OCT</div>
+</div>
+</div>
+<!-- Gantt Rows -->
+<div class="gantt-grid">
+<!-- Row 1 -->
+<div class="flex h-12 border-b border-grid-border hover:bg-surface-container-low transition-colors group">
+<div class="w-48 border-r border-grid-border flex items-center px-4 shrink-0 bg-white group-hover:bg-surface-container-low">
+<span class="text-body-sm font-semibold">Sewing Line 04</span>
+</div>
+<div class="flex-1 relative">
+<!-- Gantt Block -->
+<div class="absolute top-2 left-[5%] w-[45%] h-8 bg-primary rounded flex items-center px-3 text-white overflow-hidden shadow-sm">
+<span class="text-[11px] font-bold truncate">ORD-7291 | Batch A (Sim)</span>
+</div>
+<!-- Overflow ripple effect arrow SVG -->
+<svg class="absolute top-6 left-[50%] w-24 h-24 pointer-events-none z-20">
+<path class="ripple-line" d="M 0 0 Q 40 0 40 40 L 40 60" fill="none" stroke="#EF4444" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="flex h-12 border-b border-grid-border hover:bg-surface-container-low transition-colors group">
+<div class="w-48 border-r border-grid-border flex items-center px-4 shrink-0 bg-white group-hover:bg-surface-container-low">
+<span class="text-body-sm font-semibold">Sewing Line 05</span>
+</div>
+<div class="flex-1 relative">
+<div class="absolute top-2 left-[10%] w-[35%] h-8 bg-secondary-container border border-primary text-primary rounded flex items-center px-3 overflow-hidden">
+<span class="text-[11px] font-bold truncate">ORD-7291 | Batch B (Sim)</span>
+</div>
+</div>
+</div>
+<!-- Row 3 (Bottleneck) -->
+<div class="flex h-12 border-b border-grid-border bg-error-container/10 group">
+<div class="w-48 border-r border-grid-border flex items-center px-4 shrink-0 bg-white group-hover:bg-surface-container-low">
+<span class="text-body-sm font-semibold text-error">Wet Wash 01</span>
+<span class="material-symbols-outlined text-error text-[16px] ml-auto">warning</span>
+</div>
+<div class="flex-1 relative">
+<div class="absolute top-2 left-[55%] w-[40%] h-8 bg-risk-critical text-white rounded flex items-center px-3 overflow-hidden">
+<span class="text-[11px] font-bold truncate">ORD-7291 (Wash)</span>
+</div>
+<!-- Ghost baseline block -->
+<div class="absolute top-4 left-[85%] w-[40%] h-4 border border-dashed border-outline-variant bg-surface-container-low opacity-40 rounded"></div>
+</div>
+</div>
+<!-- Row 4 -->
+<div class="flex h-12 border-b border-grid-border hover:bg-surface-container-low transition-colors group">
+<div class="w-48 border-r border-grid-border flex items-center px-4 shrink-0 bg-white group-hover:bg-surface-container-low">
+<span class="text-body-sm font-semibold">Quality Inspection</span>
+</div>
+<div class="flex-1 relative">
+<div class="absolute top-2 left-[20%] w-[10%] h-8 bg-surface-container-highest border border-outline text-on-surface-variant rounded flex items-center px-3">
+<span class="text-[10px] font-bold uppercase">ORD-6421</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Capacity Indicators Footer -->
+<div class="p-margin-md">
+<h3 class="text-label-caps font-label-caps mb-4">WORKCENTER LOAD (8h Window)</h3>
+<div class="grid grid-cols-4 gap-4">
+<div class="bg-white border border-grid-border p-3 rounded">
+<div class="flex justify-between mb-2">
+<span class="text-body-sm font-semibold">Sewing 04</span>
+<span class="text-mono-data">108%</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-risk-action h-full" style="width: 100%"></div>
+</div>
+</div>
+<div class="bg-white border border-grid-border p-3 rounded">
+<div class="flex justify-between mb-2">
+<span class="text-body-sm font-semibold">Sewing 05</span>
+<span class="text-mono-data">84%</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-risk-on-track h-full" style="width: 84%"></div>
+</div>
+</div>
+<div class="bg-white border border-grid-border p-3 rounded">
+<div class="flex justify-between mb-2">
+<span class="text-body-sm font-semibold">Wet Wash</span>
+<span class="text-mono-data">98%</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-risk-watch h-full" style="width: 98%"></div>
+</div>
+</div>
+<div class="bg-white border border-grid-border p-3 rounded">
+<div class="flex justify-between mb-2">
+<span class="text-body-sm font-semibold">Finishing</span>
+<span class="text-mono-data">45%</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-risk-on-track h-full" style="width: 45%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Right Drawer: Impact Analysis -->
+<aside class="fixed right-0 top-12 bottom-0 w-drawer-width bg-white border-l border-outline-variant shadow-lg z-40 flex flex-col">
+<div class="p-6 border-b border-grid-border">
+<h2 class="text-headline-md font-headline-md text-primary">Impact Analysis</h2>
+<p class="text-body-sm text-on-surface-variant">Simulating delta vs. current production baseline.</p>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-8">
+<!-- Delta Metrics Cards -->
+<div class="grid grid-cols-1 gap-4">
+<div class="p-4 border border-grid-border rounded bg-surface-muted">
+<div class="flex justify-between items-start">
+<span class="text-label-caps font-label-caps">OTIF % PERFORMANCE</span>
+<span class="text-risk-on-track text-body-sm font-bold flex items-center">
+<span class="material-symbols-outlined text-[18px]">arrow_upward</span> +2.4%
+                        </span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="text-headline-lg font-bold">96.8%</span>
+<span class="text-body-sm text-on-surface-variant">vs 94.4%</span>
+</div>
+</div>
+<div class="p-4 border border-grid-border rounded bg-surface-muted">
+<div class="flex justify-between items-start">
+<span class="text-label-caps font-label-caps">RECOVERY COST</span>
+<span class="text-risk-action text-body-sm font-bold flex items-center">
+<span class="material-symbols-outlined text-[18px]">arrow_upward</span> +$1.2k
+                        </span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="text-headline-lg font-bold font-mono-data">$14,500</span>
+<span class="text-body-sm text-on-surface-variant">Est. Labor Surcharge</span>
+</div>
+</div>
+</div>
+<!-- Impact Preview Checklist -->
+<div>
+<h3 class="text-label-caps font-label-caps mb-4">READINESS CHECKLIST</h3>
+<div class="space-y-3">
+<div class="flex items-start gap-3 p-3 bg-white border border-grid-border rounded">
+<span class="material-symbols-outlined text-risk-on-track mt-0.5">check_circle</span>
+<div class="flex-1">
+<div class="flex justify-between items-center">
+<span class="text-body-sm font-semibold">Fabric Inventory</span>
+<span class="px-1.5 py-0.5 bg-risk-on-track/10 text-risk-on-track text-[10px] font-bold rounded">AVAILABLE</span>
+</div>
+<p class="text-[12px] text-on-surface-variant">Batch FAB-992 reserved for ORD-7291.</p>
+</div>
+</div>
+<div class="flex items-start gap-3 p-3 bg-white border border-grid-border rounded">
+<span class="material-symbols-outlined text-risk-watch mt-0.5">pending</span>
+<div class="flex-1">
+<div class="flex justify-between items-center">
+<span class="text-body-sm font-semibold">Line 04 Staffing</span>
+<span class="px-1.5 py-0.5 bg-risk-watch/10 text-risk-watch text-[10px] font-bold rounded">OVERTIME REQ</span>
+</div>
+<p class="text-[12px] text-on-surface-variant">Awaiting Supervisor B approval for 12h shift.</p>
+</div>
+</div>
+<div class="flex items-start gap-3 p-3 bg-white border border-grid-border rounded">
+<span class="material-symbols-outlined text-on-surface-variant mt-0.5">inventory_2</span>
+<div class="flex-1">
+<div class="flex justify-between items-center">
+<span class="text-body-sm font-semibold">Packaging Supplies</span>
+<span class="px-1.5 py-0.5 bg-surface-container-highest text-on-surface-variant text-[10px] font-bold rounded">IN REVIEW</span>
+</div>
+<p class="text-[12px] text-on-surface-variant">Splitting batch requires additional labeling.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Visualization of Impact -->
+<div class="space-y-4">
+<h3 class="text-label-caps font-label-caps">BOTTLENECK UTILIZATION</h3>
+<div class="aspect-video bg-primary-container rounded-lg overflow-hidden relative border border-outline">
+<img class="w-full h-full object-cover opacity-60 mix-blend-overlay" data-alt="A sophisticated data visualization dashboard for an industrial manufacturing cockpit. It shows complex line graphs and heatmaps representing production throughput and bottleneck utilization. The style is modern, professional, and data-dense, with a color palette of deep indigo, slate grey, and vibrant red and green accents. The lighting is soft and centered, giving the dashboard a high-tech, authoritative feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwTEQTl57_cUleTNltGF9ueQc9T8_cpnuAL1iRYp_fv3oNStMiZzyHaXatM99xlz493B4aqwdtCmYw8Q0g7Pu7J0h52elZS8iSieNKbvJdp6mjV6i7Ni_-0TEZ_udM_6KRxtwZaAciQOMjA9FvOFamRQ1SasG6F-sQeoJJLKdOHwXA7Dy9Na8dsucaGcp4ZTK87AgXNbbRmAGRzZ-Nq2RRKZdLUxseNQlaK745WUrRpJu1b4PuHeccjz4GX0hARvzT-eyBgVEJ0Q8"/>
+<div class="absolute inset-0 p-4 flex flex-col justify-end">
+<div class="bg-black/40 backdrop-blur-sm p-3 rounded border border-white/20">
+<div class="flex justify-between text-[11px] text-white/80 font-bold mb-1">
+<span>WASH LINE CAPACITY</span>
+<span>98%</span>
+</div>
+<div class="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
+<div class="bg-risk-action h-full" style="width: 98%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6 border-t border-grid-border bg-surface-muted">
+<button class="w-full h-10 bg-primary text-white font-bold rounded shadow transition-all hover:bg-primary-container active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">analytics</span> RE-RUN SIMULATION
+            </button>
+</div>
+</aside>
+<!-- Contextual Toast/Alert -->
+<div class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-risk-critical text-white px-6 py-3 rounded shadow-xl flex items-center gap-3 transition-all transform translate-y-20 opacity-0 z-[60]" id="toast">
+<span class="material-symbols-outlined text-risk-on-track">info</span>
+<span class="text-body-sm font-semibold">ORD-7291 Split Shipment logic applied to 24-workcenters.</span>
+</div>
+<script>
+        // Simple interaction for Commit Plan
+        document.querySelector('button.bg-primary.text-white.rounded').addEventListener('click', () => {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 4000);
+        });
+
+        // Toggle Right Drawer (Optional functionality for simulation)
+        window.addEventListener('keydown', (e) => {
+            if(e.key === 'd') {
+                const main = document.querySelector('main');
+                const drawer = document.querySelector('aside.right-0');
+                drawer.classList.toggle('hidden');
+                main.classList.toggle('mr-drawer-width');
+            }
+        });
+    </script>
+</body></html>

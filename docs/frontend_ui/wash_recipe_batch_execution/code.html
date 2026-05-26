@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ERATEX Industrial Logic - Wash Recipe &amp; Batch Execution</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#091426",
+                        "inverse-surface": "#303032",
+                        "on-primary-fixed": "#111c2d",
+                        "primary-container": "#1e293b",
+                        "surface-container-high": "#eae7e9",
+                        "tertiary-container": "#35260c",
+                        "error": "#ba1a1a",
+                        "surface": "#fbf8fa",
+                        "on-tertiary-fixed-variant": "#564427",
+                        "background": "#fbf8fa",
+                        "surface-bright": "#fbf8fa",
+                        "on-surface-variant": "#45474c",
+                        "on-tertiary-fixed": "#271902",
+                        "tertiary": "#1e1200",
+                        "surface-dim": "#dcd9db",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "risk-action": "#EF4444",
+                        "surface-muted": "#F8FAFC",
+                        "outline-variant": "#c5c6cd",
+                        "inverse-primary": "#bcc7de",
+                        "surface-container-highest": "#e4e2e3",
+                        "inverse-on-surface": "#f3f0f2",
+                        "tertiary-fixed-dim": "#ddc39d",
+                        "primary-fixed": "#d8e3fb",
+                        "surface-variant": "#e4e2e3",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "surface-container": "#f0edef",
+                        "secondary-fixed": "#d5e3fd",
+                        "on-secondary-container": "#57657b",
+                        "tertiary-fixed": "#fadfb8",
+                        "outline": "#75777d",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "surface-tint": "#545f73",
+                        "surface-container-low": "#f5f3f4",
+                        "on-primary-container": "#8590a6",
+                        "primary-fixed-dim": "#bcc7de",
+                        "on-error": "#ffffff",
+                        "on-background": "#1b1b1d",
+                        "risk-critical": "#111827",
+                        "on-error-container": "#93000a",
+                        "risk-watch": "#F59E0B",
+                        "risk-on-track": "#10B981",
+                        "grid-border": "#E2E8F0",
+                        "secondary-container": "#d5e3fd",
+                        "on-secondary": "#ffffff",
+                        "on-surface": "#1b1b1d",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "secondary": "#515f74",
+                        "on-tertiary-container": "#a38c6a",
+                        "surface-container-lowest": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "nav-collapsed-width": "64px",
+                        "margin-sm": "8px",
+                        "gutter": "12px",
+                        "drawer-width": "400px",
+                        "margin-md": "16px",
+                        "grid-row-height": "32px",
+                        "nav-expanded-width": "240px"
+                    },
+                    "fontFamily": {
+                        "data-tabular": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "mono-data": ["JetBrains Mono"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            font-size: 20px;
+        }
+        .step-active { border-left: 3px solid #091426; background: #F1F5F9; }
+        .grid-compact td { height: 32px; padding: 0 8px; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-margin-md h-nav-collapsed-width bg-surface dark:bg-primary border-b border-outline-variant">
+<div class="flex items-center gap-margin-md">
+<span class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary-fixed">ERATEX Industrial Logic</span>
+<div class="h-8 w-[1px] bg-outline-variant mx-2"></div>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-on-surface-variant dark:text-on-primary-container">Shift A: 06:00 - 14:00</span>
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">Unit 04 - Washhouse</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<input class="bg-surface-container-low border border-outline-variant rounded-lg px-4 py-1 text-body-sm w-64 focus:ring-2 focus:ring-primary outline-none" placeholder="Search orders, batches..." type="text"/>
+</div>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-surface-container transition-colors rounded-full cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined">sync</span>
+</button>
+<button class="p-2 hover:bg-surface-container transition-colors rounded-full relative cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 hover:bg-surface-container transition-colors rounded-full cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full flex flex-col pt-nav-collapsed-width z-40 bg-surface-container-low dark:bg-primary border-r border-grid-border w-nav-collapsed-width hover:w-nav-expanded-width transition-all duration-300 group overflow-hidden">
+<div class="flex-1 mt-4">
+<a class="group flex items-center p-2 mx-2 mb-1 transition-all hover:bg-surface-container-high dark:hover:bg-on-primary-fixed-variant text-on-surface-variant dark:text-on-primary-container" href="#">
+<span class="material-symbols-outlined min-w-[40px]">content_cut</span>
+<span class="ml-2 font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Cutting</span>
+</a>
+<a class="group flex items-center p-2 mx-2 mb-1 transition-all hover:bg-surface-container-high dark:hover:bg-on-primary-fixed-variant text-on-surface-variant dark:text-on-primary-container" href="#">
+<span class="material-symbols-outlined min-w-[40px]">apparel</span>
+<span class="ml-2 font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Sewing</span>
+</a>
+<a class="group flex items-center p-2 mx-2 mb-1 transition-all bg-secondary-container dark:bg-primary-container text-on-secondary-container dark:text-on-primary-fixed rounded-xl" href="#">
+<span class="material-symbols-outlined min-w-[40px]">water_drop</span>
+<span class="ml-2 font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Wash House</span>
+</a>
+<a class="group flex items-center p-2 mx-2 mb-1 transition-all hover:bg-surface-container-high dark:hover:bg-on-primary-fixed-variant text-on-surface-variant dark:text-on-primary-container" href="#">
+<span class="material-symbols-outlined min-w-[40px]">check_circle</span>
+<span class="ml-2 font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Finishing</span>
+</a>
+</div>
+<div class="mb-4">
+<a class="group flex items-center p-2 mx-2 mb-1 transition-all hover:bg-surface-container-high dark:hover:bg-on-primary-fixed-variant text-on-surface-variant dark:text-on-primary-container" href="#">
+<span class="material-symbols-outlined min-w-[40px]">settings_suggest</span>
+<span class="ml-2 font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Maintenance</span>
+</a>
+<a class="group flex items-center p-2 mx-2 mb-1 transition-all hover:bg-surface-container-high dark:hover:bg-on-primary-fixed-variant text-on-surface-variant dark:text-on-primary-container" href="#">
+<span class="material-symbols-outlined min-w-[40px]">settings</span>
+<span class="ml-2 font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-nav-collapsed-width mr-drawer-width pt-nav-collapsed-width h-screen overflow-y-auto bg-surface-muted">
+<div class="p-margin-md space-y-gutter">
+<!-- Status Header Section -->
+<div class="flex items-center justify-between mb-4">
+<div>
+<h2 class="font-headline-lg text-headline-lg flex items-center gap-2">
+                        Washing Bay 04
+                        <span class="inline-block w-2 h-2 rounded-full bg-risk-on-track animate-pulse"></span>
+<span class="text-body-sm font-normal text-on-surface-variant">Active</span>
+</h2>
+<p class="text-body-sm text-on-surface-variant">Station Overseer: J. Miller</p>
+</div>
+<div class="flex gap-2">
+<button class="bg-primary text-on-primary px-3 py-1 text-body-sm flex items-center gap-2 rounded-lg">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                        New Batch
+                    </button>
+<button class="border border-outline-variant bg-white px-3 py-1 text-body-sm flex items-center gap-2 rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">upload_file</span>
+                        Export Logs
+                    </button>
+</div>
+</div>
+<!-- KPI Cards -->
+<div class="grid grid-cols-4 gap-gutter">
+<div class="bg-white p-4 border border-grid-border rounded-lg">
+<span class="font-label-caps text-label-caps text-on-surface-variant">ACTIVE BATCHES</span>
+<div class="flex items-end justify-between mt-1">
+<span class="text-2xl font-bold font-data-tabular">08</span>
+<span class="text-risk-on-track text-body-sm font-bold flex items-center">
+<span class="material-symbols-outlined">trending_up</span> 12%
+                        </span>
+</div>
+</div>
+<div class="bg-white p-4 border border-grid-border rounded-lg">
+<span class="font-label-caps text-label-caps text-on-surface-variant">PLANNED vs ACTUAL LOAD</span>
+<div class="mt-2 h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 84%"></div>
+</div>
+<div class="flex justify-between mt-1">
+<span class="text-mono-data text-mono-data">840/1000 kg</span>
+<span class="text-mono-data text-mono-data">84%</span>
+</div>
+</div>
+<div class="bg-white p-4 border border-grid-border rounded-lg">
+<span class="font-label-caps text-label-caps text-on-surface-variant">MACHINE UTILIZATION</span>
+<div class="flex items-end justify-between mt-1">
+<span class="text-2xl font-bold font-data-tabular">92.4%</span>
+<span class="text-risk-watch text-body-sm font-bold">STABLE</span>
+</div>
+</div>
+<div class="bg-white p-4 border border-grid-border rounded-lg">
+<span class="font-label-caps text-label-caps text-on-surface-variant">REWASH RATE</span>
+<div class="flex items-end justify-between mt-1">
+<span class="text-2xl font-bold font-data-tabular">1.2%</span>
+<span class="text-risk-on-track text-body-sm font-bold flex items-center">
+<span class="material-symbols-outlined">expand_more</span> 0.4%
+                        </span>
+</div>
+</div>
+</div>
+<!-- Active Batches Grid -->
+<section class="bg-white border border-grid-border rounded-lg overflow-hidden">
+<div class="px-4 py-3 border-b border-grid-border flex justify-between items-center bg-surface-container-low">
+<h3 class="font-headline-md text-headline-md">Active Execution Grid</h3>
+<span class="font-mono-data text-mono-data text-on-surface-variant uppercase">SYNC: 1m ago</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left grid-compact border-collapse">
+<thead>
+<tr class="bg-surface-container text-on-surface-variant font-label-caps text-label-caps border-b border-grid-border">
+<th class="px-2 py-2 sticky left-0 bg-surface-container z-10">BATCH ID</th>
+<th class="px-2 py-2">ORDER ID</th>
+<th class="px-2 py-2">STYLE / SHADE</th>
+<th class="px-2 py-2">WASH ROUTE</th>
+<th class="px-2 py-2">MACHINE</th>
+<th class="px-2 py-2">START TIME</th>
+<th class="px-2 py-2">CURRENT STEP</th>
+<th class="px-2 py-2">STATUS</th>
+</tr>
+</thead>
+<tbody class="text-data-tabular font-data-tabular">
+<tr class="hover:bg-surface-container-low border-b border-grid-border cursor-pointer bg-blue-50/20">
+<td class="px-2 font-bold sticky left-0 bg-white border-r border-grid-border">B-99201</td>
+<td class="px-2">ORD-8821</td>
+<td class="px-2">Midnight Denim / Indigo-C</td>
+<td class="px-2"><span class="bg-surface-container px-2 py-0.5 rounded text-[10px]">STONE + ENZYME</span></td>
+<td class="px-2">MAC-W04</td>
+<td class="px-2 text-on-surface-variant">08:15</td>
+<td class="px-2 flex items-center gap-2">
+<span class="text-primary font-bold">Bleaching</span>
+<span class="text-[10px] text-on-surface-variant">12m rem.</span>
+</td>
+<td class="px-2">
+<span class="px-2 py-0.5 rounded-full text-[10px] bg-green-100 text-risk-on-track font-bold">RUNNING</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low border-b border-grid-border cursor-pointer">
+<td class="px-2 font-bold sticky left-0 bg-white border-r border-grid-border">B-99205</td>
+<td class="px-2">ORD-8825</td>
+<td class="px-2">Classic Blue / Sky-A</td>
+<td class="px-2"><span class="bg-surface-container px-2 py-0.5 rounded text-[10px]">ACID WASH</span></td>
+<td class="px-2">MAC-W01</td>
+<td class="px-2 text-on-surface-variant">09:00</td>
+<td class="px-2">Softening</td>
+<td class="px-2">
+<span class="px-2 py-0.5 rounded-full text-[10px] bg-yellow-100 text-risk-watch font-bold">PAUSED</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low border-b border-grid-border cursor-pointer">
+<td class="px-2 font-bold sticky left-0 bg-white border-r border-grid-border">B-99198</td>
+<td class="px-2">ORD-8802</td>
+<td class="px-2">Deep Carbon / Grey-LT</td>
+<td class="px-2"><span class="bg-surface-container px-2 py-0.5 rounded text-[10px]">VINTAGE RINSE</span></td>
+<td class="px-2">MAC-W08</td>
+<td class="px-2 text-on-surface-variant">07:45</td>
+<td class="px-2">QC Check Pending</td>
+<td class="px-2">
+<span class="px-2 py-0.5 rounded-full text-[10px] bg-blue-100 text-primary font-bold">QC CHECK</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low border-b border-grid-border cursor-pointer">
+<td class="px-2 font-bold sticky left-0 bg-white border-r border-grid-border text-error">B-99210</td>
+<td class="px-2">ORD-8833</td>
+<td class="px-2">Jet Black / Night-X</td>
+<td class="px-2"><span class="bg-surface-container px-2 py-0.5 rounded text-[10px]">HEAVY ENZYME</span></td>
+<td class="px-2">MAC-W02</td>
+<td class="px-2 text-on-surface-variant">09:30</td>
+<td class="px-2">Desize</td>
+<td class="px-2">
+<span class="px-2 py-0.5 rounded-full text-[10px] bg-red-100 text-risk-action font-bold">HOLD</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Queue Section -->
+<section class="bg-white border border-grid-border rounded-lg p-margin-md">
+<h3 class="font-headline-md text-headline-md mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined">queue_play_next</span>
+                    Ready to Start Queue
+                </h3>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<div class="border border-dashed border-outline-variant p-3 rounded flex items-center justify-between hover:bg-surface-container-low transition-all">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-surface-container rounded-lg flex items-center justify-center font-bold text-primary">Q1</div>
+<div>
+<p class="text-body-sm font-bold">B-99215 | ORD-8840</p>
+<p class="text-[11px] text-on-surface-variant uppercase">Est Start: 11:15</p>
+</div>
+</div>
+<button class="text-primary hover:bg-surface-container p-1 rounded transition-colors">
+<span class="material-symbols-outlined">play_circle</span>
+</button>
+</div>
+<div class="border border-dashed border-outline-variant p-3 rounded flex items-center justify-between hover:bg-surface-container-low transition-all">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-surface-container rounded-lg flex items-center justify-center font-bold text-primary">Q2</div>
+<div>
+<p class="text-body-sm font-bold">B-99216 | ORD-8841</p>
+<p class="text-[11px] text-on-surface-variant uppercase">Est Start: 12:00</p>
+</div>
+</div>
+<button class="text-primary hover:bg-surface-container p-1 rounded transition-colors">
+<span class="material-symbols-outlined">play_circle</span>
+</button>
+</div>
+<div class="border border-dashed border-outline-variant p-3 rounded flex items-center justify-between hover:bg-surface-container-low transition-all opacity-60">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-surface-container rounded-lg flex items-center justify-center font-bold text-primary">Q3</div>
+<div>
+<p class="text-body-sm font-bold">B-99217 | ORD-8842</p>
+<p class="text-[11px] text-on-surface-variant uppercase">Est Start: 13:45</p>
+</div>
+</div>
+<button class="text-primary hover:bg-surface-container p-1 rounded transition-colors">
+<span class="material-symbols-outlined">play_circle</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Right Action Drawer -->
+<aside class="fixed right-0 top-0 h-full w-drawer-width pt-nav-collapsed-width bg-white border-l border-grid-border z-40 shadow-[0_0_8px_rgba(0,0,0,0.04)] flex flex-col">
+<!-- Drawer Header -->
+<div class="p-4 border-b border-grid-border flex justify-between items-center bg-surface-container-low">
+<h2 class="font-headline-md text-headline-md">Execution Detail: B-99201</h2>
+<button class="p-1 hover:bg-surface-container rounded-full">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto hide-scrollbar p-4 space-y-margin-md">
+<!-- Batch Summary -->
+<div class="flex gap-4 p-3 bg-surface-muted rounded-lg border border-grid-border">
+<div class="w-20 h-20 bg-surface-container rounded flex-shrink-0 overflow-hidden">
+<img alt="Style" class="w-full h-full object-cover" data-alt="Close-up macro photography of indigo denim fabric texture with heavy stone wash effect and subtle whiskering. The lighting is crisp and professional, emphasizing the rugged industrial quality. The style is modern product photography with a neutral, professional background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1wl9yWOXnpVFmvTsnoGcZCBRgP4hyJQ3xLOfkoyVJgy41lWL782hF4fSgtbV4ToMX9bn_CimioJTKtNCIR-zmoaC-rwM5SUxi5PqGN-JGkmxUiYoxRIBwmurnWYXT07DkQAjRmUSCZ0EMVPmaQegjhNVpYcdlCZZeExm-C_M0T-jokU2RIBGAnTNS4SAT2ygMwBS-yc2AVJYVV84rqE694KQJMYQaVceMUdPLV1m6X8rnCv5S-hANxNFW236AcMiALDTac96y4FM"/>
+</div>
+<div class="flex-1 space-y-1">
+<div class="flex justify-between">
+<span class="font-label-caps text-label-caps text-on-surface-variant">STYLE</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">SHADE REF</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-body-sm font-bold">Midnight Slim Fit</span>
+<div class="w-6 h-6 rounded-sm bg-[#1A237E] border border-outline-variant"></div>
+</div>
+<p class="text-mono-data text-mono-data mt-1">LOT: SH-2290 / 250 units</p>
+</div>
+</div>
+<!-- Recipe Steps -->
+<div>
+<h3 class="font-label-caps text-label-caps mb-3">RECIPE STEPS (STONE + ENZYME)</h3>
+<div class="space-y-2 relative">
+<!-- Vertical Line Connector -->
+<div class="absolute left-[13px] top-4 bottom-4 w-[2px] bg-surface-container"></div>
+<!-- Step 1: Completed -->
+<div class="flex gap-4 relative">
+<div class="z-10 w-7 h-7 rounded-full bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</div>
+<div class="flex-1 border-b border-grid-border pb-2 opacity-60">
+<div class="flex justify-between">
+<span class="text-body-sm font-bold">1. Desize</span>
+<span class="text-mono-data text-mono-data">DONE</span>
+</div>
+</div>
+</div>
+<!-- Step 2: Active -->
+<div class="flex gap-4 relative">
+<div class="z-10 w-7 h-7 rounded-full bg-primary ring-4 ring-primary/20 flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[16px]">sync</span>
+</div>
+<div class="flex-1 step-active p-3 rounded-r-lg">
+<div class="flex justify-between mb-2">
+<span class="text-body-sm font-extrabold text-primary uppercase tracking-wider">2. Bleaching</span>
+<span class="text-mono-data text-mono-data font-bold text-primary">12m REM</span>
+</div>
+<!-- Parameters Grid -->
+<div class="grid grid-cols-2 gap-2 mt-2 bg-white/50 p-2 rounded">
+<div class="flex flex-col">
+<span class="text-[9px] font-label-caps text-on-surface-variant uppercase">Temp (C)</span>
+<span class="text-body-sm font-mono-data">65 <span class="text-[10px] text-on-surface-variant">/ 65.2</span></span>
+</div>
+<div class="flex flex-col">
+<span class="text-[9px] font-label-caps text-on-surface-variant uppercase">Time (Min)</span>
+<span class="text-body-sm font-mono-data">20 <span class="text-[10px] text-on-surface-variant">/ 8</span></span>
+</div>
+<div class="flex flex-col">
+<span class="text-[9px] font-label-caps text-on-surface-variant uppercase">pH Level</span>
+<span class="text-body-sm font-mono-data">9.5 <span class="text-[10px] text-on-surface-variant">/ 9.4</span></span>
+</div>
+<div class="flex flex-col">
+<span class="text-[9px] font-label-caps text-on-surface-variant uppercase">Dosage (ml)</span>
+<span class="text-body-sm font-mono-data">250 <span class="text-[10px] text-on-surface-variant">/ 250</span></span>
+</div>
+</div>
+</div>
+</div>
+<!-- Step 3: Pending -->
+<div class="flex gap-4 relative">
+<div class="z-10 w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="text-[11px] font-bold">3</span>
+</div>
+<div class="flex-1 border-b border-grid-border pb-2">
+<div class="flex justify-between">
+<span class="text-body-sm">3. Stone Wash</span>
+<span class="text-mono-data text-mono-data text-on-surface-variant">45 MIN</span>
+</div>
+</div>
+</div>
+<!-- Step 4: Pending -->
+<div class="flex gap-4 relative">
+<div class="z-10 w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="text-[11px] font-bold">4</span>
+</div>
+<div class="flex-1 border-b border-grid-border pb-2">
+<div class="flex justify-between">
+<span class="text-body-sm">4. Enzyme</span>
+<span class="text-mono-data text-mono-data text-on-surface-variant">30 MIN</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- QC Gate -->
+<div class="bg-surface-container-low p-4 rounded-lg border border-grid-border space-y-3">
+<h3 class="font-label-caps text-label-caps flex items-center justify-between">
+                    QC GATE: SHADE CHECK
+                    <span class="material-symbols-outlined text-risk-watch">verified</span>
+</h3>
+<div class="flex gap-2">
+<button class="flex-1 py-2 border border-outline-variant bg-white text-body-sm font-bold flex items-center justify-center gap-2 rounded hover:bg-risk-on-track hover:text-white hover:border-transparent transition-all">
+<span class="material-symbols-outlined">thumb_up</span>
+                        PASS
+                    </button>
+<button class="flex-1 py-2 border border-outline-variant bg-white text-body-sm font-bold flex items-center justify-center gap-2 rounded hover:bg-risk-action hover:text-white hover:border-transparent transition-all">
+<span class="material-symbols-outlined">thumb_down</span>
+                        FAIL
+                    </button>
+</div>
+<div class="flex flex-col gap-1">
+<label class="text-[10px] font-label-caps text-on-surface-variant uppercase">Measurement Impact Notes</label>
+<textarea class="w-full text-body-sm border-outline-variant rounded p-2 focus:ring-primary h-16" placeholder="Logged shrinkage or variance observed..."></textarea>
+</div>
+</div>
+</div>
+<!-- Action Controls -->
+<div class="p-4 border-t border-grid-border grid grid-cols-2 gap-2 bg-white sticky bottom-0">
+<button class="bg-primary text-on-primary py-2 font-bold text-body-sm rounded flex items-center justify-center gap-2 active:opacity-80">
+<span class="material-symbols-outlined">play_arrow</span>
+                COMPLETE STEP
+            </button>
+<button class="border border-outline-variant py-2 font-bold text-body-sm rounded flex items-center justify-center gap-2 hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">pause</span>
+                HOLD BATCH
+            </button>
+<button class="col-span-2 py-2 border border-risk-action text-risk-action font-bold text-body-sm rounded flex items-center justify-center gap-2 hover:bg-risk-action/5 transition-colors">
+<span class="material-symbols-outlined">history</span>
+                LOG RE-WASH EXCEPTION
+            </button>
+</div>
+</aside>
+<script>
+        // Simple micro-interaction for side nav expansion
+        const sideNav = document.querySelector('nav');
+        const mainContent = document.querySelector('main');
+        
+        // Dark mode toggle simulation (can be added if needed)
+        // document.documentElement.classList.toggle('dark');
+    </script>
+</body></html>

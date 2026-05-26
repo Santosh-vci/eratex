@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Eratex Quality Management Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "grid-border": "#E2E8F0",
+                        "primary-container": "#1e293b",
+                        "on-surface-variant": "#45474c",
+                        "surface-container-high": "#eae7e9",
+                        "on-primary-fixed": "#111c2d",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "outline": "#75777d",
+                        "on-tertiary-fixed-variant": "#564427",
+                        "risk-watch": "#F59E0B",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "risk-on-track": "#10B981",
+                        "surface": "#fbf8fa",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#c5c6cd",
+                        "surface-variant": "#e4e2e3",
+                        "on-primary-container": "#8590a6",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "surface-dim": "#dcd9db",
+                        "primary": "#091426",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#d5e3fd",
+                        "primary-fixed": "#d8e3fb",
+                        "on-surface": "#1b1b1d",
+                        "surface-container-highest": "#e4e2e3",
+                        "risk-critical": "#111827",
+                        "secondary": "#515f74",
+                        "on-tertiary-fixed": "#271902",
+                        "on-secondary-container": "#57657b",
+                        "on-error": "#ffffff",
+                        "surface-container": "#f0edef",
+                        "tertiary-container": "#35260c",
+                        "risk-action": "#EF4444",
+                        "tertiary-fixed": "#fadfb8",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#ddc39d",
+                        "tertiary": "#1e1200",
+                        "secondary-container": "#d5e3fd",
+                        "surface-container-low": "#f5f3f4",
+                        "inverse-surface": "#303032",
+                        "background": "#fbf8fa",
+                        "surface-tint": "#545f73",
+                        "primary-fixed-dim": "#bcc7de",
+                        "surface-bright": "#fbf8fa",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#1b1b1d",
+                        "surface-muted": "#F8FAFC",
+                        "inverse-on-surface": "#f3f0f2",
+                        "error": "#ba1a1a",
+                        "inverse-primary": "#bcc7de",
+                        "on-tertiary-container": "#a38c6a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "nav-expanded-width": "240px",
+                        "margin-sm": "8px",
+                        "drawer-width": "400px",
+                        "grid-row-height": "32px",
+                        "nav-collapsed-width": "64px",
+                        "margin-md": "16px",
+                        "gutter": "12px"
+                    },
+                    "fontFamily": {
+                        "data-tabular": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "mono-data": ["JetBrains Mono"],
+                        "headline-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .grid-row-active { background-color: #F1F5F9; border-left: 3px solid #091426; }
+    </style>
+</head>
+<body class="bg-surface-muted text-on-surface font-body-md overflow-hidden">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full h-12 bg-surface-container-lowest border-b border-grid-border flex justify-between items-center px-margin-md z-50">
+<div class="flex items-center gap-gutter">
+<span class="font-headline-lg text-headline-lg font-bold text-primary">ERATEX</span>
+<span class="h-6 w-[1px] bg-grid-border"></span>
+<span class="font-headline-md text-headline-md text-primary">Quality Control Cockpit</span>
+</div>
+<div class="flex items-center gap-margin-md">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant scale-75" data-icon="search">search</span>
+<input class="h-8 pl-8 pr-4 bg-surface-container-low border border-grid-border rounded-lg text-body-sm focus:ring-2 focus:ring-primary outline-none w-64" placeholder="Global Search Orders..." type="text"/>
+</div>
+<div class="flex items-center gap-margin-sm">
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container transition-colors rounded">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="factory">factory</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container transition-colors rounded relative">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-risk-action rounded-full"></span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container transition-colors rounded">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="help">help</span>
+</button>
+</div>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-grid-border">
+<img alt="User Profile" data-alt="A professional male factory floor manager wearing a subtle earpiece and professional work attire, looking towards the camera with a confident and disciplined expression. The background is a clean, softly blurred textile manufacturing environment with technical equipment and industrial lighting in high-key white and cool gray tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTJoojA6LKvIdhxoq6D6glVHYa_A-K-qXeB1q3qlYYZOo82SFNUVAp5y86XMCk9qf_p2HnLFF2ZkhJQi0fB9cJYPbmQGjvXzjG1pmvAo1s91PgToO7GBvSjLpRZtC8t0icnhlrjSm83-BNs6pEF5BchHJCZ_iuQbm5QDg5s_v0Wai3_9wIbUYkL_l4PXnkYHrW072DUR_EFdJ3IbuyzRgjGI5ShANxCw6LICpTBNOHj-mEoQUBYz6KvuY_acmC5EJlaIx-8P6sasw"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-12 bottom-0 w-nav-collapsed-width hover:w-nav-expanded-width transition-all duration-300 bg-surface-container-low border-r border-grid-border flex flex-col py-margin-sm z-40 group overflow-hidden">
+<nav class="flex-1 px-3 space-y-1">
+<div class="mb-4 px-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<p class="font-label-caps text-label-caps text-on-surface-variant">OPERATIONS</p>
+<p class="text-[10px] text-on-primary-container">V2.4.0</p>
+</div>
+<a class="flex items-center h-10 px-2 text-on-surface-variant hover:bg-surface-container-high transition-all rounded gap-4" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="assignment">assignment</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 whitespace-nowrap">Orders</span>
+</a>
+<a class="flex items-center h-10 px-2 text-on-surface-variant hover:bg-surface-container-high transition-all rounded gap-4" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="calendar_today">calendar_today</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 whitespace-nowrap">Planning</span>
+</a>
+<a class="flex items-center h-10 px-2 bg-secondary-container text-on-secondary-container border-r-4 border-primary transition-all rounded gap-4" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="fact_check">fact_check</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 whitespace-nowrap">Quality</span>
+</a>
+<a class="flex items-center h-10 px-2 text-on-surface-variant hover:bg-surface-container-high transition-all rounded gap-4" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="conveyor_belt">conveyor_belt</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 whitespace-nowrap">WIP</span>
+</a>
+</nav>
+<div class="px-3 space-y-1 border-t border-grid-border pt-4">
+<a class="flex items-center h-10 px-2 text-on-surface-variant hover:bg-surface-container-high transition-all rounded gap-4" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="settings">settings</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 whitespace-nowrap">Settings</span>
+</a>
+<a class="flex items-center h-10 px-2 text-on-surface-variant hover:bg-surface-container-high transition-all rounded gap-4" href="#">
+<span class="material-symbols-outlined shrink-0" data-icon="sync">sync</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 whitespace-nowrap">Sync</span>
+</a>
+</div>
+</aside>
+<!-- Main Work Area -->
+<main class="ml-nav-collapsed-width mt-12 h-[calc(100vh-48px)] p-margin-md flex flex-col gap-margin-md overflow-hidden transition-all duration-300 pr-[416px]" id="main-content">
+<!-- Header Cards -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-gutter shrink-0">
+<div class="bg-surface-container-lowest border border-grid-border p-3 flex flex-col gap-1">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Active Inspections</span>
+<div class="flex items-end justify-between">
+<span class="font-headline-lg text-headline-lg text-primary">24</span>
+<span class="text-risk-on-track font-mono-data text-mono-data flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="trending_up">trending_up</span> +3
+                    </span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-grid-border p-3 flex flex-col gap-1">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Critical Defects</span>
+<div class="flex items-end justify-between">
+<span class="font-headline-lg text-headline-lg text-risk-action">08</span>
+<span class="bg-risk-action/10 text-risk-action px-1.5 py-0.5 rounded text-[10px] font-bold">URGENT</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-grid-border p-3 flex flex-col gap-1">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">AQL Failure Risk</span>
+<div class="flex items-end justify-between">
+<span class="font-headline-lg text-headline-lg text-risk-watch">12.4%</span>
+<div class="w-16 bg-surface-container rounded-full h-1 overflow-hidden mb-1.5">
+<div class="bg-risk-watch h-full" style="width: 12.4%"></div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-grid-border p-3 flex flex-col gap-1">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Pending QC Handover</span>
+<div class="flex items-end justify-between">
+<span class="font-headline-lg text-headline-lg text-primary">142</span>
+<span class="text-on-primary-container font-mono-data text-mono-data">Batches</span>
+</div>
+</div>
+</section>
+<!-- Quality Gates -->
+<section class="bg-surface-container-low border border-grid-border p-3">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-3">SYSTEM GATE READINESS</h3>
+<div class="flex gap-4">
+<div class="flex-1 flex items-center gap-3 bg-surface-container-lowest p-2 border border-grid-border">
+<div class="w-2 h-8 bg-risk-on-track rounded-full"></div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant">FABRIC QC</p>
+<p class="font-headline-md text-headline-md leading-none">CLEARED</p>
+</div>
+</div>
+<div class="flex-1 flex items-center gap-3 bg-surface-container-lowest p-2 border border-grid-border">
+<div class="w-2 h-8 bg-risk-watch rounded-full"></div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant">CUT PANEL QC</p>
+<p class="font-headline-md text-headline-md leading-none">IN-PROCESS</p>
+</div>
+</div>
+<div class="flex-1 flex items-center gap-3 bg-surface-container-lowest p-2 border border-grid-border opacity-50">
+<div class="w-2 h-8 bg-surface-container-high rounded-full"></div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant">FINAL QC</p>
+<p class="font-headline-md text-headline-md leading-none">PENDING</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Inspection Workbench Grid -->
+<section class="flex-1 bg-surface-container-lowest border border-grid-border flex flex-col overflow-hidden">
+<div class="h-10 border-b border-grid-border flex items-center justify-between px-3 bg-surface-muted">
+<div class="flex gap-4">
+<button class="font-label-caps text-label-caps text-primary border-b-2 border-primary h-10 px-2">ALL INSPECTIONS</button>
+<button class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors h-10 px-2">FAILURES ONLY</button>
+<button class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors h-10 px-2">URGENT AT RISK</button>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-mono-data text-[11px] text-on-primary-container">SYNC: 2m ago</span>
+<button class="w-6 h-6 flex items-center justify-center hover:bg-surface-container text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span>
+</button>
+</div>
+</div>
+<div class="flex-1 overflow-auto custom-scrollbar">
+<table class="w-full text-left border-collapse min-w-[1000px]">
+<thead class="sticky top-0 bg-surface-container border-b border-grid-border z-10">
+<tr>
+<th class="px-3 py-2 font-label-caps text-label-caps text-on-surface-variant">ORDER ID</th>
+<th class="px-3 py-2 font-label-caps text-label-caps text-on-surface-variant">STYLE</th>
+<th class="px-3 py-2 font-label-caps text-label-caps text-on-surface-variant">STAGE</th>
+<th class="px-3 py-2 font-label-caps text-label-caps text-on-surface-variant">INSPECTOR</th>
+<th class="px-3 py-2 font-label-caps text-label-caps text-on-surface-variant">SAMPLE</th>
+<th class="px-3 py-2 font-label-caps text-label-caps text-on-surface-variant">DEFECTS</th>
+<th class="px-3 py-2 font-label-caps text-label-caps text-on-surface-variant">DHU%</th>
+<th class="px-3 py-2 font-label-caps text-label-caps text-on-surface-variant">RESULT</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-grid-border">
+<!-- Active Row -->
+<tr class="h-grid-row-height hover:bg-surface-container-high transition-colors cursor-pointer grid-row-active" onclick="toggleDrawer(true)">
+<td class="px-3 font-mono-data text-mono-data font-bold">#QA-8829</td>
+<td class="px-3 font-data-tabular text-data-tabular">ST-DENIM-X1</td>
+<td class="px-3">
+<span class="bg-surface-container px-2 py-0.5 rounded text-[10px] font-bold">FINAL</span>
+</td>
+<td class="px-3 font-body-sm text-body-sm">A. Mansur</td>
+<td class="px-3 font-data-tabular text-data-tabular text-on-surface-variant">80 Units</td>
+<td class="px-3 font-data-tabular text-data-tabular text-risk-action">14</td>
+<td class="px-3">
+<div class="flex items-center gap-2">
+<div class="w-12 bg-surface-container h-1.5 rounded-full">
+<div class="bg-risk-action h-full" style="width: 17%"></div>
+</div>
+<span class="font-mono-data text-[10px]">17.5%</span>
+</div>
+</td>
+<td class="px-3">
+<span class="bg-risk-action/10 text-risk-action px-2 py-0.5 rounded text-[10px] font-bold">FAIL</span>
+</td>
+</tr>
+<!-- More Rows -->
+<tr class="h-grid-row-height hover:bg-surface-container-high transition-colors cursor-pointer" onclick="toggleDrawer(true)">
+<td class="px-3 font-mono-data text-mono-data">#QA-8830</td>
+<td class="px-3 font-data-tabular text-data-tabular">PL-SHIRT-M1</td>
+<td class="px-3">
+<span class="bg-surface-container px-2 py-0.5 rounded text-[10px] font-bold">POST-WASH</span>
+</td>
+<td class="px-3 font-body-sm text-body-sm">J. Doe</td>
+<td class="px-3 font-data-tabular text-data-tabular text-on-surface-variant">125 Units</td>
+<td class="px-3 font-data-tabular text-data-tabular text-risk-on-track">02</td>
+<td class="px-3">
+<div class="flex items-center gap-2">
+<div class="w-12 bg-surface-container h-1.5 rounded-full">
+<div class="bg-risk-on-track h-full" style="width: 1%"></div>
+</div>
+<span class="font-mono-data text-[10px]">1.6%</span>
+</div>
+</td>
+<td class="px-3">
+<span class="bg-risk-on-track/10 text-risk-on-track px-2 py-0.5 rounded text-[10px] font-bold">PASS</span>
+</td>
+</tr>
+<tr class="h-grid-row-height hover:bg-surface-container-high transition-colors cursor-pointer">
+<td class="px-3 font-mono-data text-mono-data">#QA-8831</td>
+<td class="px-3 font-data-tabular text-data-tabular">ST-TWILL-K2</td>
+<td class="px-3">
+<span class="bg-surface-container px-2 py-0.5 rounded text-[10px] font-bold">INLINE</span>
+</td>
+<td class="px-3 font-body-sm text-body-sm">S. Putri</td>
+<td class="px-3 font-data-tabular text-data-tabular text-on-surface-variant">50 Units</td>
+<td class="px-3 font-data-tabular text-data-tabular text-risk-watch">05</td>
+<td class="px-3">
+<div class="flex items-center gap-2">
+<div class="w-12 bg-surface-container h-1.5 rounded-full">
+<div class="bg-risk-watch h-full" style="width: 10%"></div>
+</div>
+<span class="font-mono-data text-[10px]">10.0%</span>
+</div>
+</td>
+<td class="px-3">
+<span class="bg-risk-watch/10 text-risk-watch px-2 py-0.5 rounded text-[10px] font-bold">HOLD</span>
+</td>
+</tr>
+<!-- Repeat rows for density -->
+<script>
+                            for(let i=0; i<15; i++) {
+                                document.write(`
+                                <tr class="h-grid-row-height hover:bg-surface-container-high transition-colors cursor-pointer">
+                                    <td class="px-3 font-mono-data text-mono-data">#QA-883${i+2}</td>
+                                    <td class="px-3 font-data-tabular text-data-tabular">ST-DENIM-X${i+2}</td>
+                                    <td class="px-3"><span class="bg-surface-container px-2 py-0.5 rounded text-[10px] font-bold">FINAL</span></td>
+                                    <td class="px-3 font-body-sm text-body-sm">Inspector ${(i%3)+1}</td>
+                                    <td class="px-3 font-data-tabular text-data-tabular text-on-surface-variant">80 Units</td>
+                                    <td class="px-3 font-data-tabular text-data-tabular text-risk-on-track">0</td>
+                                    <td class="px-3"><div class="flex items-center gap-2"><div class="w-12 bg-surface-container h-1.5 rounded-full"><div class="bg-risk-on-track h-full" style="width: 0%"></div></div><span class="font-mono-data text-[10px]">0%</span></div></td>
+                                    <td class="px-3"><span class="bg-risk-on-track/10 text-risk-on-track px-2 py-0.5 rounded text-[10px] font-bold">PASS</span></td>
+                                </tr>
+                                `);
+                            }
+                        </script>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+<!-- Inspection Details (Right Drawer) -->
+<div class="fixed right-0 top-12 bottom-0 w-drawer-width bg-surface-container-lowest border-l border-grid-border shadow-md z-[60] flex flex-col transition-transform duration-300" id="action-drawer">
+<div class="p-margin-md border-b border-grid-border bg-surface-muted flex justify-between items-center">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary">Inspection Details</h2>
+<p class="text-body-sm text-on-surface-variant">Order #QA-8829 | ST-DENIM-X1</p>
+</div>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container rounded" onclick="toggleDrawer(false)">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-margin-md space-y-margin-md">
+<!-- Result Alert -->
+<div class="bg-risk-action/10 border border-risk-action p-3 rounded flex items-center gap-3">
+<span class="material-symbols-outlined text-risk-action" data-icon="error">error</span>
+<div>
+<p class="font-bold text-risk-action text-body-sm">FAILURE DETECTED</p>
+<p class="text-[11px] text-risk-action opacity-80 uppercase font-bold">AQL 2.5 LIMIT EXCEEDED</p>
+</div>
+</div>
+<!-- Defect Breakdown -->
+<div>
+<h4 class="font-label-caps text-label-caps text-on-surface-variant mb-3 border-b border-grid-border pb-1">DEFECT BREAKDOWN</h4>
+<div class="space-y-2">
+<div class="flex items-center justify-between p-2 bg-surface-container-low border border-grid-border">
+<span class="text-body-sm">Broken Stitch (Armhole)</span>
+<div class="flex items-center gap-3">
+<span class="font-mono-data text-mono-data text-risk-action">06</span>
+<span class="material-symbols-outlined text-on-surface-variant text-sm cursor-pointer" data-icon="chat_bubble">chat_bubble</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-2 bg-surface-container-low border border-grid-border">
+<span class="text-body-sm">Shade Variation</span>
+<div class="flex items-center gap-3">
+<span class="font-mono-data text-mono-data text-risk-watch">05</span>
+<span class="material-symbols-outlined text-on-surface-variant text-sm cursor-pointer" data-icon="chat_bubble">chat_bubble</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-2 bg-surface-container-low border border-grid-border">
+<span class="text-body-sm">Measurement Out of Spec</span>
+<div class="flex items-center gap-3">
+<span class="font-mono-data text-mono-data text-on-surface">03</span>
+<span class="material-symbols-outlined text-on-surface-variant text-sm cursor-pointer" data-icon="chat_bubble">chat_bubble</span>
+</div>
+</div>
+</div>
+</div>
+<!-- AQL Checklist -->
+<div>
+<h4 class="font-label-caps text-label-caps text-on-surface-variant mb-3 border-b border-grid-border pb-1">AQL READINESS CHECKLIST</h4>
+<div class="space-y-1">
+<div class="flex items-center gap-3 py-1.5 border-b border-grid-border/50">
+<span class="material-symbols-outlined text-risk-on-track text-lg" data-icon="check_circle">check_circle</span>
+<span class="text-body-sm flex-1">Labeling &amp; Placement</span>
+<span class="text-[10px] bg-risk-on-track/10 text-risk-on-track px-1 font-bold">PASS</span>
+</div>
+<div class="flex items-center gap-3 py-1.5 border-b border-grid-border/50">
+<span class="material-symbols-outlined text-risk-action text-lg" data-icon="cancel">cancel</span>
+<span class="text-body-sm flex-1">Workmanship Quality</span>
+<span class="text-[10px] bg-risk-action/10 text-risk-action px-1 font-bold">FAIL</span>
+</div>
+<div class="flex items-center gap-3 py-1.5 border-b border-grid-border/50 opacity-60">
+<span class="material-symbols-outlined text-on-surface-variant text-lg" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+<span class="text-body-sm flex-1">Packaging Compliance</span>
+<span class="text-[10px] bg-surface-container-high text-on-surface-variant px-1 font-bold">PEND</span>
+</div>
+</div>
+</div>
+<!-- Evidence Section -->
+<div>
+<div class="flex justify-between items-center mb-2">
+<h4 class="font-label-caps text-label-caps text-on-surface-variant">EVIDENCE PHOTOS (3)</h4>
+<button class="text-[10px] text-primary font-bold underline">UPLOAD</button>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<div class="aspect-video bg-surface-container border border-grid-border rounded overflow-hidden relative group">
+<img class="w-full h-full object-cover" data-alt="A macro close-up shot showing a significant workmanship defect on a denim garment armhole, where several stitches are broken and unraveling. The lighting is harsh and direct to highlight the structural failure, set against a background of industrial sewing equipment. The color palette is dominated by indigo blue and metallic silver." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTJoojA6LKvIdhxoq6D6glVHYa_A-K-qXeB1q3qlYYZOo82SFNUVAp5y86XMCk9qf_p2HnLFF2ZkhJQi0fB9cJYPbmQGjvXzjG1pmvAo1s91PgToO7GBvSjLpRZtC8t0icnhlrjSm83-BNs6pEF5BchHJCZ_iuQbm5QDg5s_v0Wai3_9wIbUYkL_l4PXnkYHrW072DUR_EFdJ3IbuyzRgjGI5ShANxCw6LICpTBNOHj-mEoQUBYz6KvuY_acmC5EJlaIx-8P6sasw"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white" data-icon="zoom_in">zoom_in</span>
+</div>
+</div>
+<div class="aspect-video bg-surface-container border border-grid-border rounded overflow-hidden relative group">
+<img class="w-full h-full object-cover" data-alt="A side-by-side shade variation check on denim panels laid out under standardized laboratory lighting. The two panels show a subtle but clear mismatch in dye intensity. The setting is a professional quality control station with neutral gray walls and high-density industrial surfaces." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTJoojA6LKvIdhxoq6D6glVHYa_A-K-qXeB1q3qlYYZOo82SFNUVAp5y86XMCk9qf_p2HnLFF2ZkhJQi0fB9cJYPbmQGjvXzjG1pmvAo1s91PgToO7GBvSjLpRZtC8t0icnhlrjSm83-BNs6pEF5BchHJCZ_iuQbm5QDg5s_v0Wai3_9wIbUYkL_l4PXnkYHrW072DUR_EFdJ3IbuyzRgjGI5ShANxCw6LICpTBNOHj-mEoQUBYz6KvuY_acmC5EJlaIx-8P6sasw"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white" data-icon="zoom_in">zoom_in</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Impact Preview -->
+<div class="bg-surface-container p-3 rounded border border-grid-border">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-sm" data-icon="analytics">analytics</span>
+<span class="font-label-caps text-[10px]">REWORK IMPACT PREVIEW</span>
+</div>
+<div class="flex items-center justify-between">
+<div>
+<p class="text-[10px] text-on-surface-variant">Est. Delay</p>
+<p class="font-mono-data text-mono-data text-risk-watch">+18 Hours</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="trending_flat">trending_flat</span>
+<div class="text-right">
+<p class="text-[10px] text-on-surface-variant">New Ship Date</p>
+<p class="font-mono-data text-mono-data">24 OCT, 14:00</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-margin-md bg-surface-muted border-t border-grid-border grid grid-cols-2 gap-2">
+<button class="col-span-2 bg-primary text-on-primary font-label-caps text-label-caps py-3 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all" id="approve-batch">
+<span class="material-symbols-outlined text-sm" data-icon="verified">verified</span>
+                Approve Batch
+            </button>
+<button class="bg-white border border-risk-action text-risk-action font-label-caps text-[10px] py-2 hover:bg-risk-action hover:text-white transition-colors">
+                TRIGGER REWORK
+            </button>
+<button class="bg-white border border-primary text-primary font-label-caps text-[10px] py-2 hover:bg-primary hover:text-white transition-colors">
+                RELEASE TO PACKING
+            </button>
+</div>
+</div>
+<!-- Micro-interactions Script -->
+<script>
+        function toggleDrawer(open) {
+            const drawer = document.getElementById('action-drawer');
+            const mainContent = document.getElementById('main-content');
+            if (open) {
+                drawer.style.transform = 'translateX(0)';
+                mainContent.style.paddingRight = '416px';
+            } else {
+                drawer.style.transform = 'translateX(100%)';
+                mainContent.style.paddingRight = '16px';
+            }
+        }
+
+        // Initialize with open drawer
+        document.addEventListener('DOMContentLoaded', () => {
+            toggleDrawer(true);
+        });
+
+        // Simple row selection highlighting
+        const tableRows = document.querySelectorAll('tbody tr');
+        tableRows.forEach(row => {
+            row.addEventListener('click', () => {
+                tableRows.forEach(r => r.classList.remove('grid-row-active'));
+                row.classList.add('grid-row-active');
+            });
+        });
+    </script>
+</body></html>

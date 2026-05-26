@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#1b1b1d",
+                        "on-tertiary": "#ffffff",
+                        "inverse-primary": "#bcc7de",
+                        "risk-watch": "#F59E0B",
+                        "surface-container-high": "#eae7e9",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "error-container": "#ffdad6",
+                        "risk-on-track": "#10B981",
+                        "risk-action": "#EF4444",
+                        "tertiary-fixed-dim": "#ddc39d",
+                        "primary-container": "#1e293b",
+                        "outline": "#75777d",
+                        "secondary-container": "#d5e3fd",
+                        "on-primary": "#ffffff",
+                        "surface-muted": "#F8FAFC",
+                        "surface-bright": "#fbf8fa",
+                        "secondary": "#515f74",
+                        "primary": "#091426",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "primary-fixed-dim": "#bcc7de",
+                        "on-surface": "#1b1b1d",
+                        "surface-tint": "#545f73",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "on-primary-fixed": "#111c2d",
+                        "primary-fixed": "#d8e3fb",
+                        "on-primary-container": "#8590a6",
+                        "inverse-surface": "#303032",
+                        "grid-border": "#E2E8F0",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "tertiary": "#1e1200",
+                        "on-tertiary-fixed": "#271902",
+                        "on-tertiary-container": "#a38c6a",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#e4e2e3",
+                        "on-tertiary-fixed-variant": "#564427",
+                        "background": "#fbf8fa",
+                        "surface-variant": "#e4e2e3",
+                        "outline-variant": "#c5c6cd",
+                        "on-secondary-container": "#57657b",
+                        "tertiary-fixed": "#fadfb8",
+                        "surface": "#fbf8fa",
+                        "surface-container": "#f0edef",
+                        "tertiary-container": "#35260c",
+                        "risk-critical": "#111827",
+                        "on-error": "#ffffff",
+                        "surface-dim": "#dcd9db",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f5f3f4",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#d5e3fd",
+                        "inverse-on-surface": "#f3f0f2"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "drawer-width": "400px",
+                        "nav-expanded-width": "240px",
+                        "margin-md": "16px",
+                        "nav-collapsed-width": "64px",
+                        "grid-row-height": "32px",
+                        "margin-sm": "8px",
+                        "gutter": "12px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "mono-data": ["JetBrains Mono"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        .grid-header-sticky { position: sticky; top: 0; z-index: 10; }
+        .row-hover:hover { background-color: #F1F5F9; }
+    </style>
+</head>
+<body class="bg-surface-muted text-on-surface font-body-md selection:bg-secondary-container">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full h-12 flex justify-between items-center px-gutter z-50 bg-surface dark:bg-primary border-b border-grid-border dark:border-outline-variant flat no shadows">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold tracking-tight text-primary dark:text-inverse-primary">ERATEX OPS CONTROL</span>
+<div class="h-6 w-px bg-outline-variant"></div>
+<nav class="hidden md:flex gap-6">
+<span class="font-label-caps text-label-caps text-primary dark:text-primary-fixed font-bold cursor-pointer opacity-80 transition-opacity">DASHBOARD</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant dark:text-on-primary-container hover:bg-surface-container-low dark:hover:bg-primary-container transition-colors px-2 rounded cursor-pointer">PRODUCTION</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant dark:text-on-primary-container hover:bg-surface-container-low dark:hover:bg-primary-container transition-colors px-2 rounded cursor-pointer">LOGISTICS</span>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="bg-surface-container px-3 py-1 rounded flex items-center gap-2 border border-outline-variant">
+<span class="material-symbols-outlined text-[18px]" data-icon="search">search</span>
+<input class="bg-transparent border-none text-body-sm focus:ring-0 w-48" placeholder="Search orders..." type="text"/>
+</div>
+<div class="flex gap-2">
+<button class="p-1 hover:bg-surface-container transition-colors rounded"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
+<button class="p-1 hover:bg-surface-container transition-colors rounded"><span class="material-symbols-outlined" data-icon="sync">sync</span></button>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant px-3 py-1 border border-outline-variant rounded bg-surface-bright">This Week</span>
+</div>
+</header>
+<!-- SideNavBar (Rail) -->
+<aside class="fixed left-0 top-12 h-[calc(100vh-48px)] z-40 flex flex-col items-center py-4 bg-surface-muted dark:bg-inverse-surface border-r border-grid-border dark:border-outline w-nav-collapsed-width transition-all duration-300 ease-in-out">
+<div class="flex flex-col gap-6 w-full items-center">
+<div class="flex flex-col items-center gap-1 group cursor-pointer w-full py-2 bg-primary-container dark:bg-primary-fixed-dim text-on-primary-container dark:text-on-primary-fixed border-r-4 border-primary">
+<span class="material-symbols-outlined" data-icon="analytics" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="font-label-caps text-[9px]">ANALYTICS</span>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer w-full py-2 text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-colors">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span class="font-label-caps text-[9px]">ORDERS</span>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer w-full py-2 text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-colors">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+<span class="font-label-caps text-[9px]">PLANNING</span>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer w-full py-2 text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-colors">
+<span class="material-symbols-outlined" data-icon="factory">factory</span>
+<span class="font-label-caps text-[9px]">CENTERS</span>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer w-full py-2 text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-caps text-[9px]">SETTINGS</span>
+</div>
+</div>
+<div class="mt-auto flex flex-col items-center gap-4 w-full">
+<div class="flex flex-col items-center gap-1 group cursor-pointer w-full py-2 text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-colors">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-caps text-[9px]">SUPPORT</span>
+</div>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a middle-aged operations manager with a confident expression, wearing a crisp navy polo shirt. The lighting is bright and clean, reflecting a professional office environment. The overall aesthetic is sharp, high-contrast, and authoritative, matching a corporate command center theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZBVWs_XdhhDaS4hfsIZ4wkrJku6nnmcZ0gtpUZzi4yjKTHbBcfGcgq1NRw8Bz9iB1N5jpuh2OGqxCOkS4viA32A1n_ta5ccJ2LccF2XvXHfws1PrLL12FLjSRnJ352fprvjMh4oNMTTF7RA6rUkrjAsPub1d2JFdi9-CKuVN0fwyzOIKZc3PTFtccDx1PebxT7NDBi98zYG0GPL-EzQpxhhBh2jY4jodoHAimwnzUyn9DivkWh10MEDuxfk6xpnDtwn6m0-UxV38"/>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-[64px] mr-[400px] mt-12 p-margin-md min-h-[calc(100vh-48px)]">
+<!-- Header Section -->
+<div class="mb-6">
+<h1 class="font-headline-lg text-headline-lg text-primary uppercase tracking-tight">Executive Control Tower <span class="text-on-surface-variant font-normal opacity-50">/ UNIT 04 - DENIM</span></h1>
+<p class="font-body-sm text-on-surface-variant">System Status: Active | Last Sync: 2m ago | Current Gate: Manufacturing Phase 2</p>
+</div>
+<!-- Top KPIs -->
+<div class="grid grid-cols-4 gap-4 mb-6">
+<!-- OTIF Risk -->
+<div class="bg-surface-container-lowest p-4 border border-grid-border rounded shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant">SHIPMENT OTIF RISK</span>
+<span class="material-symbols-outlined text-risk-action" data-icon="warning">warning</span>
+</div>
+<div class="flex items-end gap-2">
+<span class="font-headline-lg text-[32px] leading-none text-primary">82.4%</span>
+<span class="font-label-caps text-risk-action mb-1">▼ 4.2%</span>
+</div>
+<div class="mt-4 w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-risk-action h-full w-[82%]"></div>
+</div>
+<p class="font-body-sm text-[11px] text-on-surface-variant mt-2">Target: 95.0%</p>
+</div>
+<!-- Bottleneck -->
+<div class="bg-surface-container-lowest p-4 border border-grid-border rounded shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant">CAPACITY BOTTLENECK</span>
+<span class="material-symbols-outlined text-risk-watch" data-icon="speed">speed</span>
+</div>
+<div class="flex items-end gap-2">
+<span class="font-headline-md text-headline-md text-primary uppercase">Wet Wash</span>
+</div>
+<div class="mt-4 flex items-center gap-2">
+<span class="font-mono-data text-risk-action font-bold">114% LOAD</span>
+<span class="h-1 flex-1 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-risk-action h-full w-full"></div>
+</span>
+</div>
+<p class="font-body-sm text-[11px] text-on-surface-variant mt-2">Critical delay on Style #DR882</p>
+</div>
+<!-- Efficiency -->
+<div class="bg-surface-container-lowest p-4 border border-grid-border rounded shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant">PRODUCTION EFFICIENCY</span>
+<span class="material-symbols-outlined text-risk-on-track" data-icon="trending_up">trending_up</span>
+</div>
+<div class="flex items-end gap-2">
+<span class="font-headline-lg text-[32px] leading-none text-primary">91.8%</span>
+<span class="font-label-caps text-risk-on-track mb-1">▲ 1.5%</span>
+</div>
+<div class="mt-4 w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-risk-on-track h-full w-[91%]"></div>
+</div>
+<p class="font-body-sm text-[11px] text-on-surface-variant mt-2">Net-Good Output / Plan</p>
+</div>
+<!-- Recovery Cost -->
+<div class="bg-surface-container-lowest p-4 border border-grid-border rounded shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant">RECOVERY COST (EST)</span>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="payments">payments</span>
+</div>
+<div class="flex items-end gap-2">
+<span class="font-headline-lg text-[32px] leading-none text-primary">$12.4k</span>
+<span class="font-label-caps text-risk-action mb-1">+18%</span>
+</div>
+<p class="font-body-sm text-[11px] text-on-surface-variant mt-4">Projected Overtime &amp; Expedite</p>
+<button class="mt-2 text-[11px] font-bold text-primary underline">VIEW BREAKDOWN</button>
+</div>
+</div>
+<!-- Middle Row: Heatmap & Utilization -->
+<div class="grid grid-cols-5 gap-6 mb-6">
+<!-- Customer Risk Heatmap -->
+<div class="col-span-2 bg-surface-container-lowest border border-grid-border rounded overflow-hidden flex flex-col">
+<div class="px-4 py-3 border-b border-grid-border bg-surface-bright flex justify-between items-center">
+<h3 class="font-label-caps text-label-caps">CUSTOMER RISK HEATMAP</h3>
+<span class="material-symbols-outlined text-[16px]" data-icon="info">info</span>
+</div>
+<div class="p-4 flex-1">
+<div class="grid grid-cols-2 grid-rows-3 gap-2 h-full">
+<div class="bg-risk-critical text-white p-3 rounded flex flex-col justify-between">
+<span class="font-label-caps text-[10px]">LEVI STRAUSS</span>
+<div class="flex justify-between items-end">
+<span class="font-headline-md">1.2M</span>
+<span class="bg-white/20 text-[9px] px-1 rounded">BLACK</span>
+</div>
+</div>
+<div class="bg-risk-action text-white p-3 rounded flex flex-col justify-between">
+<span class="font-label-caps text-[10px]">ZARA GROUP</span>
+<div class="flex justify-between items-end">
+<span class="font-headline-md">840K</span>
+<span class="bg-white/20 text-[9px] px-1 rounded">RED</span>
+</div>
+</div>
+<div class="bg-risk-watch text-white p-3 rounded flex flex-col justify-between">
+<span class="font-label-caps text-[10px]">H&amp;M GLOBAL</span>
+<div class="flex justify-between items-end">
+<span class="font-headline-md">620K</span>
+<span class="bg-white/20 text-[9px] px-1 rounded">YELLOW</span>
+</div>
+</div>
+<div class="bg-risk-on-track text-white p-3 rounded flex flex-col justify-between">
+<span class="font-label-caps text-[10px]">GAP INC</span>
+<div class="flex justify-between items-end">
+<span class="font-headline-md">410K</span>
+<span class="bg-white/20 text-[9px] px-1 rounded">GREEN</span>
+</div>
+</div>
+<div class="col-span-2 bg-surface-container-high p-2 rounded flex items-center justify-between">
+<span class="font-label-caps text-[9px] text-on-surface-variant">UNASSIGNED / OTHER</span>
+<span class="font-mono-data text-[11px]">$2.4M</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Global Utilization Bar Chart -->
+<div class="col-span-3 bg-surface-container-lowest border border-grid-border rounded overflow-hidden">
+<div class="px-4 py-3 border-b border-grid-border bg-surface-bright flex justify-between items-center">
+<h3 class="font-label-caps text-label-caps">WORKCENTER UTILIZATION (LOAD vs CAP)</h3>
+<div class="flex gap-4 items-center">
+<div class="flex items-center gap-1"><div class="w-2 h-2 bg-primary rounded-full"></div><span class="text-[10px] font-label-caps">LOAD</span></div>
+<div class="flex items-center gap-1"><div class="w-2 h-2 bg-surface-container-high rounded-full"></div><span class="text-[10px] font-label-caps">CAPACITY</span></div>
+</div>
+</div>
+<div class="p-6 h-[220px] flex items-end justify-between gap-4">
+<!-- Bar Group -->
+<div class="flex-1 flex flex-col items-center gap-2 h-full">
+<div class="flex-1 w-full flex items-end gap-0.5 relative">
+<div class="bg-surface-container-high w-full h-[80%] absolute bottom-0 left-0 rounded-t"></div>
+<div class="bg-primary w-full h-[65%] z-10 rounded-t opacity-90"></div>
+</div>
+<span class="font-label-caps text-[9px] truncate w-full text-center">CUTTING</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 h-full">
+<div class="flex-1 w-full flex items-end gap-0.5 relative">
+<div class="bg-surface-container-high w-full h-[85%] absolute bottom-0 left-0 rounded-t"></div>
+<div class="bg-primary w-full h-[70%] z-10 rounded-t opacity-90"></div>
+</div>
+<span class="font-label-caps text-[9px] truncate w-full text-center">SEWING</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 h-full">
+<div class="flex-1 w-full flex items-end gap-0.5 relative">
+<div class="bg-surface-container-high w-full h-[70%] absolute bottom-0 left-0 rounded-t"></div>
+<div class="bg-risk-action w-full h-[95%] z-10 rounded-t opacity-90"></div>
+<span class="absolute -top-6 left-1/2 -translate-x-1/2 text-risk-action font-bold text-[10px]">114%</span>
+</div>
+<span class="font-label-caps text-[9px] truncate w-full text-center">WET WASH</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 h-full">
+<div class="flex-1 w-full flex items-end gap-0.5 relative">
+<div class="bg-surface-container-high w-full h-[90%] absolute bottom-0 left-0 rounded-t"></div>
+<div class="bg-primary w-full h-[40%] z-10 rounded-t opacity-90"></div>
+</div>
+<span class="font-label-caps text-[9px] truncate w-full text-center">FINISHING</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 h-full">
+<div class="flex-1 w-full flex items-end gap-0.5 relative">
+<div class="bg-surface-container-high w-full h-[80%] absolute bottom-0 left-0 rounded-t"></div>
+<div class="bg-primary w-full h-[30%] z-10 rounded-t opacity-90"></div>
+</div>
+<span class="font-label-caps text-[9px] truncate w-full text-center">QA/QC</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 h-full">
+<div class="flex-1 w-full flex items-end gap-0.5 relative">
+<div class="bg-surface-container-high w-full h-[60%] absolute bottom-0 left-0 rounded-t"></div>
+<div class="bg-primary w-full h-[25%] z-10 rounded-t opacity-90"></div>
+</div>
+<span class="font-label-caps text-[9px] truncate w-full text-center">PACKING</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Critical Exceptions Grid -->
+<div class="bg-surface-container-lowest border border-grid-border rounded overflow-hidden shadow-sm">
+<div class="px-4 py-3 border-b border-grid-border bg-surface-bright flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-risk-critical rounded-full animate-pulse"></span>
+<h3 class="font-label-caps text-label-caps">CRITICAL EXCEPTIONS (BLACK SEVERITY)</h3>
+</div>
+<button class="text-[11px] font-bold text-primary flex items-center gap-1 hover:underline">
+                    VIEW ALL BLOCKED <span class="material-symbols-outlined text-[14px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-muted text-on-surface-variant border-b border-grid-border">
+<tr>
+<th class="px-4 py-2 text-[10px] font-label-caps">ORDER ID</th>
+<th class="px-4 py-2 text-[10px] font-label-caps">CUSTOMER</th>
+<th class="px-4 py-2 text-[10px] font-label-caps">STYLE</th>
+<th class="px-4 py-2 text-[10px] font-label-caps">BLOCKER</th>
+<th class="px-4 py-2 text-[10px] font-label-caps">IMPACT</th>
+<th class="px-4 py-2 text-[10px] font-label-caps text-right">ACTION</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-grid-border">
+<tr class="row-hover transition-colors">
+<td class="px-4 py-2 font-mono-data text-primary">#ORD-4921</td>
+<td class="px-4 py-2 text-body-sm">Levi Strauss</td>
+<td class="px-4 py-2 text-body-sm">501 Original Raw</td>
+<td class="px-4 py-2">
+<span class="bg-error-container text-error px-2 py-0.5 rounded text-[10px] font-bold">WASH CAPACITY BREACH</span>
+</td>
+<td class="px-4 py-2 font-mono-data text-risk-action">-12 Days OTIF</td>
+<td class="px-4 py-2 text-right">
+<button class="bg-primary text-white px-3 py-1 rounded text-[10px] font-bold uppercase hover:bg-primary-container transition-colors">Intervene</button>
+</td>
+</tr>
+<tr class="row-hover transition-colors">
+<td class="px-4 py-2 font-mono-data text-primary">#ORD-5012</td>
+<td class="px-4 py-2 text-body-sm">Zara Group</td>
+<td class="px-4 py-2 text-body-sm">Slim Fit Chino</td>
+<td class="px-4 py-2">
+<span class="bg-error-container text-error px-2 py-0.5 rounded text-[10px] font-bold">FABRIC DEFECT (BATCH 04)</span>
+</td>
+<td class="px-4 py-2 font-mono-data text-risk-action">-8 Days OTIF</td>
+<td class="px-4 py-2 text-right">
+<button class="bg-primary text-white px-3 py-1 rounded text-[10px] font-bold uppercase hover:bg-primary-container transition-colors">Intervene</button>
+</td>
+</tr>
+<tr class="row-hover transition-colors">
+<td class="px-4 py-2 font-mono-data text-primary">#ORD-5108</td>
+<td class="px-4 py-2 text-body-sm">Levi Strauss</td>
+<td class="px-4 py-2 text-body-sm">Denim Jacket V2</td>
+<td class="px-4 py-2">
+<span class="bg-error-container text-error px-2 py-0.5 rounded text-[10px] font-bold">QA FAILURE - SHRINKAGE</span>
+</td>
+<td class="px-4 py-2 font-mono-data text-risk-action">-15 Days OTIF</td>
+<td class="px-4 py-2 text-right">
+<button class="bg-primary text-white px-3 py-1 rounded text-[10px] font-bold uppercase hover:bg-primary-container transition-colors">Intervene</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</main>
+<!-- Right Action Drawer -->
+<aside class="fixed right-0 top-12 h-[calc(100vh-48px)] w-drawer-width bg-surface-container-lowest border-l border-grid-border z-40 shadow-[-8px_0_24px_rgba(0,0,0,0.04)] flex flex-col">
+<div class="p-4 border-b border-grid-border bg-surface-bright flex justify-between items-center">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary">Workcenter Detail</h2>
+<span class="font-label-caps text-[11px] text-risk-action font-bold">WET WASH (WC-009) - BOTTLENECK</span>
+</div>
+<button class="p-1 hover:bg-surface-container rounded"><span class="material-symbols-outlined" data-icon="close">close</span></button>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-6">
+<!-- Order Breakdown -->
+<div>
+<h4 class="font-label-caps text-label-caps text-on-surface-variant mb-3">CONTRIBUTING ORDERS (TOP 3)</h4>
+<div class="space-y-2">
+<div class="p-3 bg-surface-muted border border-grid-border rounded flex flex-col gap-2">
+<div class="flex justify-between items-center">
+<span class="font-mono-data font-bold text-primary">#ORD-4921 (Levi)</span>
+<span class="text-[10px] bg-risk-action text-white px-1.5 rounded">High Load</span>
+</div>
+<div class="w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-risk-action h-full w-[85%]"></div>
+</div>
+<div class="flex justify-between text-[11px] text-on-surface-variant">
+<span>Req. Capacity: 450 Hrs</span>
+<span>Remaining: 120 Hrs</span>
+</div>
+</div>
+<div class="p-3 bg-surface-muted border border-grid-border rounded flex flex-col gap-2 opacity-80">
+<div class="flex justify-between items-center">
+<span class="font-mono-data font-bold text-primary">#ORD-5108 (Levi)</span>
+<span class="text-[10px] bg-risk-watch text-white px-1.5 rounded">Medium</span>
+</div>
+<div class="w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-risk-watch h-full w-[40%]"></div>
+</div>
+</div>
+<div class="p-3 bg-surface-muted border border-grid-border rounded flex flex-col gap-2 opacity-80">
+<div class="flex justify-between items-center">
+<span class="font-mono-data font-bold text-primary">#ORD-5012 (Zara)</span>
+<span class="text-[10px] bg-risk-watch text-white px-1.5 rounded">Medium</span>
+</div>
+<div class="w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-risk-watch h-full w-[35%]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Readiness Checklist -->
+<div>
+<h4 class="font-label-caps text-label-caps text-on-surface-variant mb-3">RECOVERY READINESS</h4>
+<div class="space-y-1">
+<div class="flex items-center gap-3 p-2 bg-surface-container-low rounded">
+<span class="material-symbols-outlined text-risk-on-track" data-icon="check_circle">check_circle</span>
+<div class="flex-1">
+<p class="text-[12px] font-bold">Extra Shift Approval</p>
+<p class="text-[10px] text-on-surface-variant">HR &amp; Union cleared for Weekend Ops</p>
+</div>
+<img class="w-6 h-6 rounded-full" data-alt="A small circular avatar profile picture of a human resources director with a professional and friendly look, wearing glasses and a formal shirt. Bright, clean corporate office lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjUy98lfGjY8Npq-pXO-fSICg26lcGcZopVYLHeKgC-DabLtn-srNshrTz2VfBdKTdEMbJev9ZKoR9Pm2TYi2MLe0JHaoiDArTM50xQkM6w8cDPYE5pdut3p3638-Hdy3ksgSv7phSiHiZamf1BYPtHqJo43E3KC-3ZS60psZFClfQ0ppu4vR42FvUvSVwLUqU3vZgyk4pK0vyVt7IfQApCOF-NEthdg8W8CImUs0zZjdWAf9w3NvJh2S5ndFkr404EPjCohaUPo8"/>
+</div>
+<div class="flex items-center gap-3 p-2 bg-surface-container-low rounded">
+<span class="material-symbols-outlined text-risk-watch" data-icon="pending">pending</span>
+<div class="flex-1">
+<p class="text-[12px] font-bold">Chemical Inventory</p>
+<p class="text-[10px] text-on-surface-variant">Arrival expected tomorrow 08:00</p>
+</div>
+</div>
+<div class="flex items-center gap-3 p-2 bg-surface-container-low rounded">
+<span class="material-symbols-outlined text-outline" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+<div class="flex-1">
+<p class="text-[12px] font-bold">Secondary Unit Prep</p>
+<p class="text-[10px] text-on-surface-variant">Subcontracting not yet initiated</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Impact Preview -->
+<div class="bg-primary text-white p-4 rounded-lg">
+<h4 class="font-label-caps text-[10px] opacity-70 mb-4">RECOVERY SCENARIO A: 24/7 OVERTIME</h4>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="text-[10px] opacity-60">OTIF IMPACT</p>
+<p class="text-headline-md font-bold text-risk-on-track">+4.5%</p>
+</div>
+<div>
+<p class="text-[10px] opacity-60">COST IMPACT</p>
+<p class="text-headline-md font-bold">$12,800</p>
+</div>
+</div>
+<button class="w-full mt-4 bg-white text-primary font-bold py-2 rounded text-[12px] uppercase">Execute Scenario</button>
+</div>
+</div>
+<div class="p-4 border-t border-grid-border bg-surface-bright">
+<div class="flex justify-between items-center text-[10px] font-mono-data opacity-50 uppercase">
+<span>Ref: WC-009-RECOV-2405</span>
+<span>Generated 12:45 UTC</span>
+</div>
+</div>
+</aside>
+<script>
+        // Subtle interaction for the side nav
+        document.querySelectorAll('aside div.group').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                item.classList.add('opacity-100');
+            });
+        });
+
+        // Toggle Right Drawer logic (placeholder)
+        const closeDrawer = document.querySelector('[data-icon="close"]').parentElement;
+        const drawer = document.querySelector('aside.w-drawer-width');
+        closeDrawer.addEventListener('click', () => {
+            drawer.style.transform = 'translateX(100%)';
+            drawer.style.transition = 'transform 0.3s ease-in-out';
+            document.querySelector('main').style.marginRight = '0px';
+        });
+    </script>
+</body></html>

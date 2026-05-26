@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Eratex Planning - Enquiry &amp; Costing Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            font-size: 18px;
+            vertical-align: middle;
+        }
+        /* Custom scrollbar for dense data grids */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .sticky-column { position: sticky; left: 0; z-index: 10; background: inherit; }
+        .grid-row-hover:hover { background-color: #F1F5F9 !important; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary-fixed": "#d8e3fb",
+                      "tertiary": "#1e1200",
+                      "inverse-on-surface": "#f3f0f2",
+                      "secondary-container": "#d5e3fd",
+                      "risk-critical": "#111827",
+                      "surface-container-low": "#f5f3f4",
+                      "on-tertiary-container": "#a38c6a",
+                      "on-primary-fixed-variant": "#3c475a",
+                      "on-background": "#1b1b1d",
+                      "on-tertiary-fixed": "#271902",
+                      "surface-tint": "#545f73",
+                      "on-secondary-container": "#57657b",
+                      "risk-on-track": "#10B981",
+                      "outline": "#75777d",
+                      "inverse-primary": "#bcc7de",
+                      "on-error": "#ffffff",
+                      "secondary": "#515f74",
+                      "on-surface": "#1b1b1d",
+                      "secondary-fixed": "#d5e3fd",
+                      "background": "#fbf8fa",
+                      "on-surface-variant": "#45474c",
+                      "surface-muted": "#F8FAFC",
+                      "surface-container-high": "#eae7e9",
+                      "primary-fixed-dim": "#bcc7de",
+                      "error": "#ba1a1a",
+                      "on-primary": "#ffffff",
+                      "surface-container-highest": "#e4e2e3",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-fixed-variant": "#3a485c",
+                      "on-primary-container": "#8590a6",
+                      "secondary-fixed-dim": "#b9c7e0",
+                      "surface-bright": "#fbf8fa",
+                      "on-error-container": "#93000a",
+                      "grid-border": "#E2E8F0",
+                      "on-secondary-fixed": "#0d1c2f",
+                      "on-secondary": "#ffffff",
+                      "surface-variant": "#e4e2e3",
+                      "surface": "#fbf8fa",
+                      "risk-action": "#EF4444",
+                      "outline-variant": "#c5c6cd",
+                      "on-tertiary-fixed-variant": "#564427",
+                      "surface-dim": "#dcd9db",
+                      "surface-container": "#f0edef",
+                      "on-primary-fixed": "#111c2d",
+                      "primary-container": "#1e293b",
+                      "primary": "#091426",
+                      "error-container": "#ffdad6",
+                      "inverse-surface": "#303032",
+                      "tertiary-fixed-dim": "#ddc39d",
+                      "surface-container-lowest": "#ffffff",
+                      "tertiary-fixed": "#fadfb8",
+                      "risk-watch": "#F59E0B",
+                      "tertiary-container": "#35260c"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "nav-collapsed-width": "64px",
+                      "grid-row-height": "32px",
+                      "drawer-width": "400px",
+                      "nav-expanded-width": "240px",
+                      "margin-sm": "8px",
+                      "margin-md": "16px",
+                      "gutter": "12px"
+              },
+              "fontFamily": {
+                      "body-sm": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "mono-data": ["JetBrains Mono"],
+                      "data-tabular": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "label-caps": ["Inter"]
+              },
+              "fontSize": {
+                      "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                      "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                      "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-hidden">
+<!-- Global Header (TopNavBar) -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-md h-12 bg-surface border-b border-grid-border">
+<div class="flex items-center gap-margin-md">
+<span class="font-headline-md text-headline-md font-bold text-primary">ApexFactory OS</span>
+<div class="flex items-center bg-surface-container px-3 py-1 rounded border border-outline-variant h-8">
+<span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm w-64" placeholder="Search orders, styles, or customers..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 px-3 py-1 bg-surface-container-low border border-outline-variant rounded">
+<span class="material-symbols-outlined text-risk-on-track">sync</span>
+<span class="font-mono-data text-mono-data uppercase">SYNC: 2m ago</span>
+</div>
+<span class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary transition-colors">factory</span>
+<span class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary transition-colors">notifications</span>
+<img alt="Planner Profile" class="w-8 h-8 rounded-full border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWk4nG9QvPdlDoiJQRqnmfTAwKGUyjNzP7L0WnjsQLsagJR0F86NZaYPHQjyNAYnhfzf-kE5WVEsFRYER2JvdvYguAUPSzqrQYXffRdEo2fNaH2PyVA3EuLnblUb5dIMUwxuZsbL-QQacYKHlvaurpCWDZlh_OTw-O_zOj7HJNTWROf5kQch9M1I8FMVNBjY23piIAatyrvkNGI5XcV8boI6MoHNmy8m1WpMXkzUFzAYyJLH9UiHkFk8CZb4kI_lykGQ1P7yoDANk"/>
+</div>
+</header>
+<!-- Sidebar (SideNavBar) -->
+<nav class="fixed left-0 top-12 h-[calc(100vh-48px)] z-40 flex flex-col justify-between w-nav-collapsed-width bg-surface-container-low border-r border-grid-border">
+<div class="flex flex-col items-center py-4 gap-6">
+<div class="flex flex-col items-center gap-1 group cursor-pointer">
+<div class="w-10 h-10 flex items-center justify-center rounded transition-all duration-200 bg-primary-container text-on-primary-container">
+<span class="material-symbols-outlined">inventory_2</span>
+</div>
+<span class="font-label-caps text-label-caps text-primary opacity-0 group-hover:opacity-100 transition-opacity">Orders</span>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer">
+<div class="w-10 h-10 flex items-center justify-center rounded transition-all duration-200 text-secondary hover:bg-surface-container-high">
+<span class="material-symbols-outlined">event_note</span>
+</div>
+<span class="font-label-caps text-label-caps text-secondary opacity-0 group-hover:opacity-100 transition-opacity">Planning</span>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer">
+<div class="w-10 h-10 flex items-center justify-center rounded transition-all duration-200 text-secondary hover:bg-surface-container-high">
+<span class="material-symbols-outlined">verified</span>
+</div>
+<span class="font-label-caps text-label-caps text-secondary opacity-0 group-hover:opacity-100 transition-opacity">Quality</span>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer">
+<div class="w-10 h-10 flex items-center justify-center rounded transition-all duration-200 text-secondary hover:bg-surface-container-high">
+<span class="material-symbols-outlined">database</span>
+</div>
+<span class="font-label-caps text-label-caps text-secondary opacity-0 group-hover:opacity-100 transition-opacity">Data</span>
+</div>
+</div>
+<div class="flex flex-col items-center py-4 gap-6">
+<span class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary">settings</span>
+<span class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary">help</span>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-nav-collapsed-width mr-0 mt-12 h-[calc(100vh-48px)] overflow-hidden flex flex-col transition-all duration-300" id="main-content">
+<!-- Metrics Row -->
+<div class="grid grid-cols-4 gap-gutter p-margin-md bg-surface-muted">
+<div class="bg-surface-container-lowest p-margin-md border border-grid-border rounded-lg shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant">OPEN ENQUIRIES</span>
+<span class="material-symbols-outlined text-secondary">assignment</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-primary">124</span>
+<span class="font-body-sm text-body-sm text-risk-on-track">+8% vs LY</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-margin-md border border-grid-border rounded-lg shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant">AVG FEASIBILITY SCORE</span>
+<span class="material-symbols-outlined text-secondary">analytics</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-primary">82.4</span>
+<span class="font-body-sm text-body-sm text-secondary">Target: 80.0</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-margin-md border border-grid-border rounded-lg shadow-sm border-l-4 border-l-risk-action">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-label-caps text-risk-action">AT-RISK ENQUIRIES</span>
+<span class="material-symbols-outlined text-risk-action">warning</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-primary">12</span>
+<span class="font-body-sm text-body-sm text-risk-action">High Complexity</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-margin-md border border-grid-border rounded-lg shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant">TOTAL PROJECTED VALUE</span>
+<span class="material-symbols-outlined text-secondary">payments</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-primary">$4.2M</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Q4 Pipeline</span>
+</div>
+</div>
+</div>
+<!-- Grid Container -->
+<div class="flex-1 overflow-auto bg-white">
+<table class="w-full text-left border-collapse min-w-[1000px]">
+<thead class="sticky top-0 z-20 bg-surface-container-low border-b border-grid-border">
+<tr class="h-8">
+<th class="px-4 font-label-caps text-label-caps text-secondary sticky-column border-r border-grid-border">CUSTOMER</th>
+<th class="px-4 font-label-caps text-label-caps text-secondary">STYLE ID</th>
+<th class="px-4 font-label-caps text-label-caps text-secondary">ENQUIRY DATE</th>
+<th class="px-4 font-label-caps text-label-caps text-secondary">TARGET DELV</th>
+<th class="px-4 font-label-caps text-label-caps text-secondary text-right">EST. QTY</th>
+<th class="px-4 font-label-caps text-label-caps text-secondary">STATUS</th>
+<th class="px-4 font-label-caps text-label-caps text-secondary text-center">RISK</th>
+<th class="px-4 font-label-caps text-label-caps text-secondary"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-grid-border">
+<!-- Row 1 (Selected State) -->
+<tr class="h-grid-row-height grid-row-hover bg-primary-fixed/20 cursor-pointer" onclick="toggleDrawer()">
+<td class="px-4 font-data-tabular text-data-tabular sticky-column border-r border-grid-border font-bold">Levi Strauss &amp; Co.</td>
+<td class="px-4 font-mono-data text-mono-data">501-DNM-2024-V2</td>
+<td class="px-4 font-data-tabular text-data-tabular">2023-10-12</td>
+<td class="px-4 font-data-tabular text-data-tabular">2024-03-15</td>
+<td class="px-4 font-data-tabular text-data-tabular text-right">25,000</td>
+<td class="px-4">
+<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-secondary-container text-on-secondary-container uppercase">Costing</span>
+</td>
+<td class="px-4 text-center">
+<div class="flex justify-center"><div class="w-2 h-2 rounded-full bg-risk-watch"></div></div>
+</td>
+<td class="px-4 text-right">
+<span class="material-symbols-outlined text-secondary">chevron_right</span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="h-grid-row-height grid-row-hover bg-white cursor-pointer">
+<td class="px-4 font-data-tabular text-data-tabular sticky-column border-r border-grid-border font-bold">Uniqlo Global</td>
+<td class="px-4 font-mono-data text-mono-data">U-SLIM-BLK-99</td>
+<td class="px-4 font-data-tabular text-data-tabular">2023-10-14</td>
+<td class="px-4 font-data-tabular text-data-tabular">2024-02-01</td>
+<td class="px-4 font-data-tabular text-data-tabular text-right">80,000</td>
+<td class="px-4">
+<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-risk-on-track uppercase">Verified</span>
+</td>
+<td class="px-4 text-center">
+<div class="flex justify-center"><div class="w-2 h-2 rounded-full bg-risk-on-track"></div></div>
+</td>
+<td class="px-4 text-right">
+<span class="material-symbols-outlined text-secondary">chevron_right</span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="h-grid-row-height grid-row-hover bg-white cursor-pointer">
+<td class="px-4 font-data-tabular text-data-tabular sticky-column border-r border-grid-border font-bold">Inditex (Zara)</td>
+<td class="px-4 font-mono-data text-mono-data">Z-CARGO-HVY-X</td>
+<td class="px-4 font-data-tabular text-data-tabular">2023-10-15</td>
+<td class="px-4 font-data-tabular text-data-tabular">2024-01-20</td>
+<td class="px-4 font-data-tabular text-data-tabular text-right">15,000</td>
+<td class="px-4">
+<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-risk-action uppercase">Exception</span>
+</td>
+<td class="px-4 text-center">
+<div class="flex justify-center"><div class="w-2 h-2 rounded-full bg-risk-action"></div></div>
+</td>
+<td class="px-4 text-right">
+<span class="material-symbols-outlined text-secondary">chevron_right</span>
+</td>
+</tr>
+<!-- Fill with dummy rows for density -->
+<script>
+                        const rows = [
+                            ['H&M Group', 'HM-KNT-92', '2023-10-16', '2024-04-10', '45,000', 'Feasibility', 'risk-watch'],
+                            ['Gap Inc.', 'G-KIDS-DEN', '2023-10-16', '2024-03-30', '12,000', 'New', 'risk-on-track'],
+                            ['PVH (Tommy)', 'TH-POLO-SS', '2023-10-17', '2024-05-15', '30,000', 'Costing', 'risk-watch'],
+                            ['Target Corp', 'TG-BAS-CH', '2023-10-18', '2024-04-01', '100,000', 'Verified', 'risk-on-track'],
+                            ['Lululemon', 'LU-THRM-W', '2023-10-19', '2024-02-28', '5,000', 'Feasibility', 'risk-action'],
+                            ['Levi Strauss & Co.', '511-DNM-2024', '2023-10-20', '2024-06-01', '25,000', 'New', 'risk-on-track'],
+                            ['Inditex (Massimo)', 'MD-LNR-JKT', '2023-10-21', '2024-03-12', '8,500', 'Costing', 'risk-watch'],
+                            ['Uniqlo Global', 'U-AIRISM-TEE', '2023-10-22', '2024-03-01', '200,000', 'Verified', 'risk-on-track'],
+                            ['Fast Retailing', 'FR-LIN-TRS', '2023-10-23', '2024-04-15', '12,500', 'Feasibility', 'risk-on-track'],
+                            ['Adidas AG', 'AD-PERF-JG', '2023-10-24', '2024-05-20', '50,000', 'New', 'risk-watch'],
+                            ['H&M Group', 'HM-DEN-SH', '2023-10-25', '2024-03-25', '35,000', 'Costing', 'risk-on-track'],
+                            ['Gap Inc.', 'G-DEN-TRK', '2023-10-26', '2024-02-15', '18,000', 'Verified', 'risk-on-track'],
+                        ];
+                        
+                        rows.forEach(r => {
+                            document.write(`
+                                <tr class="h-grid-row-height grid-row-hover bg-white cursor-pointer">
+                                    <td class="px-4 font-data-tabular text-data-tabular sticky-column border-r border-grid-border font-bold">${r[0]}</td>
+                                    <td class="px-4 font-mono-data text-mono-data">${r[1]}</td>
+                                    <td class="px-4 font-data-tabular text-data-tabular">${r[2]}</td>
+                                    <td class="px-4 font-data-tabular text-data-tabular">${r[3]}</td>
+                                    <td class="px-4 font-data-tabular text-data-tabular text-right">${r[4]}</td>
+                                    <td class="px-4">
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-surface-container text-secondary uppercase">${r[5]}</span>
+                                    </td>
+                                    <td class="px-4 text-center">
+                                        <div class="flex justify-center"><div class="w-2 h-2 rounded-full bg-${r[6]}"></div></div>
+                                    </td>
+                                    <td class="px-4 text-right">
+                                        <span class="material-symbols-outlined text-secondary">chevron_right</span>
+                                    </td>
+                                </tr>
+                            `);
+                        });
+                    </script>
+</tbody>
+</table>
+</div>
+</main>
+<!-- Right-side Action Drawer (Enquiry Detail) -->
+<aside class="fixed right-0 top-0 h-full w-drawer-width bg-surface-container-lowest border-l border-grid-border shadow-xl z-[60] flex flex-col translate-x-full transition-transform duration-300" id="enquiry-drawer">
+<!-- Drawer Header -->
+<div class="p-margin-md border-b border-grid-border flex justify-between items-center bg-surface-muted">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary">Enquiry Detail</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">501-DNM-2024-V2 | Levi Strauss</p>
+</div>
+<button class="p-1 hover:bg-surface-container rounded transition-colors" onclick="toggleDrawer()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Drawer Content -->
+<div class="flex-1 overflow-y-auto p-margin-md flex flex-col gap-6">
+<!-- Tech Pack Summary -->
+<section>
+<h3 class="font-label-caps text-label-caps text-secondary mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined">description</span> TECH PACK SUMMARY
+                </h3>
+<div class="grid grid-cols-2 gap-3">
+<div class="p-3 bg-surface-container-low rounded border border-outline-variant">
+<p class="text-[10px] text-secondary font-bold uppercase mb-1">Fabric Type</p>
+<p class="font-body-md text-body-md text-primary">14oz Selvedge Denim</p>
+</div>
+<div class="p-3 bg-surface-container-low rounded border border-outline-variant">
+<p class="text-[10px] text-secondary font-bold uppercase mb-1">Wash Complexity</p>
+<div class="flex items-center gap-2">
+<p class="font-body-md text-body-md text-primary">Level 4 (High)</p>
+<span class="px-2 py-0.5 rounded bg-risk-watch/10 text-risk-watch text-[10px] font-bold">RISK</span>
+</div>
+</div>
+</div>
+<div class="mt-3 p-3 bg-surface-container-low rounded border border-outline-variant">
+<p class="text-[10px] text-secondary font-bold uppercase mb-1">Critical Components</p>
+<ul class="flex flex-wrap gap-2">
+<li class="px-2 py-1 bg-white border border-outline-variant text-[11px] rounded">Authentic Copper Rivets</li>
+<li class="px-2 py-1 bg-white border border-outline-variant text-[11px] rounded">Yarn-dyed Indigo</li>
+</ul>
+</div>
+</section>
+<!-- Capacity Feasibility -->
+<section>
+<div class="flex justify-between items-end mb-3">
+<h3 class="font-label-caps text-label-caps text-secondary flex items-center gap-2">
+<span class="material-symbols-outlined">event_available</span> CAPACITY FEASIBILITY
+                    </h3>
+<span class="font-mono-data text-mono-data text-[11px] text-risk-watch">MONTH: MAR 2024</span>
+</div>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between text-[11px] font-bold mb-1">
+<span class="text-on-surface-variant">SEWING LOAD</span>
+<span class="text-primary">82%</span>
+</div>
+<div class="h-2 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-risk-on-track" style="width: 82%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[11px] font-bold mb-1">
+<span class="text-on-surface-variant">WASH MINUTES</span>
+<span class="text-risk-action">108%</span>
+</div>
+<div class="h-2 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-risk-action" style="width: 100%"></div>
+</div>
+<p class="text-[10px] text-risk-action mt-1 italic">Exception: Wash capacity exceeded by 24,000 mins.</p>
+</div>
+</div>
+</section>
+<!-- Costing Estimate -->
+<section>
+<h3 class="font-label-caps text-label-caps text-secondary mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined">payments</span> COSTING ESTIMATE (USD/UNIT)
+                </h3>
+<div class="bg-surface-container rounded border border-outline-variant overflow-hidden">
+<table class="w-full text-[12px]">
+<tbody class="divide-y divide-outline-variant">
+<tr>
+<td class="p-2 text-on-surface-variant">Fabric &amp; Trims</td>
+<td class="p-2 text-right font-bold text-primary">$4.25</td>
+</tr>
+<tr>
+<td class="p-2 text-on-surface-variant">CMT (Manufacturing)</td>
+<td class="p-2 text-right font-bold text-primary">$2.80</td>
+</tr>
+<tr>
+<td class="p-2 text-on-surface-variant">Specialist Wash</td>
+<td class="p-2 text-right font-bold text-primary">$1.50</td>
+</tr>
+<tr>
+<td class="p-2 text-on-surface-variant">Logistics &amp; Packaging</td>
+<td class="p-2 text-right font-bold text-primary">$0.45</td>
+</tr>
+<tr class="bg-surface-container-high">
+<td class="p-2 font-bold text-primary">Estimated FOB Price</td>
+<td class="p-2 text-right font-black text-primary text-body-md">$9.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Promise Date Risk -->
+<section class="p-margin-md bg-risk-watch/5 border border-risk-watch/20 rounded-lg">
+<div class="flex items-center justify-between">
+<div>
+<h4 class="font-label-caps text-label-caps text-risk-watch mb-1">PROMISE DATE RISK</h4>
+<p class="font-body-md text-body-md font-bold text-primary">Medium Risk</p>
+</div>
+<span class="material-symbols-outlined text-risk-watch text-[32px]">priority_high</span>
+</div>
+<p class="text-[11px] text-on-surface-variant mt-2 leading-tight">Wash bottleneck in Line 04 threatens the 15th Mar delivery. 3 days buffer currently available in sewing.</p>
+</section>
+</div>
+<!-- Drawer Actions -->
+<div class="p-margin-md border-t border-grid-border bg-surface-muted flex flex-col gap-2">
+<button class="w-full h-8 bg-primary text-white font-label-caps text-[11px] rounded flex items-center justify-center gap-2 hover:bg-primary-container transition-colors active:opacity-80">
+<span class="material-symbols-outlined text-[16px]">sync_alt</span> CONVERT TO FIRM ORDER
+            </button>
+<div class="grid grid-cols-2 gap-2">
+<button class="h-8 border border-primary text-primary font-label-caps text-[11px] rounded hover:bg-primary-fixed transition-colors">
+                    GENERATE QUOTE
+                </button>
+<button class="h-8 border border-outline text-secondary font-label-caps text-[11px] rounded hover:bg-surface-container-high transition-colors">
+                    FEASIBILITY REVIEW
+                </button>
+</div>
+</div>
+</aside>
+<script>
+        function toggleDrawer() {
+            const drawer = document.getElementById('enquiry-drawer');
+            const mainContent = document.getElementById('main-content');
+            
+            if (drawer.classList.contains('translate-x-full')) {
+                drawer.classList.remove('translate-x-full');
+                mainContent.classList.add('mr-drawer-width');
+            } else {
+                drawer.classList.add('translate-x-full');
+                mainContent.classList.remove('mr-drawer-width');
+            }
+        }
+
+        // Initialize with drawer closed
+        document.addEventListener('DOMContentLoaded', () => {
+            // No auto-open
+        });
+    </script>
+</body></html>

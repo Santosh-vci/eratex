@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ERATEX OPS CONTROL - Order Lifecycle Explorer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#303032",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed": "#0d1c2f",
+                    "primary-container": "#1e293b",
+                    "on-background": "#1b1b1d",
+                    "secondary-fixed-dim": "#b9c7e0",
+                    "on-error": "#ffffff",
+                    "on-primary-container": "#8590a6",
+                    "on-secondary-container": "#57657b",
+                    "tertiary-fixed": "#fadfb8",
+                    "on-surface-variant": "#45474c",
+                    "secondary-fixed": "#d5e3fd",
+                    "secondary": "#515f74",
+                    "risk-action": "#EF4444",
+                    "grid-border": "#E2E8F0",
+                    "primary-fixed-dim": "#bcc7de",
+                    "on-surface": "#1b1b1d",
+                    "on-error-container": "#93000a",
+                    "on-secondary": "#ffffff",
+                    "surface-container-highest": "#e4e2e3",
+                    "on-tertiary-container": "#a38c6a",
+                    "surface-container-low": "#f5f3f4",
+                    "on-primary-fixed-variant": "#3c475a",
+                    "inverse-on-surface": "#f3f0f2",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed": "#271902",
+                    "surface-container": "#f0edef",
+                    "risk-watch": "#F59E0B",
+                    "background": "#fbf8fa",
+                    "on-tertiary": "#ffffff",
+                    "risk-critical": "#111827",
+                    "on-secondary-fixed-variant": "#3a485c",
+                    "inverse-primary": "#bcc7de",
+                    "outline": "#75777d",
+                    "tertiary": "#1e1200",
+                    "risk-on-track": "#10B981",
+                    "surface-dim": "#dcd9db",
+                    "error": "#ba1a1a",
+                    "surface-muted": "#F8FAFC",
+                    "on-primary": "#ffffff",
+                    "surface-container-high": "#eae7e9",
+                    "outline-variant": "#c5c6cd",
+                    "surface-bright": "#fbf8fa",
+                    "surface-variant": "#e4e2e3",
+                    "secondary-container": "#d5e3fd",
+                    "surface-tint": "#545f73",
+                    "primary": "#091426",
+                    "primary-fixed": "#d8e3fb",
+                    "on-primary-fixed": "#111c2d",
+                    "tertiary-fixed-dim": "#ddc39d",
+                    "tertiary-container": "#35260c",
+                    "on-tertiary-fixed-variant": "#564427",
+                    "surface": "#fbf8fa"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "gutter": "12px",
+                    "drawer-width": "400px",
+                    "nav-expanded-width": "240px",
+                    "nav-collapsed-width": "64px",
+                    "margin-md": "16px",
+                    "margin-sm": "8px",
+                    "grid-row-height": "32px"
+            },
+            "fontFamily": {
+                    "data-tabular": ["Inter"],
+                    "mono-data": ["JetBrains Mono"],
+                    "headline-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "label-caps": ["Inter"]
+            },
+            "fontSize": {
+                    "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            font-size: 20px;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .grid-row:hover { background-color: #F1F5F9; }
+        .sticky-col-1 { position: sticky; left: 0; z-index: 10; }
+        
+        /* Drawer Transition */
+        #action-drawer {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #action-drawer.closed {
+            transform: translateX(100%);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full h-12 flex justify-between items-center px-gutter z-50 bg-surface dark:bg-primary border-b border-grid-border dark:border-outline-variant">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold tracking-tight text-primary dark:text-inverse-primary">ERATEX OPS CONTROL</span>
+<div class="h-6 w-[1px] bg-outline-variant mx-2"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Order Lifecycle Explorer</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative flex items-center bg-surface-container-low dark:bg-primary-container rounded px-3 py-1 border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant mr-2" style="font-size: 18px;">search</span>
+<input class="bg-transparent border-none outline-none text-body-sm w-48 focus:ring-0" placeholder="Global Search..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-1 hover:bg-surface-container-low dark:hover:bg-primary-container transition-colors rounded">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-1 hover:bg-surface-container-low dark:hover:bg-primary-container transition-colors rounded">
+<span class="material-symbols-outlined text-on-surface-variant">sync</span>
+</button>
+<div class="ml-2 px-3 py-1 bg-primary text-on-primary rounded-full font-label-caps text-[10px]">
+                    THIS WEEK
+                </div>
+</div>
+</div>
+</header>
+<!-- SideNavBar (Collapsible Rail) -->
+<aside class="fixed left-0 top-12 h-[calc(100vh-48px)] z-40 flex flex-col items-center py-4 bg-surface-muted dark:bg-inverse-surface border-r border-grid-border dark:border-outline w-nav-collapsed-width transition-all duration-300 ease-in-out">
+<nav class="flex flex-col gap-6 items-center w-full">
+<a class="group relative flex flex-col items-center justify-center w-12 h-12 rounded-lg bg-primary-container dark:bg-primary-fixed-dim text-on-primary-container dark:text-on-primary-fixed border-r-4 border-primary" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="absolute left-full ml-2 px-2 py-1 bg-inverse-surface text-inverse-on-surface text-[10px] font-bold rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap">ORDERS</span>
+</a>
+<a class="group relative flex flex-col items-center justify-center w-12 h-12 rounded-lg text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all" href="#">
+<span class="material-symbols-outlined">event_note</span>
+<span class="absolute left-full ml-2 px-2 py-1 bg-inverse-surface text-inverse-on-surface text-[10px] font-bold rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap">PLANNING</span>
+</a>
+<a class="group relative flex flex-col items-center justify-center w-12 h-12 rounded-lg text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all" href="#">
+<span class="material-symbols-outlined">factory</span>
+<span class="absolute left-full ml-2 px-2 py-1 bg-inverse-surface text-inverse-on-surface text-[10px] font-bold rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap">WORKCENTERS</span>
+</a>
+<a class="group relative flex flex-col items-center justify-center w-12 h-12 rounded-lg text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="absolute left-full ml-2 px-2 py-1 bg-inverse-surface text-inverse-on-surface text-[10px] font-bold rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap">ANALYTICS</span>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-6 items-center w-full">
+<a class="group relative flex flex-col items-center justify-center w-12 h-12 rounded-lg text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+</a>
+<a class="group relative flex flex-col items-center justify-center w-12 h-12 rounded-lg text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-secondary-container transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+</a>
+<div class="w-8 h-8 rounded bg-outline-variant overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDq-nfbEhFughqRH73cfJQyF0vioPxq2xcteXXR2Dts1-3OqaRUqPTtQE850lZthc6wXCR2nixWKgMA92ISfX5EhmvPO339-QBugTNDSFzE9XkTttgy1MUAlNG9JsKapbGpva0X0bTUrIPwQ02oL7Ll4k_hQ0DqSeXK2DrDJrZGo8zhyC5RCdY5uy8fdUBsczMjvLza2R-vI99jMpw-2xu3pzqKibg2zTX8krcX3L0oyu2mUltKkfXBxw12fdVcNH2SuXD6VeHCdIs"/>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-nav-collapsed-width mt-12 p-margin-md transition-all">
+<!-- Header Cards (Kpis) -->
+<section class="grid grid-cols-5 gap-3 mb-6">
+<div class="bg-surface border border-grid-border p-3 flex flex-col gap-1">
+<span class="font-label-caps text-label-caps text-on-surface-variant">ACTIVE ORDERS</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-primary">142</span>
+<span class="text-[10px] font-bold text-risk-on-track">+4.2%</span>
+</div>
+</div>
+<div class="bg-surface border border-grid-border p-3 flex flex-col gap-1 border-l-4 border-l-risk-watch">
+<span class="font-label-caps text-label-caps text-on-surface-variant">AT-RISK</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-risk-watch">12</span>
+<span class="text-[10px] font-bold text-on-surface-variant">LATE FABRIC</span>
+</div>
+</div>
+<div class="bg-surface border border-grid-border p-3 flex flex-col gap-1 border-l-4 border-l-risk-action">
+<span class="font-label-caps text-label-caps text-on-surface-variant">BLOCKED</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-risk-action">05</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">Line Down</span>
+</div>
+</div>
+<div class="bg-surface border border-grid-border p-3 flex flex-col gap-1">
+<span class="font-label-caps text-label-caps text-on-surface-variant">THIS WEEK SHIPMENTS</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-primary">28</span>
+<span class="text-[10px] font-bold text-on-surface-variant">92% COMPLETE</span>
+</div>
+</div>
+<div class="bg-surface border border-grid-border p-3 flex flex-col gap-1">
+<span class="font-label-caps text-label-caps text-on-surface-variant">PCD PENDING</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-primary">18</span>
+<span class="material-symbols-outlined text-risk-watch" style="font-size: 14px;">warning</span>
+</div>
+</div>
+</section>
+<!-- Grid Filter Bar -->
+<div class="flex items-center justify-between mb-2 px-2 h-10 bg-surface-muted border border-grid-border">
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 px-3 py-1 bg-primary text-on-primary font-label-caps text-label-caps rounded">
+<span class="material-symbols-outlined" style="font-size: 16px;">filter_alt</span>
+                    FILTERS
+                </button>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="font-label-caps text-label-caps">SORT BY:</span>
+<select class="bg-transparent border-none text-label-caps font-bold text-primary focus:ring-0 cursor-pointer">
+<option>DELIVERY DATE (ASC)</option>
+<option>RISK LEVEL</option>
+<option>CUSTOMER</option>
+</select>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-mono-data text-mono-data text-on-surface-variant">SYNC: 2m ago</span>
+<button class="p-1 hover:bg-surface-container rounded transition-colors border border-grid-border">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+</div>
+<!-- Dense Data Grid -->
+<div class="overflow-x-auto border border-grid-border bg-surface no-scrollbar">
+<table class="w-full text-left border-collapse min-w-[1200px]">
+<thead>
+<tr class="bg-surface-container h-8 border-b border-grid-border">
+<th class="sticky-col-1 bg-surface-container px-3 font-label-caps text-label-caps text-on-surface-variant border-r border-grid-border">ORDER ID</th>
+<th class="px-3 font-label-caps text-label-caps text-on-surface-variant border-r border-grid-border">CUSTOMER</th>
+<th class="px-3 font-label-caps text-label-caps text-on-surface-variant border-r border-grid-border">STYLE</th>
+<th class="px-3 font-label-caps text-label-caps text-on-surface-variant border-r border-grid-border">QTY</th>
+<th class="px-3 font-label-caps text-label-caps text-on-surface-variant border-r border-grid-border">DELIVERY</th>
+<th class="px-3 font-label-caps text-label-caps text-on-surface-variant border-r border-grid-border">CURRENT STAGE</th>
+<th class="px-3 font-label-caps text-label-caps text-on-surface-variant border-r border-grid-border">PCD STATUS</th>
+<th class="px-3 font-label-caps text-label-caps text-on-surface-variant border-r border-grid-border">RISK</th>
+<th class="px-3 font-label-caps text-label-caps text-on-surface-variant border-r border-grid-border">NEXT ACTION</th>
+<th class="px-3 font-label-caps text-label-caps text-on-surface-variant">OWNER</th>
+</tr>
+</thead>
+<tbody class="font-data-tabular text-data-tabular divide-y divide-grid-border">
+<!-- Row 1 -->
+<tr class="grid-row group cursor-pointer" onclick="toggleDrawer()">
+<td class="sticky-col-1 bg-surface px-3 py-2 font-mono-data border-r border-grid-border text-primary group-hover:bg-slate-50">#PO-88219</td>
+<td class="px-3 border-r border-grid-border">LEVI STRAUSS &amp; CO.</td>
+<td class="px-3 border-r border-grid-border">511 SLIM FIT DENIM</td>
+<td class="px-3 border-r border-grid-border font-mono-data">12,400</td>
+<td class="px-3 border-r border-grid-border">20 OCT 2024</td>
+<td class="px-3 border-r border-grid-border flex items-center gap-2 h-full py-2">
+<span class="w-2 h-2 rounded-full bg-risk-on-track"></span>
+                            SEWING (L04)
+                        </td>
+<td class="px-3 border-r border-grid-border">
+<div class="w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-risk-on-track h-full w-[85%]"></div>
+</div>
+</td>
+<td class="px-3 border-r border-grid-border">
+<span class="bg-emerald-50 text-risk-on-track px-1.5 py-0.5 rounded text-[10px] font-bold border border-emerald-100">ON TRACK</span>
+</td>
+<td class="px-3 border-r border-grid-border text-on-surface-variant">Review QC Batch</td>
+<td class="px-3">
+<div class="flex items-center gap-1">
+<img alt="Anna" class="w-4 h-4 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbNmP36bAw2WkUf7bDe7GGeWpT9ez4XsyVr28Qeqe7InQDLJIj8BvpebiHDFQeno0xtMbVvKhOaR0qHGmpzj4do9yys-u70bqjUOUuG8JQdd-ijooEWXzmDoqYXRArtw2PcNbw3CWhF42ocKR1ubOtgz0Lp0jmHJJ3QPXeZlQhvW4Z1taALuJnf1DOvV9xNNuXKTwbqnajTJrfbYlQEvu78KCTU7syhJWFJo3wVvfjSRTxcaQpKvrhgeSeJsV1gLLpv9J9pxA3bUA"/>
+<span class="text-[10px]">A. Chen</span>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="grid-row group cursor-pointer" onclick="toggleDrawer()">
+<td class="sticky-col-1 bg-surface px-3 py-2 font-mono-data border-r border-grid-border text-primary group-hover:bg-slate-50">#PO-88442</td>
+<td class="px-3 border-r border-grid-border">H&amp;M GLOBAL</td>
+<td class="px-3 border-r border-grid-border">CHINO JOGGER KHAKI</td>
+<td class="px-3 border-r border-grid-border font-mono-data">8,200</td>
+<td class="px-3 border-r border-grid-border text-risk-watch font-bold">14 OCT 2024</td>
+<td class="px-3 border-r border-grid-border flex items-center gap-2 h-full py-2">
+<span class="w-2 h-2 rounded-full bg-risk-watch animate-pulse"></span>
+                            WASHING (W12)
+                        </td>
+<td class="px-3 border-r border-grid-border">
+<div class="w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-risk-watch h-full w-[60%]"></div>
+</div>
+</td>
+<td class="px-3 border-r border-grid-border">
+<span class="bg-amber-50 text-risk-watch px-1.5 py-0.5 rounded text-[10px] font-bold border border-amber-100">AT RISK</span>
+</td>
+<td class="px-3 border-r border-grid-border text-risk-action font-bold italic">Expedite Trim</td>
+<td class="px-3">
+<div class="flex items-center gap-1">
+<img alt="Marco" class="w-4 h-4 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAu6CVFtaT4VIPH4brETadFg186J4MkpGwWY-hQ0LgnZonvuNPoP2enOttdlDCJtUbCr7GA9fLz3clCb5fvNTFb_UWBqLBsZC0DKFfTRjUVs9GXWzCFTadonEA9AFV2bjNm5v51l6HCkmFIf0o31sN7ZNYSlLS_rXnScXh0MrxmSrPFl_W9ySnQqwZDugJxRmD0SzltPRCrH9D5r8bSDn3CYTdUblzJ0AygBoMw0_O9amsm0Luy3OL15MAhWG8eR9R7H0S-2M-0gUw"/>
+<span class="text-[10px]">M. Russo</span>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="grid-row group cursor-pointer" onclick="toggleDrawer()">
+<td class="sticky-col-1 bg-surface px-3 py-2 font-mono-data border-r border-grid-border text-primary group-hover:bg-slate-50">#PO-88102</td>
+<td class="px-3 border-r border-grid-border">ZARA APPAREL</td>
+<td class="px-3 border-r border-grid-border">LINEN BLEND SHIRT</td>
+<td class="px-3 border-r border-grid-border font-mono-data">15,000</td>
+<td class="px-3 border-r border-grid-border">28 OCT 2024</td>
+<td class="px-3 border-r border-grid-border flex items-center gap-2 h-full py-2">
+<span class="w-2 h-2 rounded-full bg-risk-critical"></span>
+                            CUTTING (C02)
+                        </td>
+<td class="px-3 border-r border-grid-border">
+<div class="w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-risk-critical h-full w-[15%]"></div>
+</div>
+</td>
+<td class="px-3 border-r border-grid-border">
+<span class="bg-slate-100 text-risk-critical px-1.5 py-0.5 rounded text-[10px] font-bold border border-slate-200">BLOCKED</span>
+</td>
+<td class="px-3 border-r border-grid-border text-on-surface-variant">Update PCD Target</td>
+<td class="px-3">
+<div class="flex items-center gap-1">
+<img alt="Sofia" class="w-4 h-4 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmrq7yLfvE8TdyG8MwxhkKrg5feKBRgZfe8uT-VrcmuMnbGeF142pWr4xAJ-w92PTAazs8hnPZDWo40vtfUbqaalfy-A2nhcErFr55PuXHVPX02Il437HDStwM-dLlLiGkhJrwqYfJzkdYvY-TfBy9YMmx5xe0l02v4zik9Yx4tUWzcTHIlygV17aHJBNQj9WBcw47ypML2GQq-9DKLMmPDEMSSYj1wfVRcHxoJJolTBjqX_Nwny2bUgcZV1BQWEaTx_21DCQyGiA"/>
+<span class="text-[10px]">S. Kim</span>
+</div>
+</td>
+</tr>
+<!-- Repeat rows for density -->
+<tr class="grid-row group cursor-pointer" onclick="toggleDrawer()">
+<td class="sticky-col-1 bg-surface px-3 py-2 font-mono-data border-r border-grid-border text-primary group-hover:bg-slate-50">#PO-88156</td>
+<td class="px-3 border-r border-grid-border">UNIQLO CO.</td>
+<td class="px-3 border-r border-grid-border">STRETCH CHINO</td>
+<td class="px-3 border-r border-grid-border font-mono-data">5,500</td>
+<td class="px-3 border-r border-grid-border">30 OCT 2024</td>
+<td class="px-3 border-r border-grid-border flex items-center gap-2 h-full py-2">
+<span class="w-2 h-2 rounded-full bg-risk-on-track"></span>
+                            PACKING
+                        </td>
+<td class="px-3 border-r border-grid-border">
+<div class="w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-risk-on-track h-full w-[98%]"></div>
+</div>
+</td>
+<td class="px-3 border-r border-grid-border">
+<span class="bg-emerald-50 text-risk-on-track px-1.5 py-0.5 rounded text-[10px] font-bold border border-emerald-100">ON TRACK</span>
+</td>
+<td class="px-3 border-r border-grid-border text-on-surface-variant">Final QA Scan</td>
+<td class="px-3">
+<div class="flex items-center gap-1">
+<img alt="Jack" class="w-4 h-4 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfNN1ayshKwfcs9OOJdyGldQnGtGC1m9jSOzt2IuOtzqWbl1BTW99ibPTLvLOhXL8X3IY_G52QKpOy_6lY7NKIOjowWG799VrfoxwgeQh7eWlZb4YDmMFZ0R3BytGNxFooInzZuOZ2RQI4bcICMj1P1TquYt2jZQD1mjMIsz_0zoqavQ8FepCXTtkAsvec5LnACKocwgKJtPzd4lU87m1h4G7rFEwSty4nGq1ZRXC5baUs0b8rZO2-VpCQuQ2me2IvyR-lPz1Klng"/>
+<span class="text-[10px]">J. White</span>
+</div>
+</td>
+</tr>
+<!-- Add enough rows to fill screen -->
+<tr class="grid-row group cursor-pointer" onclick="toggleDrawer()">
+<td class="sticky-col-1 bg-surface px-3 py-2 font-mono-data border-r border-grid-border text-primary group-hover:bg-slate-50">#PO-88290</td>
+<td class="px-3 border-r border-grid-border">GAP INC.</td>
+<td class="px-3 border-r border-grid-border">CLASSIC CREW NECK</td>
+<td class="px-3 border-r border-grid-border font-mono-data">20,000</td>
+<td class="px-3 border-r border-grid-border">05 NOV 2024</td>
+<td class="px-3 border-r border-grid-border flex items-center gap-2 h-full py-2">
+<span class="w-2 h-2 rounded-full bg-risk-on-track"></span>
+                            KNITTING
+                        </td>
+<td class="px-3 border-r border-grid-border">
+<div class="w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-risk-on-track h-full w-[25%]"></div>
+</div>
+</td>
+<td class="px-3 border-r border-grid-border">
+<span class="bg-emerald-50 text-risk-on-track px-1.5 py-0.5 rounded text-[10px] font-bold border border-emerald-100">ON TRACK</span>
+</td>
+<td class="px-3 border-r border-grid-border text-on-surface-variant">Yarn Arrival Sync</td>
+<td class="px-3">
+<div class="flex items-center gap-1">
+<img alt="Emma" class="w-4 h-4 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVeJZADQtzBmzrG_eUX0yYsiwntW6HZCgCHxvYJ1ESJWN66j-DLfyC6WI6qsNAOwu935qxyHS2I2Xpl33mC628wKA-zUfkLAPoH2eESJA2JrHfxsEW_QquscCpcctdoLsGWwuusSEAdXVuOh6BwBzPAvNrcHY29_1yDWt6jNFbdSWCAdYS-enwKFvdwLwRFE_OZHlIWWdQaWzFsbcl_poCoBXL1i0puD4eRakSMpHDE_NnocNpRaYPlAvKqMbNjvR4xQbKH6BCAOo"/>
+<span class="text-[10px]">E. Brown</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</main>
+<!-- Action Drawer (Right) -->
+<aside class="fixed right-0 top-12 h-[calc(100vh-48px)] w-drawer-width bg-surface shadow-2xl border-l border-grid-border z-40 closed flex flex-col overflow-hidden" id="action-drawer">
+<header class="p-4 border-b border-grid-border flex justify-between items-center bg-surface-muted">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary">#PO-88442 Details</h2>
+<p class="text-body-sm text-on-surface-variant">H&amp;M Global • Chino Jogger Khaki</p>
+</div>
+<button class="p-1 hover:bg-surface-container rounded transition-colors" onclick="toggleDrawer()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</header>
+<div class="flex-1 overflow-y-auto p-4 space-y-6 no-scrollbar">
+<!-- Lifecycle Timeline -->
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">timeline</span>
+                    ORDER LIFECYCLE TIMELINE
+                </h3>
+<div class="relative pl-6 space-y-6 before:content-[''] before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-grid-border">
+<div class="relative">
+<div class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-risk-on-track border-2 border-white ring-4 ring-emerald-50"></div>
+<p class="text-body-sm font-bold text-primary">FABRIC SOURCING COMPLETE</p>
+<p class="text-[11px] text-on-surface-variant">02 Sep • Unit 01 Warehouse</p>
+</div>
+<div class="relative">
+<div class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-risk-on-track border-2 border-white ring-4 ring-emerald-50"></div>
+<p class="text-body-sm font-bold text-primary">CUTTING COMPLETED</p>
+<p class="text-[11px] text-on-surface-variant">15 Sep • Floor 02</p>
+</div>
+<div class="relative">
+<div class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-risk-watch border-2 border-white ring-4 ring-amber-50"></div>
+<p class="text-body-sm font-bold text-primary">WASHING IN PROGRESS (DELAYED)</p>
+<p class="text-[11px] text-risk-action font-medium">Machine #W12 Maintenance Alert</p>
+</div>
+<div class="relative">
+<div class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-surface-container border-2 border-white"></div>
+<p class="text-body-sm font-bold text-on-surface-variant opacity-50">PACKING &amp; QA</p>
+<p class="text-[11px] text-on-surface-variant opacity-50">Target: 08 Oct</p>
+</div>
+</div>
+</div>
+<!-- PCD Readiness Checklist -->
+<div class="bg-surface-container-low p-4 rounded border border-grid-border">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-4">PCD READINESS CHECKLIST</h3>
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-risk-on-track">check_circle</span>
+<span class="text-body-sm">Fabric Approved</span>
+</div>
+<span class="bg-emerald-50 text-risk-on-track px-1.5 py-0.5 rounded text-[10px] font-bold">READY</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-risk-watch">pending</span>
+<span class="text-body-sm">Trim Inventory Sync</span>
+</div>
+<span class="bg-amber-50 text-risk-watch px-1.5 py-0.5 rounded text-[10px] font-bold">WAITING</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant opacity-30">radio_button_unchecked</span>
+<span class="text-body-sm">Labor Allocation</span>
+</div>
+<span class="bg-surface-container-highest text-on-surface-variant px-1.5 py-0.5 rounded text-[10px] font-bold">LOCKED</span>
+</div>
+</div>
+</div>
+<!-- Impact Preview -->
+<div class="border border-grid-border p-4">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-2 italic">IMPACT PREVIEW: RE-SCHEDULE</h3>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-2 bg-slate-50">
+<p class="text-[10px] uppercase font-bold text-on-surface-variant">CURRENT PCD</p>
+<p class="text-headline-md font-mono-data text-primary">14 OCT</p>
+</div>
+<div class="p-2 bg-primary-container">
+<p class="text-[10px] uppercase font-bold text-on-primary-container">PROPOSED PCD</p>
+<p class="text-headline-md font-mono-data text-white">18 OCT</p>
+</div>
+</div>
+<p class="mt-2 text-[11px] text-risk-action">Warning: Rescheduling will delay #PO-88210 (Levi's) by 48 hours due to shared wash capacity.</p>
+</div>
+</div>
+<footer class="p-4 border-t border-grid-border grid grid-cols-2 gap-3">
+<button class="bg-surface border border-grid-border text-primary font-label-caps text-label-caps py-2 hover:bg-surface-container transition-colors">ADD EXCEPTION</button>
+<button class="bg-primary text-on-primary font-label-caps text-label-caps py-2 hover:opacity-90 transition-opacity">APPROVE PCD</button>
+</footer>
+</aside>
+<script>
+        function toggleDrawer() {
+            const drawer = document.getElementById('action-drawer');
+            drawer.classList.toggle('closed');
+        }
+        
+        // Simple micro-interaction for rows
+        document.querySelectorAll('.grid-row').forEach(row => {
+            row.addEventListener('click', (e) => {
+                // Flash active effect
+                row.classList.add('opacity-50');
+                setTimeout(() => row.classList.remove('opacity-50'), 100);
+            });
+        });
+    </script>
+</body></html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>QC Defect &amp; Hold Capture</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .defect-active {
+      border-color: #EF4444 !important;
+      background-color: #FEF2F2 !important;
+      color: #991B1B !important;
+    }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* Touch-feedback animation */
+    .touch-active:active {
+      transform: scale(0.96);
+      transition: transform 0.1s ease;
+    }
+  </style>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "risk-critical": "#111827",
+            "surface-container-high": "#eae7e9",
+            "on-tertiary-fixed-variant": "#564427",
+            "surface-tint": "#545f73",
+            "on-primary-fixed": "#111c2d",
+            "on-surface-variant": "#45474c",
+            "on-primary": "#ffffff",
+            "risk-action": "#EF4444",
+            "secondary-fixed": "#d5e3fd",
+            "outline-variant": "#c5c6cd",
+            "on-tertiary-container": "#a38c6a",
+            "on-secondary-fixed": "#0d1c2f",
+            "grid-border": "#E2E8F0",
+            "secondary-fixed-dim": "#b9c7e0",
+            "surface-container-low": "#f5f3f4",
+            "secondary": "#515f74",
+            "risk-on-track": "#10B981",
+            "outline": "#75777d",
+            "on-surface": "#1b1b1d",
+            "inverse-surface": "#303032",
+            "inverse-on-surface": "#f3f0f2",
+            "on-tertiary-fixed": "#271902",
+            "surface-dim": "#dcd9db",
+            "on-background": "#1b1b1d",
+            "background": "#fbf8fa",
+            "on-primary-fixed-variant": "#3c475a",
+            "on-error": "#ffffff",
+            "primary-fixed-dim": "#bcc7de",
+            "surface-bright": "#fbf8fa",
+            "surface-container-highest": "#e4e2e3",
+            "surface-muted": "#F8FAFC",
+            "primary-container": "#1e293b",
+            "tertiary-fixed": "#fadfb8",
+            "error-container": "#ffdad6",
+            "secondary-container": "#d5e3fd",
+            "on-secondary-container": "#57657b",
+            "risk-watch": "#F59E0B",
+            "on-secondary": "#ffffff",
+            "tertiary-container": "#35260c",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-container": "#8590a6",
+            "primary": "#091426",
+            "on-tertiary": "#ffffff",
+            "surface": "#fbf8fa",
+            "surface-container": "#f0edef",
+            "on-secondary-fixed-variant": "#3a485c",
+            "inverse-primary": "#bcc7de",
+            "tertiary": "#1e1200",
+            "error": "#ba1a1a",
+            "on-error-container": "#93000a",
+            "primary-fixed": "#d8e3fb",
+            "surface-variant": "#e4e2e3",
+            "tertiary-fixed-dim": "#ddc39d"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "drawer-width": "400px",
+            "gutter": "12px",
+            "nav-collapsed-width": "64px",
+            "grid-row-height": "32px",
+            "margin-md": "16px",
+            "nav-expanded-width": "240px",
+            "margin-sm": "8px"
+          },
+          "fontFamily": {
+            "data-tabular": ["Inter"],
+            "mono-data": ["JetBrains Mono"],
+            "headline-md": ["Inter"],
+            "body-sm": ["Inter"],
+            "body-md": ["Inter"],
+            "label-caps": ["Inter"],
+            "headline-lg": ["Inter"]
+          },
+          "fontSize": {
+            "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+            "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+            "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+            "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+            "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+            "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+            "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md select-none touch-none overflow-hidden">
+<!-- TOP APP BAR -->
+<header class="bg-surface dark:bg-risk-critical text-primary dark:text-on-primary border-b border-grid-border dark:border-outline-variant flex justify-between items-center px-margin-md h-12 w-full z-50 fixed top-0 docked full-width">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined">factory</span>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-on-primary">Shopfloor Control</h1>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low transition-colors p-1 rounded">notifications_active</span>
+</div>
+</header>
+<!-- MAIN CANVAS -->
+<main class="pt-12 pb-16 h-screen overflow-y-auto bg-surface-muted">
+<!-- CONTEXT HEADER (Order ID & Inspection Stage) -->
+<section class="p-4 bg-white border-b border-grid-border">
+<div class="flex justify-between items-start mb-2">
+<div>
+<span class="font-label-caps text-label-caps text-on-surface-variant block uppercase">Order ID / Batch</span>
+<div class="font-headline-lg text-headline-lg font-bold tracking-tight">DNM-742-99 <span class="text-on-surface-variant font-normal">/ L04-A</span></div>
+</div>
+<div class="bg-secondary-container px-2 py-1 rounded">
+<span class="font-label-caps text-label-caps text-on-secondary-container">END-LINE QC</span>
+</div>
+</div>
+<div class="flex gap-4 text-on-surface-variant font-body-sm text-body-sm">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">inventory_2</span>
+<span>Style: Slim Fit Indigo</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">history</span>
+<span>Sync: 2m ago</span>
+</div>
+</div>
+</section>
+<!-- DEFECT GRID -->
+<section class="p-4">
+<h2 class="font-label-caps text-label-caps text-on-surface-variant mb-3">SELECT DEFECT CATEGORY</h2>
+<div class="grid grid-cols-2 gap-3">
+<!-- Defect Button 1 -->
+<button class="touch-active flex flex-col items-center justify-center p-4 bg-white border border-grid-border rounded-xl transition-all duration-75 active:scale-95 group" onclick="toggleDefect(this)">
+<span class="material-symbols-outlined text-3xl mb-2 text-on-surface-variant group-[.defect-active]:text-risk-action">unfold_more</span>
+<span class="font-headline-md text-headline-md text-center">Open Seam</span>
+</button>
+<!-- Defect Button 2 -->
+<button class="touch-active flex flex-col items-center justify-center p-4 bg-white border border-grid-border rounded-xl transition-all duration-75 active:scale-95 group" onclick="toggleDefect(this)">
+<span class="material-symbols-outlined text-3xl mb-2 text-on-surface-variant">architecture</span>
+<span class="font-headline-md text-headline-md text-center">Broken Stitch</span>
+</button>
+<!-- Defect Button 3 -->
+<button class="touch-active flex flex-col items-center justify-center p-4 bg-white border border-grid-border rounded-xl transition-all duration-75 active:scale-95 group" onclick="toggleDefect(this)">
+<span class="material-symbols-outlined text-3xl mb-2 text-on-surface-variant">opacity</span>
+<span class="font-headline-md text-headline-md text-center">Oil Stain</span>
+</button>
+<!-- Defect Button 4 -->
+<button class="touch-active flex flex-col items-center justify-center p-4 bg-white border border-grid-border rounded-xl transition-all duration-75 active:scale-95 group" onclick="toggleDefect(this)">
+<span class="material-symbols-outlined text-3xl mb-2 text-on-surface-variant">palette</span>
+<span class="font-headline-md text-headline-md text-center">Shade Variation</span>
+</button>
+<!-- Defect Button 5 -->
+<button class="touch-active flex flex-col items-center justify-center p-4 bg-white border border-grid-border rounded-xl transition-all duration-75 active:scale-95 group" onclick="toggleDefect(this)">
+<span class="material-symbols-outlined text-3xl mb-2 text-on-surface-variant">square_foot</span>
+<span class="font-headline-md text-headline-md text-center">Measurement</span>
+</button>
+<!-- Defect Button 6 -->
+<button class="touch-active flex flex-col items-center justify-center p-4 bg-white border border-grid-border rounded-xl transition-all duration-75 active:scale-95 group" onclick="toggleDefect(this)">
+<span class="material-symbols-outlined text-3xl mb-2 text-on-surface-variant">pending</span>
+<span class="font-headline-md text-headline-md text-center">Other</span>
+</button>
+</div>
+</section>
+<!-- ACTIONS AREA -->
+<section class="px-4 space-y-4 mb-10">
+<!-- Photo Attachment -->
+<div class="bg-white border border-grid-border rounded-xl p-4">
+<div class="flex justify-between items-center mb-3">
+<span class="font-label-caps text-label-caps text-on-surface-variant">PHOTO EVIDENCE</span>
+<span class="text-on-surface-variant font-mono-data text-mono-data">0/4</span>
+</div>
+<div class="flex gap-3 overflow-x-auto hide-scrollbar">
+<div class="flex-shrink-0 w-20 h-20 bg-surface-container-low border-2 border-dashed border-outline-variant rounded-lg flex flex-col items-center justify-center text-on-surface-variant touch-active">
+<span class="material-symbols-outlined">add_a_photo</span>
+</div>
+<div class="relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-surface-dim">
+<img class="w-full h-full object-cover grayscale" data-alt="A close-up macro photograph of raw indigo denim fabric showing a distinct vertical white thread defect. The lighting is harsh and industrial, casting clinical shadows that emphasize the texture of the twill. The scene is framed as if captured through a handheld quality control device. The overall mood is focused and diagnostic, highlighting a production exception in a manufacturing environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlmrm8_s1ADGFBe2SDNRrwLQ4wOo7feQPAamT8Y5q7ESFpsUNBUI7JDXXKvusYvWAFUwZzlDocr-Y5P0sWJUQfOjbZXm3bf0fBEjGk3ImrEx3_6Vqtao56lIFpGt4vvfw1_j1s2_vVJbhtkB14OAP678PP00nBIfAfZa3I7Rh3rT5YxTgA9NpDfC-PZsVrIeG11Alx80M7LUkytpWVRBQkQrYHmtQXEcMjC55MiLfxJWLoSg0NBybtxN6aEF0yzjbgkhwXMSwBUzc"/>
+<div class="absolute top-0 right-0 p-1 bg-risk-action text-white rounded-bl">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Hold Toggle -->
+<div class="bg-white border border-grid-border rounded-xl p-4">
+<div class="flex justify-between items-center mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center transition-colors" id="hold-icon">
+<span class="material-symbols-outlined text-on-surface-variant">pause_circle</span>
+</div>
+<div>
+<div class="font-headline-md text-headline-md">Hold Required</div>
+<div class="text-body-sm text-on-surface-variant">Escalate to Supervisor</div>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" id="hold-toggle" onchange="toggleHoldArea()" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-risk-action"></div>
+</label>
+</div>
+<div class="hidden transition-all duration-300" id="hold-reason-container">
+<span class="font-label-caps text-label-caps text-on-surface-variant block mb-2">REASON FOR HOLD</span>
+<textarea class="w-full rounded-lg border-grid-border focus:ring-primary focus:border-primary text-body-md" placeholder="Enter hold justification..." rows="3"></textarea>
+</div>
+</div>
+<!-- Confirm Button -->
+<button class="w-full py-4 bg-primary text-on-primary font-headline-md text-headline-md rounded-xl shadow-lg touch-active flex items-center justify-center gap-2">
+<span>Confirm Check</span>
+<span class="material-symbols-outlined">check_circle</span>
+</button>
+</section>
+</main>
+<!-- BOTTOM NAV BAR (Mapped from Shared Components) -->
+<nav class="fixed bottom-0 left-0 w-full h-16 flex justify-around items-center px-margin-sm pb-safe bg-surface dark:bg-risk-critical border-t border-grid-border z-50">
+<!-- Home -->
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-highest transition-colors cursor-pointer w-16 h-full">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-caps text-label-caps">Home</span>
+</div>
+<!-- Output -->
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-highest transition-colors cursor-pointer w-16 h-full">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-label-caps text-label-caps">Output</span>
+</div>
+<!-- QC (Active State) -->
+<div class="flex flex-col items-center justify-center text-primary dark:text-on-primary-fixed bg-secondary-container dark:bg-primary-container rounded-full px-4 py-1 active:scale-90 duration-150">
+<span class="material-symbols-outlined">fact_check</span>
+<span class="font-label-caps text-label-caps">QC</span>
+</div>
+<!-- Andon -->
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-highest transition-colors cursor-pointer w-16 h-full">
+<span class="material-symbols-outlined">campaign</span>
+<span class="font-label-caps text-label-caps">Andon</span>
+</div>
+<!-- More -->
+<div class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-highest transition-colors cursor-pointer w-16 h-full">
+<span class="material-symbols-outlined">menu</span>
+<span class="font-label-caps text-label-caps">More</span>
+</div>
+</nav>
+<script>
+    function toggleDefect(btn) {
+      // Allow multiple selections or single selection based on preference
+      // Here we toggle the specific clicked button
+      btn.classList.toggle('defect-active');
+      
+      // Haptic feedback simulation
+      if (window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(50);
+      }
+    }
+
+    function toggleHoldArea() {
+      const isChecked = document.getElementById('hold-toggle').checked;
+      const container = document.getElementById('hold-reason-container');
+      const icon = document.getElementById('hold-icon');
+      
+      if (isChecked) {
+        container.classList.remove('hidden');
+        icon.classList.remove('bg-surface-container');
+        icon.classList.add('bg-error-container');
+        icon.querySelector('span').classList.replace('text-on-surface-variant', 'text-error');
+      } else {
+        container.classList.add('hidden');
+        icon.classList.add('bg-surface-container');
+        icon.classList.remove('bg-error-container');
+        icon.querySelector('span').classList.replace('text-error', 'text-on-surface-variant');
+      }
+    }
+    
+    // Smooth interaction for the bottom nav
+    document.querySelectorAll('nav > div').forEach(tab => {
+      tab.addEventListener('click', function() {
+        if(!this.classList.contains('bg-secondary-container')) {
+          console.log('Navigating to ' + this.innerText.trim());
+        }
+      });
+    });
+  </script>
+</body></html>

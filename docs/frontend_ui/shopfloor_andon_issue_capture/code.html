@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "risk-critical": "#111827",
+                        "surface-container-high": "#eae7e9",
+                        "on-tertiary-fixed-variant": "#564427",
+                        "surface-tint": "#545f73",
+                        "on-primary-fixed": "#111c2d",
+                        "on-surface-variant": "#45474c",
+                        "on-primary": "#ffffff",
+                        "risk-action": "#EF4444",
+                        "secondary-fixed": "#d5e3fd",
+                        "outline-variant": "#c5c6cd",
+                        "on-tertiary-container": "#a38c6a",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "grid-border": "#E2E8F0",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "surface-container-low": "#f5f3f4",
+                        "secondary": "#515f74",
+                        "risk-on-track": "#10B981",
+                        "outline": "#75777d",
+                        "on-surface": "#1b1b1d",
+                        "inverse-surface": "#303032",
+                        "inverse-on-surface": "#f3f0f2",
+                        "on-tertiary-fixed": "#271902",
+                        "surface-dim": "#dcd9db",
+                        "on-background": "#1b1b1d",
+                        "background": "#fbf8fa",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "on-error": "#ffffff",
+                        "primary-fixed-dim": "#bcc7de",
+                        "surface-bright": "#fbf8fa",
+                        "surface-container-highest": "#e4e2e3",
+                        "surface-muted": "#F8FAFC",
+                        "primary-container": "#1e293b",
+                        "tertiary-fixed": "#fadfb8",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#d5e3fd",
+                        "on-secondary-container": "#57657b",
+                        "risk-watch": "#F59E0B",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#35260c",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-container": "#8590a6",
+                        "primary": "#091426",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#fbf8fa",
+                        "surface-container": "#f0edef",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "inverse-primary": "#bcc7de",
+                        "tertiary": "#1e1200",
+                        "error": "#ba1a1a",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#d8e3fb",
+                        "surface-variant": "#e4e2e3",
+                        "tertiary-fixed-dim": "#ddc39d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "drawer-width": "400px",
+                        "gutter": "12px",
+                        "nav-collapsed-width": "64px",
+                        "grid-row-height": "32px",
+                        "margin-md": "16px",
+                        "nav-expanded-width": "240px",
+                        "margin-sm": "8px"
+                    },
+                    "fontFamily": {
+                        "data-tabular": ["Inter"],
+                        "mono-data": ["JetBrains Mono"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-state { transform: scale(0.95); transition: transform 0.075s ease-out; }
+        .glass-panel { backdrop-filter: blur(8px); background: rgba(255, 255, 255, 0.8); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md overflow-hidden">
+<!-- Top Navigation Anchor -->
+<header class="fixed top-0 w-full z-50 bg-surface border-b border-grid-border h-12 flex justify-between items-center px-margin-md">
+<div class="flex items-center gap-margin-sm">
+<span class="material-symbols-outlined text-primary" data-icon="factory">factory</span>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Shopfloor Control</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center gap-2 px-3 py-1 bg-surface-container-low rounded border border-grid-border">
+<span class="font-mono-data text-mono-data text-on-surface-variant uppercase">Line 04 - Denim</span>
+</div>
+<button class="material-symbols-outlined text-primary hover:bg-surface-container-low p-1 rounded transition-colors" data-icon="notifications_active">notifications_active</button>
+</div>
+</header>
+<!-- Side Navigation Shell -->
+<aside class="fixed left-0 top-0 h-full w-nav-collapsed-width md:w-nav-expanded-width bg-surface-container-lowest border-r border-grid-border pt-12 flex flex-col z-40 transition-all duration-300">
+<div class="p-margin-md flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-sm" data-icon="person">person</span>
+</div>
+<div class="hidden md:block">
+<p class="font-headline-md text-headline-md leading-tight">Line Supervisor</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant">SHIFT A</p>
+</div>
+</div>
+<nav class="flex-1 px-3 space-y-1 overflow-y-auto hide-scrollbar">
+<a class="flex items-center gap-3 p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="hidden md:block font-label-caps text-label-caps">Supervisor Home</span>
+</a>
+<a class="flex items-center gap-3 p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="precision_manufacturing">precision_manufacturing</span>
+<span class="hidden md:block font-label-caps text-label-caps">Output Capture</span>
+</a>
+<a class="flex items-center gap-3 p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="checklist_rtl">checklist_rtl</span>
+<span class="hidden md:block font-label-caps text-label-caps">QC Interface</span>
+</a>
+<a class="flex items-center gap-3 p-2 bg-secondary-container text-on-secondary-container font-bold rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="campaign" style="font-variation-settings: 'FILL' 1;">campaign</span>
+<span class="hidden md:block font-label-caps text-label-caps">Andon Alert</span>
+</a>
+<a class="flex items-center gap-3 p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="event_busy">event_busy</span>
+<span class="hidden md:block font-label-caps text-label-caps">Shift Closure</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Work Area -->
+<main class="ml-nav-collapsed-width md:ml-nav-expanded-width pt-12 min-h-screen transition-all duration-300">
+<div class="max-w-6xl mx-auto p-margin-md">
+<!-- Header & Status -->
+<div class="mb-margin-md flex justify-between items-end">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary">Andon Command Center</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Immediate operational escalation for Workcenter W-204</p>
+</div>
+<div class="text-right">
+<span class="font-mono-data text-mono-data text-on-surface-variant block">SYNC: 12s ago</span>
+<span class="font-label-caps text-label-caps text-risk-on-track flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-risk-on-track animate-pulse"></span> SYSTEM READY
+                    </span>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- PRIMARY ANDON BUTTONS (Bento Layout) -->
+<section class="lg:col-span-8 space-y-gutter">
+<div class="grid grid-cols-2 gap-gutter h-[400px]">
+<!-- RED: LINE STOPPED -->
+<button class="group relative flex flex-col items-center justify-center bg-risk-action rounded-xl shadow-lg border-b-4 border-red-800 transition-all hover:brightness-110 active:scale-95" onclick="activateAndon('CRITICAL', 'bg-risk-action')">
+<span class="material-symbols-outlined text-[64px] text-white mb-4 group-hover:scale-110 transition-transform" data-icon="report" style="font-variation-settings: 'FILL' 1;">report</span>
+<span class="font-headline-lg text-headline-lg text-white font-extrabold uppercase tracking-widest">Line Stopped</span>
+<span class="mt-2 font-label-caps text-label-caps text-white opacity-80">Immediate Management Required</span>
+</button>
+<!-- YELLOW: RISK OF DELAY -->
+<button class="group relative flex flex-col items-center justify-center bg-risk-watch rounded-xl shadow-lg border-b-4 border-amber-700 transition-all hover:brightness-110 active:scale-95" onclick="activateAndon('WARNING', 'bg-risk-watch')">
+<span class="material-symbols-outlined text-[64px] text-white mb-4 group-hover:scale-110 transition-transform" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
+<span class="font-headline-lg text-headline-lg text-white font-extrabold uppercase tracking-widest">Risk of Delay</span>
+<span class="mt-2 font-label-caps text-label-caps text-white opacity-80">Assistance Requested Soon</span>
+</button>
+<!-- BLUE: NEED SUPPORT -->
+<button class="group relative flex flex-col items-center justify-center bg-secondary rounded-xl shadow-lg border-b-4 border-slate-900 transition-all hover:brightness-110 active:scale-95" onclick="activateAndon('SUPPORT', 'bg-secondary')">
+<span class="material-symbols-outlined text-[64px] text-white mb-4 group-hover:scale-110 transition-transform" data-icon="engineering" style="font-variation-settings: 'FILL' 1;">engineering</span>
+<span class="font-headline-lg text-headline-lg text-white font-extrabold uppercase tracking-widest">Support Req</span>
+<span class="mt-2 font-label-caps text-label-caps text-white opacity-80">Mechanic / IT Needed</span>
+</button>
+<!-- GREEN: ISSUE RESOLVED -->
+<button class="group relative flex flex-col items-center justify-center bg-risk-on-track rounded-xl shadow-lg border-b-4 border-emerald-800 transition-all hover:brightness-110 active:scale-95" onclick="clearAndon()">
+<span class="material-symbols-outlined text-[64px] text-white mb-4 group-hover:scale-110 transition-transform" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-headline-lg text-headline-lg text-white font-extrabold uppercase tracking-widest">Issue Resolved</span>
+<span class="mt-2 font-label-caps text-label-caps text-white opacity-80">Clear All Active Signals</span>
+</button>
+</div>
+<!-- Issue Type Picker -->
+<div class="bg-surface-container-lowest border border-grid-border rounded-xl p-margin-md">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-4">Select Issue Type</h3>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+<button class="p-4 border border-grid-border rounded-lg hover:bg-surface-container-low transition-colors flex flex-col items-center gap-2 group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform" data-icon="inventory_2">inventory_2</span>
+<span class="font-label-caps text-label-caps">Need Material</span>
+</button>
+<button class="p-4 border border-grid-border rounded-lg hover:bg-surface-container-low transition-colors flex flex-col items-center gap-2 group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform" data-icon="settings_suggest">settings_suggest</span>
+<span class="font-label-caps text-label-caps">Machine Jam</span>
+</button>
+<button class="p-4 border border-grid-border rounded-lg hover:bg-surface-container-low transition-colors flex flex-col items-center gap-2 group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform" data-icon="fact_check">fact_check</span>
+<span class="font-label-caps text-label-caps">QC Needed</span>
+</button>
+<button class="p-4 border border-grid-border rounded-lg hover:bg-surface-container-low transition-colors flex flex-col items-center gap-2 group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform" data-icon="electrical_services">electrical_services</span>
+<span class="font-label-caps text-label-caps">Power/Elec</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Escalation Details (Action Drawer Style) -->
+<aside class="lg:col-span-4 space-y-gutter">
+<div class="bg-surface-container-lowest border border-grid-border rounded-xl p-margin-md flex flex-col gap-4 shadow-sm">
+<div class="flex justify-between items-center">
+<h3 class="font-headline-md text-headline-md">Escalation Detail</h3>
+<span class="px-2 py-0.5 bg-risk-critical/10 text-risk-critical rounded font-label-caps text-label-caps">L04-DENIM</span>
+</div>
+<!-- Quick Photo -->
+<div class="w-full h-40 bg-surface-container-low border-2 border-dashed border-grid-border rounded-lg flex flex-col items-center justify-center relative overflow-hidden group cursor-pointer">
+<img alt="Shopfloor Context" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-70 transition-opacity" data-alt="A detailed, high-contrast photograph of a denim manufacturing shop floor with heavy industrial machinery and blue fabric rolls. The lighting is bright and industrial, reflecting a modern light-mode interface aesthetic. The focus is on a machine interface panel that seems to be malfunctioning, set against a background of professional, high-density operations management gear." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzKhZbigrHrFkwu631u-YYCbAfr71jjpYcXVNUs9F7cXATmdY4r_g3gCFew5C_dHegzxaFJMWxO-zBAVtngiVvgwRQ2OUkN_fuxcAf1Df7IrByddu0rLOs2JN5FuXKfBPB_gSqz06aVEdFXXnU9CCCQ8E6Sh2IOCtTouTvq30D-shDLdcebKyy951vG9Kjl8FnEeSoPNSZS1aWLyktgrM1zpM7Y5fBK_ddwFWCG1_MWfV35CpKr2DaWK9ggjToZ_aj9l-U3IO4WNY"/>
+<div class="relative z-10 flex flex-col items-center text-primary">
+<span class="material-symbols-outlined text-[32px]" data-icon="photo_camera">photo_camera</span>
+<span class="font-label-caps text-label-caps mt-1">TAP TO ADD PHOTO</span>
+</div>
+</div>
+<!-- Urgency Toggle -->
+<div class="flex items-center justify-between p-3 bg-error-container/20 border border-error/20 rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-risk-action" data-icon="bolt">bolt</span>
+<span class="font-label-caps text-label-caps text-risk-action">URGENT ESCALATION</span>
+</div>
+<div class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-risk-action transition-colors duration-200 ease-in-out">
+<span class="translate-x-5 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+</div>
+</div>
+<!-- Comment Field -->
+<div>
+<label class="font-label-caps text-label-caps text-on-surface-variant block mb-1">OPTIONAL COMMENT</label>
+<textarea class="w-full h-24 p-2 bg-surface-bright border border-grid-border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none font-body-sm text-body-sm" placeholder="Briefly describe the bottleneck..."></textarea>
+</div>
+<!-- Submit Button -->
+<button class="w-full bg-risk-critical text-on-primary py-4 font-label-caps text-label-caps flex items-center justify-center gap-2 rounded-lg hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="send">send</span>
+                            BROADCAST ALERT TO STATION
+                        </button>
+</div>
+<!-- Recent Activity -->
+<div class="bg-surface-container-low/50 border border-grid-border rounded-xl p-margin-md">
+<h4 class="font-label-caps text-label-caps text-on-surface-variant mb-3">RECENT ACTIVITY</h4>
+<div class="space-y-3">
+<div class="flex gap-3 text-body-sm">
+<span class="text-risk-on-track material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+<div>
+<p class="font-semibold">QC Resolved - W-201</p>
+<p class="text-[11px] text-on-surface-variant opacity-70">14:02 · Line Supervisor</p>
+</div>
+</div>
+<div class="flex gap-3 text-body-sm">
+<span class="text-risk-watch material-symbols-outlined text-sm" data-icon="warning">warning</span>
+<div>
+<p class="font-semibold">Material Delay - L04</p>
+<p class="text-[11px] text-on-surface-variant opacity-70">13:45 · Operator A-02</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div>
+</main>
+<!-- Mobile Navigation Shell -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full h-16 bg-surface border-t border-grid-border flex justify-around items-center px-margin-sm pb-safe z-50">
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-caps text-label-caps">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="font-label-caps text-label-caps">Output</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary bg-secondary-container rounded-full px-4 py-1" href="#">
+<span class="material-symbols-outlined" data-icon="campaign" style="font-variation-settings: 'FILL' 1;">campaign</span>
+<span class="font-label-caps text-label-caps">Andon</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="fact_check">fact_check</span>
+<span class="font-label-caps text-label-caps">QC</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+<span class="font-label-caps text-label-caps">More</span>
+</a>
+</nav>
+<!-- Micro-interaction overlay -->
+<div class="fixed inset-0 pointer-events-none z-[100] transition-colors duration-300" id="alert-overlay"></div>
+<script>
+        function activateAndon(level, colorClass) {
+            const overlay = document.getElementById('alert-overlay');
+            const body = document.body;
+            
+            // Pulse visual feedback
+            if (level === 'CRITICAL') {
+                overlay.classList.add('bg-risk-action/20');
+                setTimeout(() => overlay.classList.remove('bg-risk-action/20'), 500);
+            } else if (level === 'WARNING') {
+                overlay.classList.add('bg-risk-watch/20');
+                setTimeout(() => overlay.classList.remove('bg-risk-watch/20'), 500);
+            }
+
+            console.log(`Andon Activated: ${level}`);
+            // Feedback for touch users
+            if (navigator.vibrate) {
+                navigator.vibrate(level === 'CRITICAL' ? [100, 50, 100] : 100);
+            }
+        }
+
+        function clearAndon() {
+            const overlay = document.getElementById('alert-overlay');
+            overlay.classList.add('bg-risk-on-track/20');
+            setTimeout(() => overlay.classList.remove('bg-risk-on-track/20'), 300);
+            console.log('Andon Cleared');
+        }
+
+        // Handle Urgency Toggle interaction
+        document.querySelector('.cursor-pointer.rounded-full').addEventListener('click', function() {
+            const knob = this.querySelector('span');
+            const isUrgent = knob.classList.contains('translate-x-5');
+            
+            if(isUrgent) {
+                knob.classList.remove('translate-x-5');
+                knob.classList.add('translate-x-0');
+                this.classList.remove('bg-risk-action');
+                this.classList.add('bg-outline-variant');
+            } else {
+                knob.classList.remove('translate-x-0');
+                knob.classList.add('translate-x-5');
+                this.classList.remove('bg-outline-variant');
+                this.classList.add('bg-risk-action');
+            }
+        });
+    </script>
+</body></html>

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Shopfloor Control - Daily Operating Cockpit</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Industrial Grid Pattern */
+        .bg-grid-pattern {
+            background-image: radial-gradient(circle, #E2E8F0 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "tertiary-container": "#35260c",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#57657b",
+                        "background": "#fbf8fa",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-container": "#a38c6a",
+                        "secondary": "#515f74",
+                        "surface-tint": "#545f73",
+                        "grid-border": "#E2E8F0",
+                        "tertiary-fixed": "#fadfb8",
+                        "secondary-fixed": "#d5e3fd",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "surface": "#fbf8fa",
+                        "inverse-on-surface": "#f3f0f2",
+                        "on-primary-fixed": "#111c2d",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#8590a6",
+                        "on-tertiary-fixed-variant": "#564427",
+                        "on-background": "#1b1b1d",
+                        "on-surface": "#1b1b1d",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-bright": "#fbf8fa",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#303032",
+                        "risk-critical": "#111827",
+                        "tertiary-fixed-dim": "#ddc39d",
+                        "surface-container-highest": "#e4e2e3",
+                        "risk-watch": "#F59E0B",
+                        "on-tertiary-fixed": "#271902",
+                        "primary-fixed": "#d8e3fb",
+                        "primary-container": "#1e293b",
+                        "surface-container-low": "#f5f3f4",
+                        "surface-container-high": "#eae7e9",
+                        "outline-variant": "#c5c6cd",
+                        "surface-dim": "#dcd9db",
+                        "on-surface-variant": "#45474c",
+                        "surface-container": "#f0edef",
+                        "risk-action": "#EF4444",
+                        "outline": "#75777d",
+                        "inverse-primary": "#bcc7de",
+                        "secondary-container": "#d5e3fd",
+                        "primary": "#091426",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#e4e2e3",
+                        "tertiary": "#1e1200",
+                        "surface-muted": "#F8FAFC",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "primary-fixed-dim": "#bcc7de",
+                        "risk-on-track": "#10B981"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "12px",
+                        "drawer-width": "400px",
+                        "nav-expanded-width": "240px",
+                        "nav-collapsed-width": "64px",
+                        "margin-md": "16px",
+                        "margin-sm": "8px",
+                        "grid-row-height": "32px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "mono-data": ["JetBrains Mono"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface-muted text-on-surface font-body-md min-h-screen flex flex-col md:flex-row bg-grid-pattern overflow-hidden">
+<!-- Desktop Sidebar -->
+<aside class="hidden md:flex flex-col bg-surface border-r border-grid-border fixed h-full z-40 transition-all duration-300 w-nav-collapsed-width lg:w-nav-expanded-width">
+<div class="h-16 flex items-center px-4 border-b border-grid-border">
+<span class="text-primary font-headline-md font-extrabold tracking-tighter">SC</span>
+<span class="hidden lg:inline ml-2 text-primary font-headline-md font-extrabold">Shopfloor</span>
+</div>
+<nav class="flex-1 py-4 space-y-2 overflow-y-auto hide-scrollbar">
+<!-- Navigation Items Mapping from JSON style_active_navigation -->
+<a class="bg-secondary-container text-on-secondary-container rounded-xl mx-2 h-12 flex items-center px-3 group" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="ml-3 font-label-caps text-label-caps hidden lg:block">DASHBOARD</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low mx-2 h-12 flex items-center px-3 group" href="#">
+<span class="material-symbols-outlined" data-icon="precision_manufacturing">precision_manufacturing</span>
+<span class="ml-3 font-label-caps text-label-caps hidden lg:block">PRODUCTION</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low mx-2 h-12 flex items-center px-3 group" href="#">
+<span class="material-symbols-outlined" data-icon="timer_off">timer_off</span>
+<span class="ml-3 font-label-caps text-label-caps hidden lg:block">DOWNTIME</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low mx-2 h-12 flex items-center px-3 group" href="#">
+<span class="material-symbols-outlined" data-icon="error_outline">error_outline</span>
+<span class="ml-3 font-label-caps text-label-caps hidden lg:block">EXCEPTIONS</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low mx-2 h-12 flex items-center px-3 group" href="#">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+<span class="ml-3 font-label-caps text-label-caps hidden lg:block">SHIFT LOGS</span>
+</a>
+</nav>
+<div class="p-4 border-t border-grid-border bg-surface-container-lowest">
+<div class="flex items-center space-x-3 mb-4 hidden lg:flex">
+<div class="w-8 h-8 rounded bg-primary-container flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-sm" data-icon="person">person</span>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant">OPERATOR</p>
+<p class="font-headline-md text-xs font-bold">Unit A - S1</p>
+</div>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary" data-icon="sync">sync</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary" data-icon="help_outline">help_outline</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col md:ml-nav-collapsed-width lg:ml-nav-expanded-width relative h-screen overflow-hidden">
+<!-- Header -->
+<header class="h-16 bg-primary text-on-primary fixed top-0 left-0 right-0 z-50 md:left-nav-collapsed-width lg:left-nav-expanded-width flex items-center justify-between px-gutter border-b border-outline-variant">
+<div class="flex flex-col">
+<h1 class="font-headline-md text-headline-md font-bold leading-tight">Unit A - Sewing Line 05</h1>
+<div class="flex items-center space-x-2">
+<span class="bg-risk-on-track w-2 h-2 rounded-full animate-pulse"></span>
+<span class="font-label-caps text-[10px] opacity-80 uppercase">Shift 1: 06:00 - 14:00</span>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<div class="hidden sm:flex flex-col items-end mr-2">
+<p class="font-mono-data text-mono-data opacity-70">SYNC: 2m ago</p>
+<p class="font-label-caps text-[9px] text-risk-on-track">DATA FRESH</p>
+</div>
+<div class="flex space-x-2">
+<button class="w-10 h-10 flex items-center justify-center hover:bg-primary-container transition-colors rounded">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center hover:bg-primary-container transition-colors rounded">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Scrollable Dashboard Body -->
+<div class="pt-16 pb-20 md:pb-6 overflow-y-auto h-full px-4 md:px-6">
+<div class="max-w-7xl mx-auto py-6 space-y-6">
+<!-- Top Row: Active Task & Summary Stats -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+<!-- Active Task Card (Priority 1) -->
+<div class="lg:col-span-2 bg-white border border-grid-border p-5 rounded shadow-sm relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 bg-primary h-full"></div>
+<div class="flex justify-between items-start mb-4">
+<div>
+<span class="font-label-caps text-label-caps text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">ACTIVE JOB</span>
+<h2 class="font-headline-lg text-headline-lg text-primary mt-1">ORD-774218 / SLIM-FIT-DENIM</h2>
+</div>
+<div class="text-right">
+<p class="font-label-caps text-label-caps text-on-surface-variant">WORKCENTER</p>
+<p class="font-mono-data text-headline-md font-bold">ST-005</p>
+</div>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
+<div class="bg-surface-muted p-3 rounded border border-grid-border/50">
+<p class="font-label-caps text-[10px] text-on-surface-variant">TARGET QTY</p>
+<p class="font-mono-data text-lg font-bold">1,200</p>
+</div>
+<div class="bg-surface-muted p-3 rounded border border-grid-border/50">
+<p class="font-label-caps text-[10px] text-on-surface-variant">ACTUAL TO DATE</p>
+<p class="font-mono-data text-lg font-bold">842</p>
+</div>
+<div class="bg-surface-muted p-3 rounded border border-grid-border/50">
+<p class="font-label-caps text-[10px] text-on-surface-variant">REMAINING</p>
+<p class="font-mono-data text-lg font-bold text-on-primary-fixed-variant">358</p>
+</div>
+<div class="bg-error-container/20 p-3 rounded border border-error-container">
+<p class="font-label-caps text-[10px] text-error">DEFECTS</p>
+<p class="font-mono-data text-lg font-bold text-error">12</p>
+</div>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full transition-all duration-1000" style="width: 70%;"></div>
+</div>
+<div class="flex justify-between mt-2">
+<span class="font-label-caps text-[10px] text-on-surface-variant">70.1% COMPLETE</span>
+<span class="font-label-caps text-[10px] text-on-surface-variant">EST. FINISH: 13:15 (ON TRACK)</span>
+</div>
+</div>
+<!-- Summary Stats (Circular/Numbers) -->
+<div class="bg-white border border-grid-border p-5 rounded shadow-sm flex flex-col justify-between">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant border-b border-grid-border pb-2 mb-4">REAL-TIME PERFORMANCE</h3>
+<div class="flex items-center justify-around flex-1">
+<div class="text-center relative">
+<svg class="w-20 h-20 transform -rotate-90">
+<circle class="text-surface-container" cx="40" cy="40" fill="transparent" r="36" stroke="currentColor" stroke-width="6"></circle>
+<circle class="text-risk-on-track" cx="40" cy="40" fill="transparent" r="36" stroke="currentColor" stroke-dasharray="226.2" stroke-dashoffset="22.6" stroke-width="6"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-mono-data text-lg font-bold leading-none">92%</span>
+</div>
+<p class="font-label-caps text-[9px] mt-2">EFFICIENCY</p>
+</div>
+<div class="w-px h-12 bg-grid-border"></div>
+<div class="text-center">
+<p class="font-mono-data text-2xl font-bold text-risk-watch">1.4%</p>
+<p class="font-label-caps text-[9px] mt-1 text-on-surface-variant uppercase">Defect Rate</p>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-grid-border flex justify-between">
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant">DOWNTIME</p>
+<p class="font-mono-data font-bold">37 MIN</p>
+</div>
+<div class="text-right">
+<p class="font-label-caps text-[10px] text-on-surface-variant">OPERATOR</p>
+<p class="font-mono-data font-bold">ID: 08-R</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Middle Row: Hourly Tracker & Exceptions -->
+<div class="grid grid-cols-1 xl:grid-cols-4 gap-4">
+<!-- Hourly Output Tracker -->
+<div class="xl:col-span-3 bg-white border border-grid-border rounded shadow-sm overflow-hidden flex flex-col">
+<div class="px-5 py-3 border-b border-grid-border flex justify-between items-center bg-surface-container-low">
+<h3 class="font-label-caps text-label-caps text-primary">HOURLY PERFORMANCE LOG (LAST 8 HOURS)</h3>
+<button class="text-on-primary-fixed-variant flex items-center text-[10px] font-bold">
+<span class="material-symbols-outlined text-sm mr-1" data-icon="download">download</span> EXPORT
+                            </button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-lowest text-on-surface-variant">
+<tr>
+<th class="px-5 py-2 font-label-caps text-[10px] border-b border-grid-border">HOUR</th>
+<th class="px-5 py-2 font-label-caps text-[10px] border-b border-grid-border">TARGET</th>
+<th class="px-5 py-2 font-label-caps text-[10px] border-b border-grid-border">ACTUAL</th>
+<th class="px-5 py-2 font-label-caps text-[10px] border-b border-grid-border">DEFECTS</th>
+<th class="px-5 py-2 font-label-caps text-[10px] border-b border-grid-border text-right">NET GOOD</th>
+<th class="px-5 py-2 font-label-caps text-[10px] border-b border-grid-border text-center">STATUS</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-grid-border">
+<tr class="hover:bg-surface-muted transition-colors h-[32px]">
+<td class="px-5 py-2 font-mono-data text-xs">06:00 - 07:00</td>
+<td class="px-5 py-2 font-mono-data text-xs">150</td>
+<td class="px-5 py-2 font-mono-data text-xs font-bold">148</td>
+<td class="px-5 py-2 font-mono-data text-xs text-error">2</td>
+<td class="px-5 py-2 font-mono-data text-xs text-right font-bold">146</td>
+<td class="px-5 py-2 text-center"><span class="w-2 h-2 rounded-full bg-risk-watch inline-block"></span></td>
+</tr>
+<tr class="hover:bg-surface-muted transition-colors h-[32px]">
+<td class="px-5 py-2 font-mono-data text-xs">07:00 - 08:00</td>
+<td class="px-5 py-2 font-mono-data text-xs">150</td>
+<td class="px-5 py-2 font-mono-data text-xs font-bold text-risk-on-track">155</td>
+<td class="px-5 py-2 font-mono-data text-xs">0</td>
+<td class="px-5 py-2 font-mono-data text-xs text-right font-bold text-risk-on-track">155</td>
+<td class="px-5 py-2 text-center"><span class="w-2 h-2 rounded-full bg-risk-on-track inline-block"></span></td>
+</tr>
+<tr class="hover:bg-surface-muted transition-colors h-[32px] bg-error-container/5">
+<td class="px-5 py-2 font-mono-data text-xs">08:00 - 09:00</td>
+<td class="px-5 py-2 font-mono-data text-xs">150</td>
+<td class="px-5 py-2 font-mono-data text-xs font-bold text-error">110</td>
+<td class="px-5 py-2 font-mono-data text-xs text-error">5</td>
+<td class="px-5 py-2 font-mono-data text-xs text-right font-bold text-error">105</td>
+<td class="px-5 py-2 text-center"><span class="w-2 h-2 rounded-full bg-risk-action inline-block"></span></td>
+</tr>
+<tr class="hover:bg-surface-muted transition-colors h-[32px]">
+<td class="px-5 py-2 font-mono-data text-xs">09:00 - 10:00</td>
+<td class="px-5 py-2 font-mono-data text-xs">150</td>
+<td class="px-5 py-2 font-mono-data text-xs font-bold">150</td>
+<td class="px-5 py-2 font-mono-data text-xs">1</td>
+<td class="px-5 py-2 font-mono-data text-xs text-right font-bold">149</td>
+<td class="px-5 py-2 text-center"><span class="w-2 h-2 rounded-full bg-risk-on-track inline-block"></span></td>
+</tr>
+<tr class="hover:bg-surface-muted transition-colors h-[32px]">
+<td class="px-5 py-2 font-mono-data text-xs">10:00 - 11:00</td>
+<td class="px-5 py-2 font-mono-data text-xs">150</td>
+<td class="px-5 py-2 font-mono-data text-xs font-bold">152</td>
+<td class="px-5 py-2 font-mono-data text-xs">0</td>
+<td class="px-5 py-2 font-mono-data text-xs text-right font-bold">152</td>
+<td class="px-5 py-2 text-center"><span class="w-2 h-2 rounded-full bg-risk-on-track inline-block"></span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Downtime/Exceptions Log -->
+<div class="bg-white border border-grid-border rounded shadow-sm flex flex-col">
+<div class="px-4 py-3 border-b border-grid-border flex justify-between items-center bg-surface-container-low">
+<h3 class="font-label-caps text-label-caps text-on-surface">RECENT EVENTS</h3>
+<span class="bg-error text-on-error font-label-caps text-[9px] px-1.5 rounded-full">2 NEW</span>
+</div>
+<div class="flex-1 overflow-y-auto">
+<div class="p-4 space-y-4">
+<div class="flex items-start space-x-3">
+<div class="w-8 h-8 rounded bg-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-error text-lg" data-icon="precision_manufacturing">precision_manufacturing</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm font-bold">Machine Jam - WC5</p>
+<p class="font-mono-data text-[10px] text-on-surface-variant">09:12 • 15m Duration</p>
+</div>
+</div>
+<div class="flex items-start space-x-3">
+<div class="w-8 h-8 rounded bg-tertiary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-tertiary-fixed-variant text-lg" data-icon="inventory_2">inventory_2</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm font-bold">Waiting for Trims</p>
+<p class="font-mono-data text-[10px] text-on-surface-variant">08:45 • 22m Duration</p>
+</div>
+</div>
+<div class="flex items-start space-x-3">
+<div class="w-8 h-8 rounded bg-secondary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-secondary-container text-lg" data-icon="person_search">person_search</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm font-bold">Operator Swap</p>
+<p class="font-mono-data text-[10px] text-on-surface-variant">07:30 • 5m Duration</p>
+</div>
+</div>
+</div>
+</div>
+<button class="p-3 font-label-caps text-label-caps text-primary hover:bg-surface-container-high transition-all border-t border-grid-border uppercase">
+                            View Full Log
+                        </button>
+</div>
+</div>
+<!-- Bottom Row: Quick Action Buttons -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<button class="flex flex-col items-center justify-center p-6 bg-primary text-on-primary rounded shadow-md hover:scale-[0.98] transition-transform active:scale-95 space-y-2">
+<span class="material-symbols-outlined text-3xl" data-icon="add_circle">add_circle</span>
+<span class="font-label-caps text-label-caps">REPORT OUTPUT</span>
+</button>
+<button class="flex flex-col items-center justify-center p-6 bg-white border-2 border-primary text-primary rounded shadow-md hover:bg-surface-container transition-colors active:scale-95 space-y-2">
+<span class="material-symbols-outlined text-3xl" data-icon="pause_circle">pause_circle</span>
+<span class="font-label-caps text-label-caps">LOG DOWNTIME</span>
+</button>
+<button class="flex flex-col items-center justify-center p-6 bg-white border-2 border-error text-error rounded shadow-md hover:bg-error-container/20 transition-colors active:scale-95 space-y-2">
+<span class="material-symbols-outlined text-3xl" data-icon="warning">warning</span>
+<span class="font-label-caps text-label-caps">RECORD DEFECT</span>
+</button>
+<button class="flex flex-col items-center justify-center p-6 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded shadow-md hover:opacity-90 transition-opacity active:scale-95 space-y-2">
+<span class="material-symbols-outlined text-3xl" data-icon="call">call</span>
+<span class="font-label-caps text-label-caps">CALL MECHANIC</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Mobile Bottom Nav Bar (Shared Component) -->
+<nav class="fixed bottom-0 left-0 w-full md:hidden flex justify-around items-center px-4 py-2 bg-surface border-t border-grid-border z-50 shadow-lg">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full p-2 w-16 h-12" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+<span class="font-label-caps text-[10px] uppercase">Output</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 w-16 h-12" href="#">
+<span class="material-symbols-outlined" data-icon="pause_circle">pause_circle</span>
+<span class="font-label-caps text-[10px] uppercase">Downtime</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 w-16 h-12" href="#">
+<span class="material-symbols-outlined" data-icon="warning">warning</span>
+<span class="font-label-caps text-[10px] uppercase">Alert</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 w-16 h-12" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-label-caps text-[10px] uppercase">Log</span>
+</a>
+</nav>
+</main>
+<!-- Right Drawer: Contextual Impact (Hidden by default, used for "Details") -->
+<div class="fixed right-0 top-16 bottom-0 w-drawer-width bg-white shadow-2xl z-40 translate-x-full transition-transform duration-300 border-l border-grid-border hidden xl:flex flex-col" id="right-drawer">
+<div class="p-6 border-b border-grid-border flex justify-between items-center">
+<h2 class="font-headline-md text-primary">Order Details &amp; Impact</h2>
+<button class="p-2 hover:bg-surface-container rounded" onclick="document.getElementById('right-drawer').classList.add('translate-x-full')">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-6 space-y-6">
+<!-- Impact Preview Component -->
+<div class="bg-surface-muted border border-grid-border p-4 rounded">
+<p class="font-label-caps text-label-caps mb-3">SCHEDULE IMPACT PREVIEW</p>
+<div class="flex items-center justify-between text-xs font-mono-data mb-2">
+<span class="text-on-surface-variant">CURRENT FINISH:</span>
+<span class="font-bold">13:15 TODAY</span>
+</div>
+<div class="flex items-center justify-between text-xs font-mono-data mb-4">
+<span class="text-on-surface-variant">NEW FINISH (+15m JAM):</span>
+<span class="font-bold text-error">13:30 TODAY</span>
+</div>
+<div class="h-1.5 w-full bg-grid-border rounded-full flex overflow-hidden">
+<div class="h-full bg-primary" style="width: 85%"></div>
+<div class="h-full bg-error" style="width: 5%"></div>
+</div>
+</div>
+<!-- Readiness Checklist -->
+<div>
+<p class="font-label-caps text-label-caps mb-4">PRE-START READINESS</p>
+<ul class="space-y-3">
+<li class="flex items-center justify-between p-3 bg-white border border-grid-border rounded">
+<div class="flex items-center space-x-3">
+<input checked="" class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-body-sm font-medium">Trims Verified</span>
+</div>
+<span class="bg-risk-on-track/10 text-risk-on-track font-label-caps text-[9px] px-1.5 rounded">READY</span>
+</li>
+<li class="flex items-center justify-between p-3 bg-white border border-grid-border rounded">
+<div class="flex items-center space-x-3">
+<input class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-body-sm font-medium">Machine Calibrated</span>
+</div>
+<span class="bg-risk-watch/10 text-risk-watch font-label-caps text-[9px] px-1.5 rounded">PENDING</span>
+</li>
+</ul>
+</div>
+<!-- Context Image -->
+<div class="rounded-xl overflow-hidden border border-grid-border">
+<img class="w-full h-40 object-cover grayscale brightness-90 hover:grayscale-0 transition-all duration-500" data-alt="A high-contrast industrial photograph of a clean, modern manufacturing shopfloor focusing on precision machinery and robotic arms. The lighting is crisp and cool-toned, reflecting a professional and efficient workspace with sleek steel surfaces and bright LED overhead panels. The color palette emphasizes deep navy, slate gray, and bright white to maintain the cockpit aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJTQvTCRJ8Iwi-5FjwwsaSV-5_022C0UnJug8b_zZO9qhE4EWIYLUngEbFQ0mCCdpIv-1qAIzOKxQ-v5DMQaHRljx32kQFeK9yF0NGrLpeFF-K5FFHi-Ko1TjByvAlcL2mIiMZvKWTwy6FIY6sOYz7vgI5OuiRMyHc6lkf1cQ9Va-Dn3xoHnVSWB2PnmeqC36iPpqEOBLfXeu01kHzXdFdir_4iXEn6_u3ibqMI25nyoEdMQMU2TmeMSnCCcW6BpYpWSkexucGUOU"/>
+</div>
+</div>
+<div class="p-6 border-t border-grid-border bg-surface-container-low">
+<button class="w-full bg-primary text-on-primary py-3 font-label-caps text-label-caps rounded shadow hover:opacity-90 transition-opacity">
+                ACKNOWLEDGE ALL ALERTS
+            </button>
+</div>
+</div>
+<!-- Micro-interactions Script -->
+<script>
+        // Toggle Drawer for Desktop (Simulating a detail click)
+        const dashboardCards = document.querySelectorAll('.bg-white.shadow-sm');
+        const drawer = document.getElementById('right-drawer');
+
+        dashboardCards.forEach(card => {
+            card.addEventListener('click', () => {
+                if (window.innerWidth >= 1280) { // xl breakpoint
+                    drawer.classList.remove('hidden');
+                    setTimeout(() => drawer.classList.remove('translate-x-full'), 10);
+                }
+            });
+        });
+
+        // Simulating data updates
+        setInterval(() => {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            // This would normally update UI elements
+        }, 30000);
+    </script>
+</body></html>

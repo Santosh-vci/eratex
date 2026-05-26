@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ERATEX OPS CONTROL - WIP &amp; Queue Monitoring</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        /* Custom scrollbar for high-density grids */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+        
+        .grid-sticky-col { position: sticky; left: 0; z-index: 20; background-color: inherit; }
+        .grid-sticky-header { position: sticky; top: 0; z-index: 30; }
+        
+        .drawer-transition { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        .risk-dot-green { background-color: #10B981; }
+        .risk-dot-yellow { background-color: #F59E0B; }
+        .risk-dot-red { background-color: #EF4444; }
+        .risk-dot-black { background-color: #111827; }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            font-size: 18px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#303032",
+                        "surface-muted": "#F8FAFC",
+                        "primary": "#091426",
+                        "error-container": "#ffdad6",
+                        "risk-watch": "#F59E0B",
+                        "surface-container-high": "#eae7e9",
+                        "inverse-on-surface": "#f3f0f2",
+                        "tertiary-container": "#35260c",
+                        "inverse-primary": "#bcc7de",
+                        "risk-on-track": "#10B981",
+                        "primary-fixed": "#d8e3fb",
+                        "primary-fixed-dim": "#bcc7de",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#fadfb8",
+                        "on-surface-variant": "#45474c",
+                        "surface-dim": "#dcd9db",
+                        "secondary-container": "#d5e3fd",
+                        "on-tertiary-fixed": "#271902",
+                        "on-error": "#ffffff",
+                        "on-primary-container": "#8590a6",
+                        "surface": "#fbf8fa",
+                        "surface-tint": "#545f73",
+                        "risk-critical": "#111827",
+                        "on-background": "#1b1b1d",
+                        "outline-variant": "#c5c6cd",
+                        "on-tertiary-container": "#a38c6a",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#f5f3f4",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed-dim": "#ddc39d",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "on-surface": "#1b1b1d",
+                        "on-primary-fixed": "#111c2d",
+                        "primary-container": "#1e293b",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed": "#d5e3fd",
+                        "on-tertiary-fixed-variant": "#564427",
+                        "grid-border": "#E2E8F0",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "risk-action": "#EF4444",
+                        "secondary": "#515f74",
+                        "surface-variant": "#e4e2e3",
+                        "surface-bright": "#fbf8fa",
+                        "background": "#fbf8fa",
+                        "on-secondary-container": "#57657b",
+                        "tertiary": "#1e1200",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "outline": "#75777d",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#e4e2e3",
+                        "surface-container": "#f0edef"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-sm": "8px",
+                        "nav-expanded-width": "240px",
+                        "margin-md": "16px",
+                        "gutter": "12px",
+                        "drawer-width": "400px",
+                        "grid-row-height": "32px",
+                        "nav-collapsed-width": "64px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "mono-data": ["JetBrains Mono"],
+                        "label-caps": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface-muted text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed overflow-hidden">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full h-12 flex justify-between items-center px-gutter z-50 bg-surface dark:bg-primary border-b border-grid-border dark:border-outline-variant">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold tracking-tight text-primary dark:text-inverse-primary uppercase">ERATEX OPS CONTROL</span>
+<div class="h-6 w-px bg-grid-border mx-2"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">SURFACE 8: WIP MONITOR</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center bg-surface-container-low px-3 py-1 rounded border border-grid-border">
+<span class="material-symbols-outlined text-on-surface-variant text-sm mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm w-64 placeholder:text-on-surface-variant/50" placeholder="Search Order or Style..." type="text"/>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-label-caps text-label-caps text-primary">This Week</span>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low transition-colors p-1 rounded">sync</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low transition-colors p-1 rounded">notifications</button>
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-[10px] text-white font-bold">JD</div>
+</div>
+</div>
+</header>
+<!-- SideNavBar (Collapsed) -->
+<nav class="fixed left-0 top-12 h-[calc(100vh-48px)] z-40 flex flex-col items-center py-4 bg-surface-muted dark:bg-inverse-surface border-r border-grid-border dark:border-outline w-nav-collapsed-width">
+<div class="flex flex-col gap-2 w-full px-2">
+<!-- Active: Workcenters/Planning logic - highlighting Workcenters as proximity -->
+<button class="w-full aspect-square flex flex-col items-center justify-center rounded text-on-surface-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">assignment</span>
+</button>
+<button class="w-full aspect-square flex flex-col items-center justify-center rounded text-on-surface-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">event_note</span>
+</button>
+<button class="w-full aspect-square flex flex-col items-center justify-center rounded bg-primary-container text-on-primary-container border-r-4 border-primary transition-all">
+<span class="material-symbols-outlined">factory</span>
+</button>
+<button class="w-full aspect-square flex flex-col items-center justify-center rounded text-on-surface-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">analytics</span>
+</button>
+</div>
+<div class="mt-auto flex flex-col gap-2 w-full px-2">
+<button class="w-full aspect-square flex flex-col items-center justify-center rounded text-on-surface-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="w-full aspect-square flex flex-col items-center justify-center rounded text-on-surface-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-nav-collapsed-width pt-12 h-screen flex overflow-hidden">
+<!-- Center Panel (Backlog + Grid) -->
+<div class="flex-1 flex flex-col overflow-hidden">
+<!-- Header Cards Section -->
+<section class="p-4 grid grid-cols-4 gap-3">
+<div class="bg-white border border-grid-border p-3 flex flex-col justify-between">
+<span class="font-label-caps text-label-caps text-on-surface-variant">TOTAL AGEING WIP</span>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-headline-lg text-headline-lg text-primary">12,450</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">units</span>
+</div>
+<div class="mt-2 text-[10px] text-risk-action font-bold flex items-center">
+<span class="material-symbols-outlined text-[12px] mr-1">trending_up</span> +12% VS LAST SHIFT
+                    </div>
+</div>
+<div class="bg-white border border-grid-border p-3 flex flex-col justify-between">
+<span class="font-label-caps text-label-caps text-on-surface-variant">OLDEST WIP BATCH</span>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-headline-lg text-headline-lg text-risk-action">156</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">hours</span>
+</div>
+<div class="mt-2 text-[10px] text-on-surface-variant font-medium">BATCH ID: #77421 - WASHING</div>
+</div>
+<div class="bg-white border border-grid-border p-3 flex flex-col justify-between">
+<span class="font-label-caps text-label-caps text-on-surface-variant">HIGHEST-RISK WIP</span>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-headline-lg text-headline-lg text-risk-critical">4,200</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">units</span>
+</div>
+<div class="mt-2 text-[10px] text-risk-watch font-bold">LINKED TO SHIPMENT EXPORT (T-3)</div>
+</div>
+<div class="bg-white border border-grid-border p-3 flex flex-col justify-between border-l-4 border-l-primary">
+<span class="font-label-caps text-label-caps text-on-surface-variant">CONSTRAINT: WET WASH</span>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-headline-lg text-headline-lg text-primary">8,120</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">waiting</span>
+</div>
+<div class="mt-2 h-1 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="bg-risk-action h-full w-[88%]"></div>
+</div>
+</div>
+</section>
+<!-- Table Actions & Legend -->
+<div class="px-4 py-2 flex justify-between items-center bg-white border-y border-grid-border">
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full risk-dot-green"></span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">On Track</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full risk-dot-yellow"></span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Watch (&gt;24h)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full risk-dot-red"></span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Critical (&gt;48h)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full risk-dot-black"></span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Stalled/Hold</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="bg-white border border-grid-border px-3 py-1 flex items-center gap-1 font-label-caps text-label-caps hover:bg-surface-muted transition-colors">
+<span class="material-symbols-outlined text-sm">filter_list</span> FILTER
+                    </button>
+<button class="bg-primary text-white px-3 py-1 flex items-center gap-1 font-label-caps text-label-caps hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-sm">download</span> EXPORT REPORT
+                    </button>
+</div>
+</div>
+<!-- Main WIP Grid -->
+<div class="flex-1 overflow-auto bg-white">
+<table class="w-full text-left border-collapse min-w-[1000px]">
+<thead class="grid-sticky-header bg-surface-muted text-on-surface-variant border-b border-grid-border">
+<tr>
+<th class="p-2 font-label-caps text-label-caps grid-sticky-col bg-surface-muted">ORDER ID</th>
+<th class="p-2 font-label-caps text-label-caps">STYLE</th>
+<th class="p-2 font-label-caps text-label-caps">WIP STAGE</th>
+<th class="p-2 font-label-caps text-label-caps">QUANTITY</th>
+<th class="p-2 font-label-caps text-label-caps text-center">AGEING</th>
+<th class="p-2 font-label-caps text-label-caps">HOLD REASON</th>
+<th class="p-2 font-label-caps text-label-caps">NEXT PROCESS</th>
+<th class="p-2 font-label-caps text-label-caps">SHIPMENT RISK</th>
+</tr>
+</thead>
+<tbody class="font-data-tabular text-data-tabular">
+<!-- Row 1 (Critical) -->
+<tr class="border-b border-grid-border hover:bg-surface-muted cursor-pointer transition-colors" onclick="toggleDrawer()">
+<td class="p-2 font-bold text-primary grid-sticky-col bg-white">#ER-99381</td>
+<td class="p-2">DNM-SLIM-V2</td>
+<td class="p-2">Sewing to Wash</td>
+<td class="p-2">1,200</td>
+<td class="p-2 text-center">
+<span class="px-2 py-0.5 rounded bg-risk-action/10 text-risk-action font-bold">156h</span>
+</td>
+<td class="p-2 italic text-on-surface-variant">Shade Approval Pending</td>
+<td class="p-2">Wet Wash</td>
+<td class="p-2">
+<div class="flex items-center gap-1 text-risk-action">
+<span class="material-symbols-outlined text-sm">priority_high</span> CRITICAL (T-1)
+                                </div>
+</td>
+</tr>
+<!-- Row 2 (Watch) -->
+<tr class="border-b border-grid-border hover:bg-surface-muted cursor-pointer transition-colors">
+<td class="p-2 font-bold text-primary grid-sticky-col bg-white">#ER-99402</td>
+<td class="p-2">DNM-CARGO-X</td>
+<td class="p-2">Wash to Finishing</td>
+<td class="p-2">850</td>
+<td class="p-2 text-center">
+<span class="px-2 py-0.5 rounded bg-risk-watch/10 text-risk-watch font-bold">32h</span>
+</td>
+<td class="p-2 text-on-surface-variant">---</td>
+<td class="p-2">Trimming</td>
+<td class="p-2">
+<div class="flex items-center gap-1 text-risk-watch">
+<span class="material-symbols-outlined text-sm">warning</span> AT RISK (T-3)
+                                </div>
+</td>
+</tr>
+<!-- Row 3 (Hold) -->
+<tr class="border-b border-grid-border hover:bg-surface-muted cursor-pointer transition-colors bg-risk-critical/[0.02]">
+<td class="p-2 font-bold text-primary grid-sticky-col bg-white">#ER-99110</td>
+<td class="p-2">JCK-HEAVY-R</td>
+<td class="p-2">Cutting to Sewing</td>
+<td class="p-2">2,100</td>
+<td class="p-2 text-center">
+<span class="px-2 py-0.5 rounded bg-risk-critical text-white font-mono font-bold">STALLED</span>
+</td>
+<td class="p-2 font-bold text-risk-critical">Material Shortage (Buttons)</td>
+<td class="p-2">Line 04 - Sewing</td>
+<td class="p-2 text-on-surface-variant">T-10 (Stable)</td>
+</tr>
+<!-- Repeat Rows -->
+<tr class="border-b border-grid-border hover:bg-surface-muted cursor-pointer transition-colors">
+<td class="p-2 font-bold text-primary grid-sticky-col bg-white">#ER-99450</td>
+<td class="p-2">DNM-CHINO-ST</td>
+<td class="p-2">Sewing to Wash</td>
+<td class="p-2">3,400</td>
+<td class="p-2 text-center">
+<span class="px-2 py-0.5 rounded bg-risk-on-track/10 text-risk-on-track font-bold">4h</span>
+</td>
+<td class="p-2 text-on-surface-variant">---</td>
+<td class="p-2">Wet Wash</td>
+<td class="p-2 text-risk-on-track font-bold">ON TRACK</td>
+</tr>
+<!-- Data placeholders -->
+<tr class="border-b border-grid-border hover:bg-surface-muted cursor-pointer transition-colors">
+<td class="p-2 font-bold text-primary grid-sticky-col bg-white">#ER-99501</td>
+<td class="p-2">DNM-RELAX-F</td>
+<td class="p-2">Washing</td>
+<td class="p-2">450</td>
+<td class="p-2 text-center">
+<span class="px-2 py-0.5 rounded bg-risk-on-track/10 text-risk-on-track font-bold">12h</span>
+</td>
+<td class="p-2 text-on-surface-variant">---</td>
+<td class="p-2">Oven/Drying</td>
+<td class="p-2 text-risk-on-track font-bold">ON TRACK</td>
+</tr>
+<!-- Row Fillers -->
+<tr class="border-b border-grid-border hover:bg-surface-muted">
+<td class="p-2 font-bold text-primary grid-sticky-col bg-white">#ER-99522</td>
+<td class="p-2">DNM-SKINNY</td>
+<td class="p-2">Finishing to QC</td>
+<td class="p-2">1,120</td>
+<td class="p-2 text-center">
+<span class="px-2 py-0.5 rounded bg-risk-action/10 text-risk-action font-bold">72h</span>
+</td>
+<td class="p-2 italic text-on-surface-variant">QC Backlog</td>
+<td class="p-2">Final QC</td>
+<td class="p-2 text-risk-action font-bold">LATE (T-0)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Footer Meta -->
+<footer class="h-8 bg-surface px-4 flex items-center justify-between border-t border-grid-border font-mono-data text-[10px] text-on-surface-variant uppercase">
+<div>CONNECTED: ERATEX_CENTRAL_SRV_02</div>
+<div class="flex gap-4">
+<span>SYNC: 45s AGO</span>
+<span class="text-risk-on-track">● ALL SYSTEMS NOMINAL</span>
+</div>
+</footer>
+</div>
+<!-- Right Detail Drawer (400px) -->
+<aside class="w-drawer-width bg-white border-l border-grid-border h-full flex flex-col drawer-transition translate-x-full fixed right-0 top-12 z-40 shadow-xl" id="detailDrawer">
+<div class="p-4 border-b border-grid-border flex justify-between items-center bg-primary text-white">
+<div>
+<h2 class="font-headline-md text-headline-md uppercase">WIP ANALYSIS</h2>
+<p class="font-label-caps text-[10px] opacity-70">ORDER #ER-99381 | DNM-SLIM-V2</p>
+</div>
+<button class="material-symbols-outlined hover:bg-white/10 p-1 rounded" onclick="toggleDrawer()">close</button>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-6">
+<!-- Timeline/Dwell Time -->
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">schedule</span> DWELL TIME PER STAGE
+                    </h3>
+<div class="space-y-4 border-l-2 border-grid-border ml-2 pl-4">
+<div class="relative">
+<div class="absolute -left-[21px] top-1 w-2 h-2 rounded-full bg-risk-on-track"></div>
+<p class="font-label-caps text-[10px] text-on-surface-variant">CUTTING TO SEWING</p>
+<p class="font-body-sm text-body-sm font-bold">12h <span class="font-normal text-on-surface-variant text-[11px]">(Std: 14h)</span></p>
+</div>
+<div class="relative">
+<div class="absolute -left-[21px] top-1 w-2 h-2 rounded-full bg-risk-action"></div>
+<p class="font-label-caps text-[10px] text-on-surface-variant">SEWING TO WASH (CURRENT)</p>
+<p class="font-body-sm text-body-sm font-bold text-risk-action">156h <span class="font-normal text-on-surface-variant text-[11px]">(Std: 18h)</span></p>
+<div class="mt-2 p-2 bg-surface-container-low rounded border border-grid-border">
+<p class="text-[11px] font-bold text-primary">REASON: SHADE APPROVAL PENDING</p>
+<p class="text-[11px] text-on-surface-variant mt-1">Comment: Waiting for technical team to confirm laundry master sample. Last update 48h ago.</p>
+</div>
+</div>
+<div class="relative opacity-30">
+<div class="absolute -left-[21px] top-1 w-2 h-2 rounded-full bg-outline"></div>
+<p class="font-label-caps text-[10px] text-on-surface-variant">WET WASH TO DRYING</p>
+<p class="font-body-sm text-body-sm">Pending</p>
+</div>
+</div>
+</div>
+<!-- Readiness Checklist -->
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-3">READINESS CHECKLIST</h3>
+<div class="space-y-2">
+<div class="flex items-center justify-between p-2 border border-grid-border bg-surface-muted">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-risk-on-track">check_circle</span>
+<span class="text-body-sm">Fabric Components</span>
+</div>
+<span class="font-label-caps text-[10px] bg-risk-on-track/10 text-risk-on-track px-1">READY</span>
+</div>
+<div class="flex items-center justify-between p-2 border border-grid-border bg-surface-muted">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-risk-action">error</span>
+<span class="text-body-sm">Technical Approval</span>
+</div>
+<span class="font-label-caps text-[10px] bg-risk-action/10 text-risk-action px-1">BLOCKED</span>
+</div>
+<div class="flex items-center justify-between p-2 border border-grid-border bg-surface-muted">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant">radio_button_unchecked</span>
+<span class="text-body-sm">Final Trim Dispatch</span>
+</div>
+<span class="font-label-caps text-[10px] bg-surface-container-high px-1">PENDING</span>
+</div>
+</div>
+</div>
+<!-- Escalation Module -->
+<div class="p-3 bg-error-container/30 border border-error-container rounded">
+<h3 class="font-label-caps text-label-caps text-on-error-container mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">priority_high</span> ESCALATION MODULE
+                    </h3>
+<div class="space-y-3">
+<div>
+<label class="font-label-caps text-[10px] text-on-error-container block mb-1">ASSIGN OWNER</label>
+<select class="w-full bg-white border-outline-variant h-8 text-body-sm focus:ring-primary">
+<option>Marcus Thorne (Tech Lead)</option>
+<option>Elena Rodriguez (Ops Mgr)</option>
+<option>Unassigned</option>
+</select>
+</div>
+<div>
+<label class="font-label-caps text-[10px] text-on-error-container block mb-1">DUE FOR CLEARANCE</label>
+<input class="w-full bg-white border-outline-variant h-8 text-body-sm focus:ring-primary" type="date" value="2023-11-20"/>
+</div>
+<button class="w-full bg-risk-critical text-white h-8 font-label-caps text-label-caps mt-2 hover:opacity-90">SEND ALERT</button>
+</div>
+</div>
+</div>
+<!-- Drawer Footer -->
+<div class="p-4 border-t border-grid-border bg-surface-muted flex gap-2">
+<button class="flex-1 border border-primary text-primary h-8 font-label-caps text-label-caps hover:bg-primary hover:text-white transition-all">VIEW FULL HISTORY</button>
+<button class="w-10 border border-primary text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">print</span>
+</button>
+</div>
+</aside>
+</main>
+<!-- FAB for adding exception - Hidden on sub-screens per mandate -->
+<button class="fixed bottom-12 right-6 w-12 h-12 bg-primary text-white rounded shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-50">
+<span class="material-symbols-outlined">add_alert</span>
+</button>
+<script>
+        function toggleDrawer() {
+            const drawer = document.getElementById('detailDrawer');
+            if (drawer.classList.contains('translate-x-full')) {
+                drawer.classList.remove('translate-x-full');
+            } else {
+                drawer.classList.add('translate-x-full');
+            }
+        }
+
+        // Auto-show drawer on first row click for demo
+        document.addEventListener('DOMContentLoaded', () => {
+            // Pre-calculate some values if needed
+        });
+    </script>
+</body></html>

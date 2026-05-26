@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fabric Inward &amp; QC Monitor | Eratex Operations</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-error": "#ffffff",
+                "tertiary": "#1e1200",
+                "surface-container-low": "#f5f3f4",
+                "surface-container": "#f0edef",
+                "risk-action": "#EF4444",
+                "risk-on-track": "#10B981",
+                "on-background": "#1b1b1d",
+                "outline-variant": "#c5c6cd",
+                "inverse-surface": "#303032",
+                "secondary-fixed-dim": "#b9c7e0",
+                "background": "#fbf8fa",
+                "on-secondary-fixed": "#0d1c2f",
+                "on-secondary-fixed-variant": "#3a485c",
+                "error": "#ba1a1a",
+                "risk-critical": "#111827",
+                "on-primary-fixed-variant": "#3c475a",
+                "tertiary-fixed": "#fadfb8",
+                "primary-fixed-dim": "#bcc7de",
+                "on-tertiary": "#ffffff",
+                "on-primary-fixed": "#111c2d",
+                "primary": "#091426",
+                "surface-bright": "#fbf8fa",
+                "surface-container-high": "#eae7e9",
+                "inverse-primary": "#bcc7de",
+                "surface": "#fbf8fa",
+                "tertiary-fixed-dim": "#ddc39d",
+                "surface-variant": "#e4e2e3",
+                "surface-container-lowest": "#ffffff",
+                "on-tertiary-fixed-variant": "#564427",
+                "surface-tint": "#545f73",
+                "primary-container": "#1e293b",
+                "error-container": "#ffdad6",
+                "grid-border": "#E2E8F0",
+                "risk-watch": "#F59E0B",
+                "on-tertiary-fixed": "#271902",
+                "on-secondary": "#ffffff",
+                "secondary": "#515f74",
+                "tertiary-container": "#35260c",
+                "surface-dim": "#dcd9db",
+                "surface-muted": "#F8FAFC",
+                "outline": "#75777d",
+                "on-surface": "#1b1b1d",
+                "on-error-container": "#93000a",
+                "surface-container-highest": "#e4e2e3",
+                "on-surface-variant": "#45474c",
+                "secondary-fixed": "#d5e3fd",
+                "inverse-on-surface": "#f3f0f2",
+                "on-primary": "#ffffff",
+                "on-primary-container": "#8590a6",
+                "secondary-container": "#d5e3fd",
+                "on-tertiary-container": "#a38c6a",
+                "on-secondary-container": "#57657b",
+                "primary-fixed": "#d8e3fb"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "spacing": {
+                "margin-sm": "8px",
+                "nav-expanded-width": "240px",
+                "gutter": "12px",
+                "drawer-width": "400px",
+                "grid-row-height": "32px",
+                "nav-collapsed-width": "64px",
+                "margin-md": "16px"
+            },
+            "fontFamily": {
+                "body-md": ["Inter"],
+                "data-tabular": ["Inter"],
+                "headline-lg": ["Inter"],
+                "body-sm": ["Inter"],
+                "label-caps": ["Inter"],
+                "mono-data": ["JetBrains Mono"],
+                "headline-md": ["Inter"]
+            },
+            "fontSize": {
+                "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            font-size: 1.25rem;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+        .grid-row-hover:hover { background-color: #F1F5F9; }
+        .sticky-col-1 { position: sticky; left: 0; z-index: 10; background: inherit; }
+    </style>
+</head>
+<body class="bg-background font-body-md text-on-background antialiased overflow-hidden">
+<!-- Top Navigation Bar -->
+<header class="bg-surface border-b border-outline-variant flex justify-between items-center w-full px-margin-md h-12 z-50 fixed top-0 docked full-width">
+<div class="flex items-center gap-4">
+<span class="text-headline-md font-headline-md font-bold text-on-surface">Operations Control Cockpit</span>
+<div class="h-6 w-px bg-outline-variant mx-2"></div>
+<h1 class="text-headline-md font-headline-md text-primary">Fabric Inward &amp; QC Monitor</h1>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center bg-surface-container px-3 py-1 rounded-lg border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm w-64 p-0" placeholder="Search Roll ID, Lot or Order..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="hover:bg-surface-container-low transition-colors p-1 rounded-full relative">
+<span class="material-symbols-outlined">notifications_active</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-risk-action rounded-full border border-white"></span>
+</button>
+<button class="hover:bg-surface-container-low transition-colors p-1 rounded-full">
+<span class="material-symbols-outlined">sync</span>
+</button>
+<button class="hover:bg-surface-container-low transition-colors p-1 rounded-full">
+<span class="material-symbols-outlined">apps</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-primary-container flex items-center justify-center text-white font-bold text-xs border border-outline-variant">
+                    JD
+                </div>
+</div>
+</div>
+</header>
+<!-- Sidebar Navigation -->
+<nav class="fixed left-0 top-12 h-[calc(100vh-48px)] flex flex-col z-40 overflow-hidden bg-surface-container-lowest border-r border-outline-variant w-nav-collapsed-width hover:w-nav-expanded-width transition-all duration-300 group">
+<div class="flex flex-col flex-1 py-4">
+<!-- Active: Inventory -->
+<a class="flex items-center h-12 px-5 gap-4 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-label-caps font-label-caps whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Dashboard</span>
+</a>
+<a class="flex items-center h-12 px-5 gap-4 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">factory</span>
+<span class="text-label-caps font-label-caps whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Production</span>
+</a>
+<a class="flex items-center h-12 px-5 gap-4 bg-secondary-container text-on-secondary-container border-r-2 border-primary" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="text-label-caps font-label-caps whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Inventory</span>
+</a>
+<a class="flex items-center h-12 px-5 gap-4 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-label-caps font-label-caps whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Capacity</span>
+</a>
+<a class="flex items-center h-12 px-5 gap-4 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-risk-action">warning</span>
+<span class="text-label-caps font-label-caps whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Exceptions</span>
+</a>
+</div>
+<div class="py-4 border-t border-outline-variant">
+<a class="flex items-center h-12 px-5 gap-4 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-label-caps font-label-caps whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Settings</span>
+</a>
+<a class="flex items-center h-12 px-5 gap-4 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="text-label-caps font-label-caps whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Support</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-nav-collapsed-width mt-12 p-4 h-[calc(100vh-48px)] overflow-y-auto pr-[400px]">
+<!-- KPI Dashboard Section -->
+<section class="grid grid-cols-4 gap-4 mb-6">
+<div class="bg-surface p-4 border border-outline-variant rounded shadow-sm">
+<div class="flex justify-between items-start">
+<p class="text-label-caps font-label-caps text-on-surface-variant">INWARD TODAY</p>
+<span class="material-symbols-outlined text-on-surface-variant">inventory</span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="text-headline-lg font-headline-lg">142 Rolls</span>
+<span class="text-body-sm text-on-surface-variant font-mono-data">(8,520m)</span>
+</div>
+<div class="mt-1 flex items-center text-risk-on-track gap-1">
+<span class="material-symbols-outlined text-xs" style="font-size: 14px;">trending_up</span>
+<span class="text-body-sm">+4.2% vs yesterday</span>
+</div>
+</div>
+<div class="bg-surface p-4 border border-outline-variant rounded shadow-sm border-l-4 border-l-risk-action">
+<div class="flex justify-between items-start">
+<p class="text-label-caps font-label-caps text-on-surface-variant">PENDING INSPECTION</p>
+<span class="material-symbols-outlined text-risk-action">schedule</span>
+</div>
+<div class="mt-2">
+<span class="text-headline-lg font-headline-lg">48 Rolls</span>
+</div>
+<p class="text-body-sm text-risk-action font-semibold mt-1">Critical PCD Impact</p>
+</div>
+<div class="bg-surface p-4 border border-outline-variant rounded shadow-sm">
+<div class="flex justify-between items-start">
+<p class="text-label-caps font-label-caps text-on-surface-variant">QUALITY PASS RATE</p>
+<span class="material-symbols-outlined text-risk-on-track">verified_user</span>
+</div>
+<div class="mt-2">
+<span class="text-headline-lg font-headline-lg">94.2%</span>
+</div>
+<div class="mt-1 flex items-center text-risk-action gap-1">
+<span class="material-symbols-outlined text-xs" style="font-size: 14px;">trending_down</span>
+<span class="text-body-sm">-1.2% vs LW</span>
+</div>
+</div>
+<div class="bg-surface p-4 border border-outline-variant rounded shadow-sm border-l-4 border-l-risk-watch">
+<div class="flex justify-between items-start">
+<p class="text-label-caps font-label-caps text-on-surface-variant">MAJOR DEFECTS</p>
+<span class="material-symbols-outlined text-risk-watch">report</span>
+</div>
+<div class="mt-2">
+<span class="text-headline-lg font-headline-lg">12 Rolls</span>
+</div>
+<p class="text-body-sm text-on-surface-variant mt-1">Requires Technical Review</p>
+</div>
+</section>
+<!-- Control Bar (Filters) -->
+<section class="bg-surface p-3 border border-outline-variant mb-4 flex flex-wrap items-center gap-4 sticky top-0 z-20">
+<div class="flex items-center gap-2 border-r border-outline-variant pr-4">
+<span class="material-symbols-outlined text-body-md">filter_list</span>
+<span class="text-label-caps font-label-caps">Filters</span>
+</div>
+<select class="text-body-sm bg-surface border border-outline rounded px-2 py-1 focus:ring-1 focus:ring-primary h-8">
+<option>All Vendors</option>
+<option>Nishat Mills</option>
+<option>Artistic Milliners</option>
+</select>
+<select class="text-body-sm bg-surface border border-outline rounded px-2 py-1 focus:ring-1 focus:ring-primary h-8">
+<option>Shade Lot: All</option>
+<option>LOT-A2</option>
+<option>LOT-B1</option>
+</select>
+<select class="text-body-sm bg-surface border border-outline rounded px-2 py-1 focus:ring-1 focus:ring-primary h-8">
+<option>Fabric: Denim/Chino</option>
+<option>Denim</option>
+<option>Chino</option>
+</select>
+<select class="text-body-sm bg-surface border border-outline rounded px-2 py-1 focus:ring-1 focus:ring-primary h-8">
+<option>PCD Horizon: 48h</option>
+<option>72h</option>
+<option>Next Week</option>
+</select>
+<div class="ml-auto flex gap-2">
+<button class="bg-primary text-white text-body-sm font-semibold px-4 py-1 h-8 rounded flex items-center gap-2 hover:opacity-90">
+<span class="material-symbols-outlined text-sm" style="font-size: 16px;">add</span>
+                    New Batch
+                </button>
+<button class="border border-outline text-body-sm font-semibold px-4 py-1 h-8 rounded flex items-center gap-2 hover:bg-surface-container">
+<span class="material-symbols-outlined text-sm" style="font-size: 16px;">file_download</span>
+                    Export
+                </button>
+</div>
+</section>
+<!-- High Density Data Grid -->
+<section class="bg-white border border-outline-variant overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-muted sticky top-0 z-10">
+<tr class="h-8 border-b border-outline-variant">
+<th class="px-3 text-label-caps font-label-caps border-r border-outline-variant sticky-col-1 whitespace-nowrap">ROLL ID</th>
+<th class="px-3 text-label-caps font-label-caps border-r border-outline-variant whitespace-nowrap">SHADE LOT</th>
+<th class="px-3 text-label-caps font-label-caps border-r border-outline-variant whitespace-nowrap">SPECIFICATION</th>
+<th class="px-3 text-label-caps font-label-caps border-r border-outline-variant whitespace-nowrap">WIDTH (ACTUAL)</th>
+<th class="px-3 text-label-caps font-label-caps border-r border-outline-variant whitespace-nowrap">GSM</th>
+<th class="px-3 text-label-caps font-label-caps border-r border-outline-variant whitespace-nowrap">SHRINK W/W</th>
+<th class="px-3 text-label-caps font-label-caps border-r border-outline-variant whitespace-nowrap">4-PT SCORE</th>
+<th class="px-3 text-label-caps font-label-caps border-r border-outline-variant whitespace-nowrap">PCD RISK</th>
+<th class="px-3 text-label-caps font-label-caps border-r border-outline-variant whitespace-nowrap">STATUS</th>
+<th class="px-3 text-label-caps font-label-caps whitespace-nowrap">INSPECTOR</th>
+</tr>
+</thead>
+<tbody class="text-data-tabular font-data-tabular">
+<!-- Row 1: The Active Selection -->
+<tr class="h-grid-row-height bg-primary-fixed border-b border-outline-variant cursor-pointer">
+<td class="px-3 border-r border-outline-variant sticky-col-1 bg-primary-fixed font-bold">R-2024-012</td>
+<td class="px-3 border-r border-outline-variant">LOT-A2</td>
+<td class="px-3 border-r border-outline-variant truncate max-w-[150px]">12oz Indigo Selvedge</td>
+<td class="px-3 border-r border-outline-variant">58" <span class="text-risk-action">(-0.5")</span></td>
+<td class="px-3 border-r border-outline-variant">380</td>
+<td class="px-3 border-r border-outline-variant">-2.5% / -1.2%</td>
+<td class="px-3 border-r border-outline-variant font-bold text-risk-watch">18 pts</td>
+<td class="px-3 border-r border-outline-variant">
+<span class="bg-risk-action/10 text-risk-action px-2 py-0.5 rounded text-[10px] font-bold">CRITICAL</span>
+</td>
+<td class="px-3 border-r border-outline-variant">
+<span class="bg-risk-watch/10 text-risk-watch px-2 py-0.5 rounded text-[10px] font-bold uppercase">Hold</span>
+</td>
+<td class="px-3">R. Ahmadi</td>
+</tr>
+<!-- Row 2 -->
+<tr class="h-grid-row-height border-b border-outline-variant grid-row-hover">
+<td class="px-3 border-r border-outline-variant sticky-col-1 font-bold">R-2024-013</td>
+<td class="px-3 border-r border-outline-variant">LOT-A2</td>
+<td class="px-3 border-r border-outline-variant">12oz Indigo Selvedge</td>
+<td class="px-3 border-r border-outline-variant">58.5"</td>
+<td class="px-3 border-r border-outline-variant">378</td>
+<td class="px-3 border-r border-outline-variant">-2.3% / -1.4%</td>
+<td class="px-3 border-r border-outline-variant text-risk-on-track">4 pts</td>
+<td class="px-3 border-r border-outline-variant">
+<span class="bg-risk-on-track/10 text-risk-on-track px-2 py-0.5 rounded text-[10px] font-bold">ON TRACK</span>
+</td>
+<td class="px-3 border-r border-outline-variant">
+<span class="bg-risk-on-track/10 text-risk-on-track px-2 py-0.5 rounded text-[10px] font-bold uppercase">Pass</span>
+</td>
+<td class="px-3">S. Khan</td>
+</tr>
+<!-- Row 3 -->
+<tr class="h-grid-row-height border-b border-outline-variant grid-row-hover">
+<td class="px-3 border-r border-outline-variant sticky-col-1 font-bold">R-2024-014</td>
+<td class="px-3 border-r border-outline-variant">LOT-B1</td>
+<td class="px-3 border-r border-outline-variant">9oz Khaki Twill</td>
+<td class="px-3 border-r border-outline-variant">60"</td>
+<td class="px-3 border-r border-outline-variant">310</td>
+<td class="px-3 border-r border-outline-variant">-1.0% / -0.5%</td>
+<td class="px-3 border-r border-outline-variant text-risk-on-track">2 pts</td>
+<td class="px-3 border-r border-outline-variant">
+<span class="bg-on-primary-container/10 text-on-primary-container px-2 py-0.5 rounded text-[10px] font-bold">LOW</span>
+</td>
+<td class="px-3 border-r border-outline-variant">
+<span class="bg-risk-on-track/10 text-risk-on-track px-2 py-0.5 rounded text-[10px] font-bold uppercase">Pass</span>
+</td>
+<td class="px-3">R. Ahmadi</td>
+</tr>
+<!-- Repeat rows for density -->
+<script>
+                        const tbody = document.querySelector('tbody');
+                        for(let i=15; i<35; i++) {
+                            const tr = document.createElement('tr');
+                            tr.className = 'h-grid-row-height border-b border-outline-variant grid-row-hover';
+                            tr.innerHTML = `
+                                <td class="px-3 border-r border-outline-variant sticky-col-1 font-bold">R-2024-0${i}</td>
+                                <td class="px-3 border-r border-outline-variant">LOT-C3</td>
+                                <td class="px-3 border-r border-outline-variant">10.5oz Stretch Denim</td>
+                                <td class="px-3 border-r border-outline-variant">57"</td>
+                                <td class="px-3 border-r border-outline-variant">340</td>
+                                <td class="px-3 border-r border-outline-variant">-4.5% / -2.1%</td>
+                                <td class="px-3 border-r border-outline-variant ${i%5===0?'text-risk-action font-bold':'text-on-surface-variant'}">${i%5===0?'24':'8'} pts</td>
+                                <td class="px-3 border-r border-outline-variant"><span class="bg-risk-on-track/10 text-risk-on-track px-2 py-0.5 rounded text-[10px] font-bold uppercase">Normal</span></td>
+                                <td class="px-3 border-r border-outline-variant"><span class="bg-on-surface-variant/10 text-on-surface-variant px-2 py-0.5 rounded text-[10px] font-bold uppercase">Pending</span></td>
+                                <td class="px-3">Inspector_${i%3}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        }
+                    </script>
+</tbody>
+</table>
+</section>
+<!-- Stale Data Indicator Footer -->
+<footer class="mt-4 flex justify-between items-center text-on-surface-variant">
+<div class="flex items-center gap-4 text-body-sm">
+<span class="flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-risk-on-track"></span>
+                    System Online: All QC Stations Active
+                </span>
+<span class="font-mono-data text-xs">SYNC: 2m ago</span>
+</div>
+<div class="flex items-center gap-2 text-body-sm">
+<span>Page 1 of 4</span>
+<div class="flex border border-outline rounded overflow-hidden">
+<button class="px-2 py-1 bg-surface-container border-r border-outline"><span class="material-symbols-outlined text-sm">chevron_left</span></button>
+<button class="px-2 py-1 bg-surface hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined text-sm">chevron_right</span></button>
+</div>
+</div>
+</footer>
+</main>
+<!-- Right Action Drawer -->
+<aside class="fixed right-0 top-12 h-[calc(100vh-48px)] w-[400px] bg-white border-l border-outline-variant z-30 shadow-lg flex flex-col">
+<!-- Drawer Header -->
+<div class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-muted">
+<div>
+<h2 class="text-headline-md font-headline-md text-primary">Roll Inspection Detail</h2>
+<p class="text-body-sm font-mono-data text-on-surface-variant">ID: R-2024-012 | 12oz Indigo</p>
+</div>
+<button class="p-1 hover:bg-surface-container rounded-full"><span class="material-symbols-outlined">close</span></button>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-6">
+<!-- Technical Specs Section -->
+<section>
+<h3 class="text-label-caps font-label-caps text-on-surface-variant mb-3">TECHNICAL SPECS</h3>
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-background p-3 border border-outline-variant rounded">
+<p class="text-xs text-on-surface-variant mb-1">Actual Width</p>
+<p class="text-body-md font-bold">58" <span class="text-risk-action text-xs">(-0.5" dev)</span></p>
+</div>
+<div class="bg-background p-3 border border-outline-variant rounded">
+<p class="text-xs text-on-surface-variant mb-1">Actual GSM</p>
+<p class="text-body-md font-bold">380 <span class="text-risk-on-track text-xs">(+2 dev)</span></p>
+</div>
+<div class="bg-background p-3 border border-outline-variant rounded col-span-2">
+<p class="text-xs text-on-surface-variant mb-1">Shrinkage (Warp / Weft)</p>
+<p class="text-body-md font-bold">-2.5% / -1.2%</p>
+</div>
+</div>
+</section>
+<!-- 4-Point Map -->
+<section>
+<div class="flex justify-between items-center mb-3">
+<h3 class="text-label-caps font-label-caps text-on-surface-variant">4-POINT RESULT MAP</h3>
+<span class="text-headline-md font-bold text-risk-watch">18 pts / 100m</span>
+</div>
+<div class="space-y-2">
+<div class="flex items-center justify-between text-body-sm p-2 border-b border-outline-variant/30">
+<span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-risk-action"></span> Hole / Tear</span>
+<span class="font-bold">8 pts</span>
+</div>
+<div class="flex items-center justify-between text-body-sm p-2 border-b border-outline-variant/30">
+<span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-risk-watch"></span> Slub / Knot</span>
+<span class="font-bold">6 pts</span>
+</div>
+<div class="flex items-center justify-between text-body-sm p-2 border-b border-outline-variant/30">
+<span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-500"></span> Shading</span>
+<span class="font-bold">4 pts</span>
+</div>
+</div>
+</section>
+<!-- Shade Check -->
+<section class="bg-background p-3 border border-outline-variant rounded">
+<h3 class="text-label-caps font-label-caps text-on-surface-variant mb-2">SHADE CHECK</h3>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded border border-outline-variant" style="background-color: #1a233b;"></div>
+<div>
+<p class="text-body-sm font-bold">Delta-E: 0.45</p>
+<p class="text-xs text-risk-on-track">Within Tolerance (&lt;1.0)</p>
+</div>
+</div>
+</section>
+<!-- Affected Orders -->
+<section>
+<h3 class="text-label-caps font-label-caps text-on-surface-variant mb-3">AFFECTED ORDERS</h3>
+<div class="border border-risk-action/30 bg-risk-action/5 rounded p-3">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-body-sm font-bold">ORD-7291</p>
+<p class="text-xs text-on-surface-variant">Product: J52 Slim Fit</p>
+</div>
+<span class="bg-risk-action text-white text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">Blocked</span>
+</div>
+<div class="mt-2 h-1 w-full bg-outline-variant rounded-full overflow-hidden">
+<div class="h-full bg-risk-action w-full"></div>
+</div>
+<p class="text-[11px] mt-1 font-semibold text-risk-action">PCD: 25 Oct (At Risk)</p>
+</div>
+</section>
+</div>
+<!-- Drawer Actions -->
+<div class="p-4 border-t border-outline-variant bg-surface-container-lowest grid grid-cols-2 gap-2">
+<button class="bg-primary text-white text-body-sm font-bold py-2 rounded hover:opacity-90 flex items-center justify-center gap-2 transition-opacity">
+<span class="material-symbols-outlined text-sm" style="font-size: 16px;">task_alt</span>
+                Release to Cutting
+            </button>
+<button class="border border-outline text-body-sm font-bold py-2 rounded hover:bg-surface-container transition-colors">
+                Mark for Rewash
+            </button>
+<button class="border border-outline text-body-sm font-bold py-2 rounded hover:bg-surface-container transition-colors">
+                Manager Review
+            </button>
+<button class="bg-risk-action text-white text-body-sm font-bold py-2 rounded hover:opacity-90 flex items-center justify-center gap-2 transition-opacity">
+<span class="material-symbols-outlined text-sm" style="font-size: 16px;">warning</span>
+                QC Exception
+            </button>
+</div>
+</aside>
+<!-- Contextual FAB -->
+<div class="fixed bottom-6 right-[420px] z-50">
+<button class="bg-primary-container text-on-primary-fixed w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:scale-105 transition-transform group">
+<span class="material-symbols-outlined" style="font-size: 32px; color: white;">camera_alt</span>
+<span class="absolute right-full mr-4 bg-primary-container text-white px-3 py-1 rounded text-body-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                Scan Roll QR
+            </span>
+</button>
+</div>
+</body></html>

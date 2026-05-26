@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Output Capture | Shopfloor Control</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "risk-critical": "#111827",
+                        "surface-container-high": "#eae7e9",
+                        "on-tertiary-fixed-variant": "#564427",
+                        "surface-tint": "#545f73",
+                        "on-primary-fixed": "#111c2d",
+                        "on-surface-variant": "#45474c",
+                        "on-primary": "#ffffff",
+                        "risk-action": "#EF4444",
+                        "secondary-fixed": "#d5e3fd",
+                        "outline-variant": "#c5c6cd",
+                        "on-tertiary-container": "#a38c6a",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "grid-border": "#E2E8F0",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "surface-container-low": "#f5f3f4",
+                        "secondary": "#515f74",
+                        "risk-on-track": "#10B981",
+                        "outline": "#75777d",
+                        "on-surface": "#1b1b1d",
+                        "inverse-surface": "#303032",
+                        "inverse-on-surface": "#f3f0f2",
+                        "on-tertiary-fixed": "#271902",
+                        "surface-dim": "#dcd9db",
+                        "on-background": "#1b1b1d",
+                        "background": "#fbf8fa",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "on-error": "#ffffff",
+                        "primary-fixed-dim": "#bcc7de",
+                        "surface-bright": "#fbf8fa",
+                        "surface-container-highest": "#e4e2e3",
+                        "surface-muted": "#F8FAFC",
+                        "primary-container": "#1e293b",
+                        "tertiary-fixed": "#fadfb8",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#d5e3fd",
+                        "on-secondary-container": "#57657b",
+                        "risk-watch": "#F59E0B",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#35260c",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-container": "#8590a6",
+                        "primary": "#091426",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#fbf8fa",
+                        "surface-container": "#f0edef",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "inverse-primary": "#bcc7de",
+                        "tertiary": "#1e1200",
+                        "error": "#ba1a1a",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#d8e3fb",
+                        "surface-variant": "#e4e2e3",
+                        "tertiary-fixed-dim": "#ddc39d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "drawer-width": "400px",
+                        "gutter": "12px",
+                        "nav-collapsed-width": "64px",
+                        "grid-row-height": "32px",
+                        "margin-md": "16px",
+                        "nav-expanded-width": "240px",
+                        "margin-sm": "8px"
+                    },
+                    "fontFamily": {
+                        "data-tabular": ["Inter"],
+                        "mono-data": ["JetBrains Mono"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+        .keypad-btn {
+            transition: transform 0.1s ease, background-color 0.2s ease;
+        }
+        .keypad-btn:active {
+            transform: scale(0.95);
+        }
+        .high-contrast-input:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: -2px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md antialiased overflow-hidden">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter h-nav-collapsed-width bg-primary dark:bg-primary border-b border-outline-variant">
+<div class="flex items-center gap-4">
+<span class="text-headline-md font-headline-md font-bold text-on-primary">Shopfloor Control</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-primary hover:bg-primary-container p-2 rounded transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-primary hover:bg-primary-container p-2 rounded transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant">
+<img alt="Operator Avatar" class="h-full w-full object-cover" data-alt="A professional studio headshot of a shopfloor supervisor wearing a neat blue collared shirt. The lighting is crisp and bright, creating a clean light-mode aesthetic against a neutral studio background. The style is corporate yet functional, conveying a sense of authority and operational focus in a modern manufacturing environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqK7ZWsdzujVrQt2V-ahUqrkgMNHC2kO5rhSh3914ILUxc0gf5H5Olfy--4Nrx0IuJJFiy9EN1XLh_zxFOKEGaXaUzdjKb0bC0E3JY1tFzH1cw8MuowuNC0UtyEnqTRTHkIUYQvjTDW3DzFoj4KRJ3y1LcwbD1aStO1ufMFKooVgV7Ty4YI3Lcr2blYhcJtdslGwQwcokoBXnyHyXMjHdEoj6VwJEuVouXXazQ9L5D_f9P-m0X9p4epo9ZF3XAMDZCW1jESD9Ujh4"/>
+</div>
+</div>
+</header>
+<div class="flex h-screen pt-nav-collapsed-width overflow-hidden">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-full pt-4 bg-surface dark:bg-surface-dim border-r border-grid-border w-nav-collapsed-width lg:w-nav-expanded-width transition-all duration-300">
+<div class="px-4 mb-6">
+<div class="flex flex-col">
+<span class="text-primary font-headline-md font-extrabold uppercase">Unit A</span>
+<span class="text-on-surface-variant font-body-sm">Shift 1: 06:00 - 14:00</span>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center px-4 py-3 mx-2 text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span>
+<span class="hidden lg:block font-label-caps uppercase">Dashboard</span>
+</a>
+<a class="flex items-center px-4 py-3 mx-2 bg-secondary-container text-on-secondary-container rounded-xl transition-all scale-95" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="precision_manufacturing">precision_manufacturing</span>
+<span class="hidden lg:block font-label-caps uppercase">Production</span>
+</a>
+<a class="flex items-center px-4 py-3 mx-2 text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="timer_off">timer_off</span>
+<span class="hidden lg:block font-label-caps uppercase">Downtime</span>
+</a>
+<a class="flex items-center px-4 py-3 mx-2 text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="error_outline">error_outline</span>
+<span class="hidden lg:block font-label-caps uppercase">Exceptions</span>
+</a>
+<a class="flex items-center px-4 py-3 mx-2 text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="event_note">event_note</span>
+<span class="hidden lg:block font-label-caps uppercase">Shift Logs</span>
+</a>
+</nav>
+<div class="p-4 border-t border-grid-border">
+<div class="flex items-center text-on-surface-variant mb-2">
+<span class="material-symbols-outlined text-sm mr-2" data-icon="sync">sync</span>
+<span class="font-mono-data text-xs">Sync: 2m ago</span>
+</div>
+<div class="flex items-center text-on-surface-variant">
+<span class="material-symbols-outlined text-sm mr-2" data-icon="help_outline">help_outline</span>
+<span class="font-body-sm">Help</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-hidden relative flex flex-col md:flex-row bg-surface-muted">
+<!-- Central Workbench -->
+<div class="flex-1 p-gutter overflow-y-auto pb-24 md:pb-gutter">
+<!-- Order Context Header -->
+<div class="bg-surface-container-lowest border border-grid-border rounded-lg p-4 mb-gutter flex justify-between items-center">
+<div class="flex items-center gap-6">
+<div>
+<span class="block text-label-caps text-on-surface-variant uppercase mb-1">Active Style</span>
+<span class="font-headline-md text-headline-md text-primary">Slim-Fit Denim</span>
+</div>
+<div class="h-8 w-px bg-grid-border"></div>
+<div>
+<span class="block text-label-caps text-on-surface-variant uppercase mb-1">Order ID</span>
+<span class="font-mono-data text-headline-md">ORD-8840</span>
+</div>
+</div>
+<div class="text-right">
+<span class="block text-label-caps text-on-surface-variant uppercase mb-1">Current Slot</span>
+<div class="flex items-center justify-end text-primary font-headline-md gap-2">
+<span class="material-symbols-outlined" data-icon="schedule">schedule</span>
+<span>10:00 - 11:00</span>
+</div>
+</div>
+</div>
+<!-- Numeric Keypad & Input Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter h-fit">
+<!-- Keypad Section -->
+<div class="lg:col-span-7 bg-surface-container-lowest border border-grid-border rounded-lg p-6 shadow-sm">
+<div class="mb-6">
+<label class="block font-label-caps text-on-surface-variant uppercase mb-2">Gross Output Entry</label>
+<div class="relative">
+<input class="w-full bg-surface-container h-16 text-right px-6 text-[32px] font-mono-data font-bold border-2 border-primary-container rounded high-contrast-input" id="gross-output" readonly="" type="text" value="0"/>
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-label-caps">PCS</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-3">
+<button class="keypad-btn h-16 bg-white border border-outline-variant rounded font-headline-md text-2xl hover:bg-surface-container" onclick="appendNum(1)">1</button>
+<button class="keypad-btn h-16 bg-white border border-outline-variant rounded font-headline-md text-2xl hover:bg-surface-container" onclick="appendNum(2)">2</button>
+<button class="keypad-btn h-16 bg-white border border-outline-variant rounded font-headline-md text-2xl hover:bg-surface-container" onclick="appendNum(3)">3</button>
+<button class="keypad-btn h-16 bg-white border border-outline-variant rounded font-headline-md text-2xl hover:bg-surface-container" onclick="appendNum(4)">4</button>
+<button class="keypad-btn h-16 bg-white border border-outline-variant rounded font-headline-md text-2xl hover:bg-surface-container" onclick="appendNum(5)">5</button>
+<button class="keypad-btn h-16 bg-white border border-outline-variant rounded font-headline-md text-2xl hover:bg-surface-container" onclick="appendNum(6)">6</button>
+<button class="keypad-btn h-16 bg-white border border-outline-variant rounded font-headline-md text-2xl hover:bg-surface-container" onclick="appendNum(7)">7</button>
+<button class="keypad-btn h-16 bg-white border border-outline-variant rounded font-headline-md text-2xl hover:bg-surface-container" onclick="appendNum(8)">8</button>
+<button class="keypad-btn h-16 bg-white border border-outline-variant rounded font-headline-md text-2xl hover:bg-surface-container" onclick="appendNum(9)">9</button>
+<button class="keypad-btn h-16 bg-error-container text-on-error-container border border-error rounded font-label-caps" onclick="clearKeypad()">CLEAR</button>
+<button class="keypad-btn h-16 bg-white border border-outline-variant rounded font-headline-md text-2xl hover:bg-surface-container" onclick="appendNum(0)">0</button>
+<button class="keypad-btn h-16 bg-surface-container-high border border-outline-variant rounded flex items-center justify-center" onclick="backspace()">
+<span class="material-symbols-outlined" data-icon="backspace">backspace</span>
+</button>
+</div>
+</div>
+<!-- Fine-tune inputs -->
+<div class="lg:col-span-5 flex flex-col gap-gutter">
+<div class="bg-surface-container-lowest border border-grid-border rounded-lg p-6 shadow-sm flex-1">
+<h3 class="font-label-caps text-on-surface-variant uppercase mb-4">Quality Adjustments</h3>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between items-center mb-2">
+<label class="font-body-md font-bold text-risk-action">Defect Qty</label>
+<span class="text-xs text-on-surface-variant font-mono-data">Impacts Net Yield</span>
+</div>
+<input class="w-full h-12 border-2 border-outline-variant rounded px-4 font-mono-data text-xl focus:border-risk-action high-contrast-input" id="defect-qty" oninput="calculateNet()" type="number" value="0"/>
+</div>
+<div>
+<div class="flex justify-between items-center mb-2">
+<label class="font-body-md font-bold text-risk-watch">Rework Qty</label>
+<span class="text-xs text-on-surface-variant font-mono-data">Pending Correction</span>
+</div>
+<input class="w-full h-12 border-2 border-outline-variant rounded px-4 font-mono-data text-xl focus:border-risk-watch high-contrast-input" id="rework-qty" oninput="calculateNet()" type="number" value="0"/>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-grid-border">
+<div class="flex justify-between items-end">
+<div>
+<span class="block font-label-caps text-on-surface-variant uppercase">Net Good Quantity</span>
+<span class="text-4xl font-headline-lg font-extrabold text-risk-on-track" id="net-good-display">0</span>
+<span class="text-on-surface-variant font-body-sm ml-1">PCS</span>
+</div>
+<div class="text-right">
+<span class="block font-label-caps text-on-surface-variant uppercase">Efficiency</span>
+<span class="text-xl font-mono-data font-bold text-primary" id="efficiency-display">0%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Bar (Desktop-ish) -->
+<div class="flex gap-4">
+<button class="flex-1 bg-surface-container-highest text-primary font-bold py-4 rounded-lg border border-grid-border hover:bg-surface-container-high transition-colors">
+                                SAVE AS DRAFT
+                            </button>
+<button class="flex-[2] bg-primary text-on-primary font-bold py-4 rounded-lg shadow-lg hover:opacity-90 active:scale-95 transition-all" onclick="handleSubmit()">
+                                SUBMIT OUTPUT
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Mobile BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full md:hidden flex justify-around items-center px-4 py-2 bg-surface border-t border-grid-border shadow-lg z-50">
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full p-2 scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="font-label-caps text-[10px] uppercase">Output</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container">
+<span class="material-symbols-outlined" data-icon="pause_circle">pause_circle</span>
+<span class="font-label-caps text-[10px] uppercase">Downtime</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container">
+<span class="material-symbols-outlined" data-icon="warning">warning</span>
+<span class="font-label-caps text-[10px] uppercase">Alert</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-label-caps text-[10px] uppercase">Log</span>
+</div>
+</nav>
+</main>
+<!-- Right Side Impact Preview -->
+<aside class="hidden xl:flex flex-col w-drawer-width bg-surface border-l border-grid-border shadow-[8px_0_8px_4px_rgba(0,0,0,0.04)] z-10">
+<div class="p-6">
+<h3 class="font-headline-md text-headline-md mb-6">Production Analytics</h3>
+<!-- Target Tracker -->
+<div class="space-y-6">
+<div>
+<div class="flex justify-between text-body-sm mb-2">
+<span>Hourly Target (60 PCS)</span>
+<span class="font-mono-data font-bold" id="target-progress">0%</span>
+</div>
+<div class="h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-risk-watch transition-all duration-500" id="target-bar" style="width: 0%"></div>
+</div>
+</div>
+<div class="bg-surface-container-low p-4 rounded-lg border border-grid-border">
+<span class="font-label-caps text-on-surface-variant uppercase text-[10px] block mb-2">Impact Preview</span>
+<div class="flex items-center gap-4">
+<div class="flex-1 p-2 bg-white rounded border border-grid-border">
+<span class="block text-[10px] text-on-surface-variant">BEFORE</span>
+<span class="text-body-md font-bold">94.2%</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="arrow_forward">arrow_forward</span>
+<div class="flex-1 p-2 bg-white rounded border border-risk-on-track">
+<span class="block text-[10px] text-risk-on-track">AFTER</span>
+<span class="text-body-md font-bold text-risk-on-track" id="yield-preview">94.2%</span>
+</div>
+</div>
+<p class="text-[11px] text-on-surface-variant mt-3 italic">Calculated based on current defect input and order volume.</p>
+</div>
+</div>
+<!-- Operator Shift Log (Quick View) -->
+<div class="mt-8">
+<h4 class="font-label-caps text-on-surface-variant uppercase mb-4">Live Shift Feed</h4>
+<div class="space-y-4">
+<div class="flex gap-3">
+<div class="h-8 w-8 rounded-full bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="check_circle">check_circle</span>
+</div>
+<div>
+<p class="text-body-sm font-bold">09:00 - 10:00 Slot Closed</p>
+<p class="text-body-sm text-on-surface-variant">62 PCS Captured. 103% of target.</p>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="h-8 w-8 rounded-full bg-error-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-error-container text-sm" data-icon="warning">warning</span>
+</div>
+<div>
+<p class="text-body-sm font-bold">Downtime: Machine #4</p>
+<p class="text-body-sm text-on-surface-variant">Thread break resolved at 09:22.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Stale Data Indicator -->
+<div class="mt-auto p-4 border-t border-grid-border bg-surface-muted flex justify-between items-center">
+<span class="font-mono-data text-[10px] text-outline uppercase tracking-wider">Operational Data Integrity Verified</span>
+<span class="material-symbols-outlined text-risk-on-track text-sm" data-icon="shield_check">shield</span>
+</div>
+</aside>
+</div>
+<!-- Micro-interactions Script -->
+<script>
+        const grossInput = document.getElementById('gross-output');
+        const defectInput = document.getElementById('defect-qty');
+        const reworkInput = document.getElementById('rework-qty');
+        const netGoodDisplay = document.getElementById('net-good-display');
+        const efficiencyDisplay = document.getElementById('efficiency-display');
+        const targetBar = document.getElementById('target-bar');
+        const targetProgressText = document.getElementById('target-progress');
+        const yieldPreview = document.getElementById('yield-preview');
+
+        const HOURLY_TARGET = 60;
+
+        function appendNum(n) {
+            if (grossInput.value === '0') {
+                grossInput.value = n;
+            } else {
+                grossInput.value += n;
+            }
+            calculateNet();
+        }
+
+        function clearKeypad() {
+            grossInput.value = '0';
+            calculateNet();
+        }
+
+        function backspace() {
+            if (grossInput.value.length > 1) {
+                grossInput.value = grossInput.value.slice(0, -1);
+            } else {
+                grossInput.value = '0';
+            }
+            calculateNet();
+        }
+
+        function calculateNet() {
+            const gross = parseInt(grossInput.value) || 0;
+            const defect = parseInt(defectInput.value) || 0;
+            const rework = parseInt(reworkInput.value) || 0;
+            
+            const net = Math.max(0, gross - (defect + rework));
+            netGoodDisplay.innerText = net;
+
+            // Efficiency calculation
+            const efficiency = Math.round((net / HOURLY_TARGET) * 100);
+            efficiencyDisplay.innerText = `${efficiency}%`;
+            
+            // UI Bar Updates
+            const progress = Math.min(100, efficiency);
+            targetBar.style.width = `${progress}%`;
+            targetProgressText.innerText = `${efficiency}%`;
+            
+            if (efficiency >= 100) {
+                targetBar.className = 'h-full bg-risk-on-track transition-all duration-500';
+            } else if (efficiency > 80) {
+                targetBar.className = 'h-full bg-risk-watch transition-all duration-500';
+            } else {
+                targetBar.className = 'h-full bg-risk-action transition-all duration-500';
+            }
+
+            // Yield Preview (Simple Mock Logic)
+            const currentYield = gross > 0 ? ((net / gross) * 100).toFixed(1) : "100.0";
+            yieldPreview.innerText = `${currentYield}%`;
+        }
+
+        function handleSubmit() {
+            const net = netGoodDisplay.innerText;
+            if (parseInt(net) === 0) {
+                alert("Cannot submit 0 net quantity. Please verify input.");
+                return;
+            }
+            
+            const btn = event.currentTarget;
+            btn.innerText = "SUBMITTING...";
+            btn.classList.add('opacity-50');
+            btn.disabled = true;
+
+            setTimeout(() => {
+                alert(`Output Submitted: ${net} Good PCS recorded for ORD-8840.`);
+                location.reload();
+            }, 1000);
+        }
+    </script>
+</body></html>

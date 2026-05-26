@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "risk-critical": "#111827",
+            "surface-container-high": "#eae7e9",
+            "on-tertiary-fixed-variant": "#564427",
+            "surface-tint": "#545f73",
+            "on-primary-fixed": "#111c2d",
+            "on-surface-variant": "#45474c",
+            "on-primary": "#ffffff",
+            "risk-action": "#EF4444",
+            "secondary-fixed": "#d5e3fd",
+            "outline-variant": "#c5c6cd",
+            "on-tertiary-container": "#a38c6a",
+            "on-secondary-fixed": "#0d1c2f",
+            "grid-border": "#E2E8F0",
+            "secondary-fixed-dim": "#b9c7e0",
+            "surface-container-low": "#f5f3f4",
+            "secondary": "#515f74",
+            "risk-on-track": "#10B981",
+            "outline": "#75777d",
+            "on-surface": "#1b1b1d",
+            "inverse-surface": "#303032",
+            "inverse-on-surface": "#f3f0f2",
+            "on-tertiary-fixed": "#271902",
+            "surface-dim": "#dcd9db",
+            "on-background": "#1b1b1d",
+            "background": "#fbf8fa",
+            "on-primary-fixed-variant": "#3c475a",
+            "on-error": "#ffffff",
+            "primary-fixed-dim": "#bcc7de",
+            "surface-bright": "#fbf8fa",
+            "surface-container-highest": "#e4e2e3",
+            "surface-muted": "#F8FAFC",
+            "primary-container": "#1e293b",
+            "tertiary-fixed": "#fadfb8",
+            "error-container": "#ffdad6",
+            "secondary-container": "#d5e3fd",
+            "on-secondary-container": "#57657b",
+            "risk-watch": "#F59E0B",
+            "on-secondary": "#ffffff",
+            "tertiary-container": "#35260c",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-container": "#8590a6",
+            "primary": "#091426",
+            "on-tertiary": "#ffffff",
+            "surface": "#fbf8fa",
+            "surface-container": "#f0edef",
+            "on-secondary-fixed-variant": "#3a485c",
+            "inverse-primary": "#bcc7de",
+            "tertiary": "#1e1200",
+            "error": "#ba1a1a",
+            "on-error-container": "#93000a",
+            "primary-fixed": "#d8e3fb",
+            "surface-variant": "#e4e2e3",
+            "tertiary-fixed-dim": "#ddc39d"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "drawer-width": "400px",
+            "gutter": "12px",
+            "nav-collapsed-width": "64px",
+            "grid-row-height": "32px",
+            "margin-md": "16px",
+            "nav-expanded-width": "240px",
+            "margin-sm": "8px"
+          },
+          "fontFamily": {
+            "data-tabular": ["Inter"],
+            "mono-data": ["JetBrains Mono"],
+            "headline-md": ["Inter"],
+            "body-sm": ["Inter"],
+            "body-md": ["Inter"],
+            "label-caps": ["Inter"],
+            "headline-lg": ["Inter"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      line-height: 1;
+      text-transform: none;
+      letter-spacing: normal;
+      word-wrap: normal;
+      white-space: nowrap;
+      direction: ltr;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #888;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md text-body-md overflow-hidden">
+<!-- TOP APP BAR -->
+<header class="fixed top-0 w-full z-50 bg-surface border-b border-grid-border flex justify-between items-center px-margin-md h-12">
+<div class="flex items-center gap-margin-sm">
+<span class="material-symbols-outlined text-primary" data-icon="factory">factory</span>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Shopfloor Control</h1>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-mono-data text-mono-data text-on-surface-variant">SYNC: 42s ago</span>
+<button class="hover:bg-surface-container-low p-2 rounded-full transition-colors active:scale-95 duration-75">
+<span class="material-symbols-outlined text-primary" data-icon="notifications_active">notifications_active</span>
+</button>
+</div>
+</header>
+<div class="flex h-screen pt-12">
+<!-- NAVIGATION DRAWER (Left Rail) -->
+<nav class="fixed left-0 top-12 h-[calc(100vh-48px)] w-nav-collapsed-width md:w-64 border-r border-grid-border bg-surface-container-lowest flex flex-col p-margin-md z-40 transition-all shadow-md">
+<div class="mb-8 flex items-center gap-3 px-2">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container" data-icon="person">person</span>
+</div>
+<div class="hidden md:block overflow-hidden">
+<p class="font-headline-md text-headline-md font-bold truncate">Line Supervisor</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Line 04 - Shift A</p>
+</div>
+</div>
+<div class="space-y-1">
+<!-- Supervisor Home -->
+<a class="flex items-center gap-3 p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="hidden md:block font-label-caps text-label-caps">Supervisor Home</span>
+</a>
+<!-- Output Capture -->
+<a class="flex items-center gap-3 p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="precision_manufacturing">precision_manufacturing</span>
+<span class="hidden md:block font-label-caps text-label-caps">Output Capture</span>
+</a>
+<!-- QC Interface -->
+<a class="flex items-center gap-3 p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="checklist_rtl">checklist_rtl</span>
+<span class="hidden md:block font-label-caps text-label-caps">QC Interface</span>
+</a>
+<!-- Handover (Active) -->
+<a class="flex items-center gap-3 p-2 bg-secondary-container text-on-secondary-container font-bold rounded-lg opacity-80" href="#">
+<span class="material-symbols-outlined" data-icon="swap_horiz">swap_horiz</span>
+<span class="hidden md:block font-label-caps text-label-caps">Handover</span>
+</a>
+<!-- Andon Alert -->
+<a class="flex items-center gap-3 p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="warning">warning</span>
+<span class="hidden md:block font-label-caps text-label-caps">Andon Alert</span>
+</a>
+</div>
+</nav>
+<!-- MAIN CONTENT CANVAS -->
+<main class="ml-nav-collapsed-width md:ml-64 flex-1 overflow-y-auto bg-surface-muted p-margin-md pb-24">
+<!-- TRANSFER FLOW HEADER -->
+<section class="bg-surface border border-grid-border p-6 mb-gutter shadow-sm">
+<div class="flex items-center justify-between mb-6">
+<h2 class="font-headline-lg text-headline-lg text-primary flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="sync_alt">sync_alt</span>
+            Department Handover Capture
+          </h2>
+<div class="flex items-center gap-3">
+<span class="px-3 py-1 bg-risk-watch bg-opacity-10 text-risk-watch text-label-caps rounded-full border border-risk-watch border-opacity-20">PENDING APPROVAL</span>
+<span class="font-mono-data text-mono-data text-outline">TXN-0049281</span>
+</div>
+</div>
+<div class="flex items-center justify-center gap-12 py-4">
+<!-- From -->
+<div class="flex flex-col items-center gap-2 text-center">
+<div class="w-16 h-16 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined scale-150" data-icon="settings_input_component">settings_input_component</span>
+</div>
+<div>
+<p class="font-label-caps text-label-caps text-on-surface-variant">FROM DEPARTMENT</p>
+<p class="font-headline-md text-headline-md font-bold">Sewing (Line 04)</p>
+</div>
+</div>
+<!-- Arrow Animation -->
+<div class="flex-1 max-w-[200px] relative h-2 bg-surface-container flex items-center rounded-full overflow-hidden">
+<div class="absolute inset-0 bg-primary w-full animate-[pulse_2s_infinite]"></div>
+<div class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-4 h-4 bg-primary rotate-45"></div>
+</div>
+<!-- To -->
+<div class="flex flex-col items-center gap-2 text-center">
+<div class="w-16 h-16 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center border-2 border-primary shadow-md">
+<span class="material-symbols-outlined scale-150" data-icon="waves">waves</span>
+</div>
+<div>
+<p class="font-label-caps text-label-caps text-on-surface-variant">TO DEPARTMENT</p>
+<p class="font-headline-md text-headline-md font-bold">Wash &amp; Finish</p>
+</div>
+</div>
+</div>
+</section>
+<!-- SELECTION & DATA GRID -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Order Selection -->
+<div class="lg:col-span-1 space-y-gutter">
+<div class="bg-surface border border-grid-border p-4 shadow-sm">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-4">IDENTIFICATION</h3>
+<div class="space-y-4">
+<div>
+<label class="block font-body-sm text-body-sm text-outline mb-1">Order ID</label>
+<select class="w-full h-[32px] border-grid-border rounded-lg bg-surface-container-low text-body-md focus:ring-2 focus:ring-primary focus:border-transparent">
+<option>PO-88291-DENIM</option>
+<option>PO-88292-TWILL</option>
+</select>
+</div>
+<div>
+<label class="block font-body-sm text-body-sm text-outline mb-1">Batch ID</label>
+<div class="relative">
+<input class="w-full h-[32px] border-grid-border rounded-lg bg-surface-container-low text-body-md focus:ring-2 focus:ring-primary" type="text" value="BATCH-402-A"/>
+<span class="material-symbols-outlined absolute right-2 top-1.5 text-outline text-lg" data-icon="barcode_scanner">barcode_scanner</span>
+</div>
+</div>
+<div class="p-3 bg-surface-container-highest border-l-4 border-primary">
+<p class="text-body-sm font-bold">Active Style: Slim-Fit 501 Indigo</p>
+<p class="text-xs text-on-surface-variant">Buyer: Global Apparel Co.</p>
+</div>
+</div>
+</div>
+<!-- Quantity Discrepancy Card -->
+<div class="bg-risk-critical text-on-primary p-4 shadow-md flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<h3 class="font-label-caps text-label-caps">QUANTITY VERIFICATION</h3>
+<span class="material-symbols-outlined text-risk-action" data-icon="error">error</span>
+</div>
+<div class="flex justify-between items-end mt-2">
+<div>
+<p class="text-[32px] font-bold leading-none">1,200</p>
+<p class="text-xs text-on-primary-container">Expected Output</p>
+</div>
+<div class="text-right">
+<p class="text-[32px] font-bold leading-none text-risk-action">1,182</p>
+<p class="text-xs text-on-primary-container">Actual Scanned</p>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
+<p class="text-xs text-risk-action font-bold">DISCREPANCY: -18 PCS (1.5%)</p>
+<button class="text-xs underline text-on-primary-container hover:text-white">Adjust Scans</button>
+</div>
+</div>
+</div>
+<!-- Checklist -->
+<div class="lg:col-span-2 space-y-gutter">
+<div class="bg-surface border border-grid-border p-4 shadow-sm h-full">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-4">TRANSFER READINESS CHECKLIST</h3>
+<div class="space-y-2">
+<!-- Checklist Item 1 -->
+<div class="flex items-center gap-4 p-3 hover:bg-surface-container-low border-b border-grid-border group cursor-pointer">
+<input checked="" class="w-5 h-5 text-primary border-grid-border focus:ring-primary rounded-sm" type="checkbox"/>
+<div class="flex-1">
+<p class="font-body-md text-body-md font-bold">Quantity Match</p>
+<p class="text-xs text-outline">Verify batch count against line output logs.</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-risk-on-track bg-opacity-10 text-risk-on-track text-[10px] font-bold rounded">VERIFIED</span>
+<span class="material-symbols-outlined text-outline group-hover:text-primary" data-icon="notes">notes</span>
+</div>
+</div>
+<!-- Checklist Item 2 -->
+<div class="flex items-center gap-4 p-3 hover:bg-surface-container-low border-b border-grid-border group cursor-pointer">
+<input checked="" class="w-5 h-5 text-primary border-grid-border focus:ring-primary rounded-sm" type="checkbox"/>
+<div class="flex-1">
+<p class="font-body-md text-body-md font-bold">QC Passed</p>
+<p class="text-xs text-outline">Inspection report #QC-449 approved by QA Lead.</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-risk-on-track bg-opacity-10 text-risk-on-track text-[10px] font-bold rounded">VERIFIED</span>
+<span class="material-symbols-outlined text-outline group-hover:text-primary" data-icon="attachment">attachment</span>
+</div>
+</div>
+<!-- Checklist Item 3 -->
+<div class="flex items-center gap-4 p-3 hover:bg-surface-container-low border-b border-grid-border group cursor-pointer">
+<input class="w-5 h-5 text-primary border-grid-border focus:ring-primary rounded-sm" type="checkbox"/>
+<div class="flex-1">
+<p class="font-body-md text-body-md font-bold">Bundle ID Scan</p>
+<p class="text-xs text-outline">Mandatory scan of all 40 sub-bundle RFID tags.</p>
+</div>
+<div class="flex items-center gap-2">
+<button class="bg-primary text-on-primary text-[10px] font-bold px-2 py-1 rounded">START SCAN</button>
+</div>
+</div>
+<!-- Checklist Item 4 -->
+<div class="flex items-center gap-4 p-3 hover:bg-surface-container-low group cursor-pointer">
+<input class="w-5 h-5 text-primary border-grid-border focus:ring-primary rounded-sm" type="checkbox"/>
+<div class="flex-1">
+<p class="font-body-md text-body-md font-bold">Instruction Handoff</p>
+<p class="text-xs text-outline">Transfer special wash requirements for this indigo batch.</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline group-hover:text-primary" data-icon="edit_note">edit_note</span>
+</div>
+</div>
+</div>
+<!-- Handover Note Box -->
+<div class="mt-6">
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-2">HANDOVER REMARKS</label>
+<textarea class="w-full h-24 border-grid-border rounded-lg bg-surface-container-low text-body-md p-3 focus:ring-2 focus:ring-primary" placeholder="e.g., Fabric feels stiff, needs extra softening in cycle 2..."></textarea>
+</div>
+</div>
+</div>
+</div>
+<!-- SIGNATURE SECTION -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter mt-gutter">
+<!-- From Supervisor -->
+<div class="bg-surface border border-grid-border p-4 shadow-sm flex flex-col gap-4">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant">RELEASING SUPERVISOR (SEWING)</h3>
+<div class="flex items-center gap-4">
+<img class="w-12 h-12 rounded-full object-cover grayscale" data-alt="A professional portrait of a senior manufacturing supervisor with a focused expression, wearing a navy blue work uniform. The background is a clean, bright industrial setting with soft bokeh. The lighting is crisp and modern, reflecting a disciplined and authoritative atmosphere in a light-mode color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlmrm8_s1ADGFBe2SDNRrwLQ4wOo7feQPAamT8Y5q7ESFpsUNBUI7JDXXKvusYvWAFUwZzlDocr-Y5P0sWJUQfOjbZXm3bf0fBEjGk3ImrEx3_6Vqtao56lIFpGt4vvfw1_j1s2_vVJbhtkB14OAP678PP00nBIfAfZa3I7Rh3rT5YxTgA9NpDfC-PZsVrIeG11Alx80M7LUkytpWVRBQkQrYHmtQXEcMjC55MiLfxJWLoSg0NBybtxN6aEF0yzjbgkhwXMSwBUzc"/>
+<div class="flex-1">
+<p class="font-headline-md text-headline-md font-bold">Marcus Chen</p>
+<p class="text-xs text-outline">Line 04 Supervisor • ID: SC-401</p>
+</div>
+</div>
+<div class="h-20 bg-surface-container-lowest border border-dashed border-outline-variant flex items-center justify-center relative">
+<p class="text-xs text-outline italic">Signature Confirmed via Badge Scan</p>
+<span class="material-symbols-outlined absolute bottom-1 right-1 text-risk-on-track" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<!-- To Supervisor -->
+<div class="bg-surface border border-grid-border p-4 shadow-sm flex flex-col gap-4">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant">RECEIVING SUPERVISOR (WASH)</h3>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-outline" data-icon="person">person</span>
+</div>
+<div class="flex-1">
+<p class="font-headline-md text-headline-md font-bold text-outline">Waiting for scan...</p>
+<p class="text-xs text-outline">Requires physical badge authentication</p>
+</div>
+</div>
+<div class="h-20 bg-primary-container flex flex-col items-center justify-center cursor-pointer hover:bg-opacity-90 transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined text-on-primary text-3xl mb-1" data-icon="contactless">contactless</span>
+<p class="text-on-primary font-label-caps text-label-caps">TAP BADGE TO CONFIRM RECEIPT</p>
+</div>
+</div>
+</div>
+</main>
+<!-- FOOTER ACTION BAR -->
+<footer class="fixed bottom-0 left-0 w-full h-16 bg-surface border-t border-grid-border flex items-center justify-between px-margin-md z-50 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+<div class="flex items-center gap-6">
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+<span class="font-label-caps text-label-caps">CANCEL</span>
+</button>
+<div class="h-8 w-[1px] bg-grid-border"></div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant">TOTAL TRANSFER</span>
+<span class="font-headline-md text-headline-md font-bold">1,182 Units</span>
+</div>
+</div>
+<div class="flex items-center gap-margin-md">
+<button class="h-10 px-6 border border-grid-border font-label-caps text-label-caps hover:bg-surface-container-low transition-colors">PRINT LABELS</button>
+<button class="h-10 px-8 bg-primary text-on-primary font-headline-md text-headline-md font-bold rounded-lg shadow-md hover:opacity-90 active:scale-95 transition-all">CONFIRM TRANSFER</button>
+</div>
+</footer>
+<!-- MOBILE NAVIGATION (HIDDEN ON DESKTOP) -->
+<div class="md:hidden fixed bottom-0 left-0 w-full h-16 bg-surface border-t border-grid-border flex justify-around items-center px-margin-sm pb-safe z-50">
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-caps text-label-caps">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="font-label-caps text-label-caps">Output</span>
+</div>
+<div class="flex flex-col items-center justify-center text-primary dark:text-on-primary-fixed bg-secondary-container rounded-full px-4 py-1">
+<span class="material-symbols-outlined" data-icon="swap_horiz">swap_horiz</span>
+<span class="font-label-caps text-label-caps">Handoff</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="campaign">campaign</span>
+<span class="font-label-caps text-label-caps">Andon</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+<span class="font-label-caps text-label-caps">More</span>
+</div>
+</div>
+</div>
+<script>
+    // Micro-interaction for quantity highlighting
+    const actualInput = document.querySelector('input[value="BATCH-402-A"]');
+    actualInput.addEventListener('focus', () => {
+       console.log("Input focused: System readiness check initiated.");
+    });
+
+    // Simple ripple effect for buttons
+    document.querySelectorAll('button').forEach(button => {
+      button.addEventListener('mousedown', function(e) {
+        let ripple = document.createElement('div');
+        ripple.classList.add('ripple');
+        this.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+      });
+    });
+  </script>
+</body></html>

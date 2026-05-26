@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Eratex Operations Control | Style Technical File 10.4</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "risk-on-track": "#10B981",
+                        "secondary-container": "#d5e3fd",
+                        "surface": "#fbf8fa",
+                        "outline-variant": "#c5c6cd",
+                        "on-tertiary-fixed-variant": "#564427",
+                        "surface-muted": "#F8FAFC",
+                        "risk-critical": "#111827",
+                        "inverse-surface": "#303032",
+                        "on-tertiary": "#ffffff",
+                        "outline": "#75777d",
+                        "on-primary-fixed": "#111c2d",
+                        "error-container": "#ffdad6",
+                        "tertiary-container": "#35260c",
+                        "surface-dim": "#dcd9db",
+                        "tertiary-fixed": "#fadfb8",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "surface-container-highest": "#e4e2e3",
+                        "on-primary": "#ffffff",
+                        "on-secondary-container": "#57657b",
+                        "surface-container": "#f0edef",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "inverse-on-surface": "#f3f0f2",
+                        "on-background": "#1b1b1d",
+                        "error": "#ba1a1a",
+                        "risk-action": "#EF4444",
+                        "surface-bright": "#fbf8fa",
+                        "grid-border": "#E2E8F0",
+                        "risk-watch": "#F59E0B",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#d5e3fd",
+                        "on-tertiary-fixed": "#271902",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "primary-fixed": "#d8e3fb",
+                        "tertiary-fixed-dim": "#ddc39d",
+                        "inverse-primary": "#bcc7de",
+                        "surface-tint": "#545f73",
+                        "primary-container": "#1e293b",
+                        "on-surface": "#1b1b1d",
+                        "on-surface-variant": "#45474c",
+                        "on-tertiary-container": "#a38c6a",
+                        "on-secondary": "#ffffff",
+                        "surface-container-high": "#eae7e9",
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "primary": "#091426",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "tertiary": "#1e1200",
+                        "surface-container-low": "#f5f3f4",
+                        "on-primary-container": "#8590a6",
+                        "secondary": "#515f74",
+                        "background": "#fbf8fa",
+                        "surface-variant": "#e4e2e3",
+                        "primary-fixed-dim": "#bcc7de"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-sm": "8px",
+                        "nav-collapsed-width": "64px",
+                        "nav-expanded-width": "240px",
+                        "margin-md": "16px",
+                        "grid-row-height": "32px",
+                        "gutter": "12px",
+                        "drawer-width": "400px"
+                    },
+                    "fontFamily": {
+                        "mono-data": ["JetBrains Mono"],
+                        "label-caps": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+            line-height: 1;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 2px;
+        }
+        .grid-sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+        .compact-row {
+            height: 32px;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface overflow-hidden">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-primary flex justify-between items-center px-margin-md h-12 border-b border-outline-variant">
+<div class="flex items-center gap-margin-md">
+<span class="font-headline-lg text-headline-lg font-bold tracking-tighter text-on-primary">OPERATIONS CONTROL</span>
+<div class="h-6 w-px bg-on-primary/20 mx-2"></div>
+<span class="font-headline-md text-headline-md text-on-primary">Style Technical File</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<input class="bg-on-primary/10 border-none text-on-primary placeholder-on-primary/50 text-body-sm px-3 py-1 w-64 rounded focus:ring-1 focus:ring-on-primary/30" placeholder="Search Master Data..." type="text"/>
+</div>
+<span class="material-symbols-outlined text-on-primary cursor-pointer active:opacity-80 hover:bg-primary-container transition-colors p-1 rounded">notifications</span>
+<span class="material-symbols-outlined text-on-primary cursor-pointer active:opacity-80 hover:bg-primary-container transition-colors p-1 rounded">settings</span>
+<img alt="User profile" class="w-8 h-8 rounded-full border border-on-primary/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCek0cURFKgSAOOM7Ltq4ksgC-M8wFJL1vJkpsTL_x2KejPlIHbRff5AzGPl8tXh5A8rAkPd4DqjgTIi0TeqPGvOZrcTX0ZmwyefTduc3dn4DudYzv_VczObJAw0logyYCVRNVGDABj1ERaGcE2lc7Y7VPujMXaDW3B8y7xI59gq_mrQ789FZPM1cdCABzau9fxngml3FClQ7kt6g6s-jJ3Ph5wHvYMZMh3CQtVC5WVvtmPxnR-H0x2P1ih23qgUpCQFRGO8ssxtEs"/>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-12 h-[calc(100vh-48px)] w-nav-collapsed-width bg-surface border-r border-outline-variant flex flex-col justify-between py-margin-sm z-40 transition-all duration-200 ease-in-out">
+<div class="flex flex-col items-center gap-4">
+<div class="p-2 bg-secondary-container text-on-secondary-container border-r-2 border-primary cursor-pointer">
+<span class="material-symbols-outlined">dashboard</span>
+</div>
+<div class="p-2 text-on-surface-variant hover:bg-surface-container-low cursor-pointer">
+<span class="material-symbols-outlined">factory</span>
+</div>
+<div class="p-2 text-on-surface-variant hover:bg-surface-container-low cursor-pointer">
+<span class="material-symbols-outlined">conveyor_belt</span>
+</div>
+<div class="p-2 text-on-surface-variant hover:bg-surface-container-low cursor-pointer">
+<span class="material-symbols-outlined">inventory_2</span>
+</div>
+<div class="p-2 text-on-surface-variant hover:bg-surface-container-low cursor-pointer">
+<span class="material-symbols-outlined">analytics</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-4">
+<div class="p-2 text-on-surface-variant hover:bg-surface-container-low cursor-pointer">
+<span class="material-symbols-outlined">help</span>
+</div>
+<div class="p-2 text-on-surface-variant hover:bg-surface-container-low cursor-pointer">
+<span class="material-symbols-outlined">logout</span>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-nav-collapsed-width mt-12 mr-drawer-width h-[calc(100vh-48px)] overflow-hidden flex flex-col">
+<!-- Style Header KPIs -->
+<section class="p-margin-md grid grid-cols-4 gap-4 bg-surface-muted border-b border-grid-border">
+<div class="bg-white p-3 border border-grid-border shadow-sm flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant">TOTAL SMV</span>
+<span class="font-headline-lg text-headline-lg text-primary mt-1">24.85 min</span>
+</div>
+<div class="bg-white p-3 border border-grid-border shadow-sm flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant">OPERATION COUNT</span>
+<span class="font-headline-lg text-headline-lg text-primary mt-1">42</span>
+</div>
+<div class="bg-white p-3 border border-grid-border shadow-sm flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant">SKILL COMPLEXITY</span>
+<div class="flex items-center gap-2 mt-1">
+<span class="w-2 h-2 rounded-full bg-risk-action"></span>
+<span class="font-headline-lg text-headline-lg text-primary">High</span>
+</div>
+</div>
+<div class="bg-white p-3 border border-grid-border shadow-sm flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant">LATEST VERSION</span>
+<div class="flex items-center justify-between mt-1">
+<span class="font-headline-lg text-headline-lg text-primary">V2.4</span>
+<span class="text-mono-data text-on-surface-variant italic">SYNC: 2m ago</span>
+</div>
+</div>
+</section>
+<!-- Operation Bulletin Grid -->
+<section class="flex-1 overflow-auto custom-scrollbar p-margin-md">
+<div class="bg-white border border-grid-border shadow-sm">
+<table class="w-full border-collapse text-left">
+<thead class="grid-sticky-header bg-surface-container text-on-surface-variant font-label-caps text-label-caps border-b border-grid-border">
+<tr>
+<th class="p-2 w-12 border-r border-grid-border text-center">SEQ</th>
+<th class="p-2 border-r border-grid-border">OPERATION NAME</th>
+<th class="p-2 w-24 border-r border-grid-border text-center">SMV</th>
+<th class="p-2 border-r border-grid-border">MACHINE TYPE</th>
+<th class="p-2 w-32 border-r border-grid-border text-center">SKILL GRADE</th>
+<th class="p-2 w-24 text-center">QC POINT</th>
+</tr>
+</thead>
+<tbody class="text-data-tabular font-data-tabular">
+<!-- Data Rows -->
+<tr class="compact-row border-b border-grid-border hover:bg-surface-container-low transition-colors group cursor-pointer">
+<td class="p-2 border-r border-grid-border text-center text-on-surface-variant">10</td>
+<td class="p-2 border-r border-grid-border font-semibold">Join Back Rise</td>
+<td class="p-2 border-r border-grid-border text-center">0.85</td>
+<td class="p-2 border-r border-grid-border">4-Thread Overlock</td>
+<td class="p-2 border-r border-grid-border text-center">
+<span class="bg-secondary-container/30 text-secondary px-2 py-0.5 rounded-full text-[10px] font-bold">GRADE B</span>
+</td>
+<td class="p-2 text-center">
+<span class="material-symbols-outlined text-risk-on-track text-lg">check_circle</span>
+</td>
+</tr>
+<tr class="compact-row border-b border-grid-border hover:bg-surface-container-low transition-colors group cursor-pointer bg-surface-container-lowest">
+<td class="p-2 border-r border-grid-border text-center text-on-surface-variant">20</td>
+<td class="p-2 border-r border-grid-border font-semibold">Attach Waistband</td>
+<td class="p-2 border-r border-grid-border text-center">1.45</td>
+<td class="p-2 border-r border-grid-border">Feed-off-the-arm</td>
+<td class="p-2 border-r border-grid-border text-center">
+<span class="bg-primary-container/10 text-primary px-2 py-0.5 rounded-full text-[10px] font-bold">GRADE A</span>
+</td>
+<td class="p-2 text-center">
+<span class="material-symbols-outlined text-risk-on-track text-lg">check_circle</span>
+</td>
+</tr>
+<tr class="compact-row border-b border-grid-border hover:bg-surface-container-low transition-colors group cursor-pointer">
+<td class="p-2 border-r border-grid-border text-center text-on-surface-variant">30</td>
+<td class="p-2 border-r border-grid-border font-semibold">Bottom Hemming</td>
+<td class="p-2 border-r border-grid-border text-center">0.60</td>
+<td class="p-2 border-r border-grid-border">SNLS - Automatic</td>
+<td class="p-2 border-r border-grid-border text-center">
+<span class="bg-outline-variant/30 text-on-surface-variant px-2 py-0.5 rounded-full text-[10px] font-bold">GRADE C</span>
+</td>
+<td class="p-2 text-center">
+<span class="material-symbols-outlined text-outline-variant text-lg">circle</span>
+</td>
+</tr>
+<tr class="compact-row border-b border-grid-border hover:bg-surface-container-low transition-colors group cursor-pointer bg-surface-container-lowest">
+<td class="p-2 border-r border-grid-border text-center text-on-surface-variant">40</td>
+<td class="p-2 border-r border-grid-border font-semibold">Side Seam Felling</td>
+<td class="p-2 border-r border-grid-border text-center">1.20</td>
+<td class="p-2 border-r border-grid-border">5-Thread Safety</td>
+<td class="p-2 border-r border-grid-border text-center">
+<span class="bg-primary-container/10 text-primary px-2 py-0.5 rounded-full text-[10px] font-bold">GRADE A</span>
+</td>
+<td class="p-2 text-center">
+<span class="material-symbols-outlined text-risk-on-track text-lg">check_circle</span>
+</td>
+</tr>
+<tr class="compact-row border-b border-grid-border hover:bg-surface-container-low transition-colors group cursor-pointer">
+<td class="p-2 border-r border-grid-border text-center text-on-surface-variant">50</td>
+<td class="p-2 border-r border-grid-border font-semibold">Bartack Pockets</td>
+<td class="p-2 border-r border-grid-border text-center">0.45</td>
+<td class="p-2 border-r border-grid-border">Programmable Bartack</td>
+<td class="p-2 border-r border-grid-border text-center">
+<span class="bg-secondary-container/30 text-secondary px-2 py-0.5 rounded-full text-[10px] font-bold">GRADE B</span>
+</td>
+<td class="p-2 text-center">
+<span class="material-symbols-outlined text-outline-variant text-lg">circle</span>
+</td>
+</tr>
+<!-- More rows to fill space -->
+<tr class="compact-row border-b border-grid-border hover:bg-surface-container-low transition-colors group cursor-pointer bg-surface-container-lowest">
+<td class="p-2 border-r border-grid-border text-center text-on-surface-variant">60</td>
+<td class="p-2 border-r border-grid-border font-semibold">Pocket Facing</td>
+<td class="p-2 border-r border-grid-border text-center">0.55</td>
+<td class="p-2 border-r border-grid-border">SNLS - Standard</td>
+<td class="p-2 border-r border-grid-border text-center">
+<span class="bg-outline-variant/30 text-on-surface-variant px-2 py-0.5 rounded-full text-[10px] font-bold">GRADE C</span>
+</td>
+<td class="p-2 text-center">
+<span class="material-symbols-outlined text-outline-variant text-lg">circle</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+<!-- Right Action Drawer -->
+<aside class="fixed right-0 top-12 h-[calc(100vh-48px)] w-drawer-width bg-white border-l border-outline-variant z-40 flex flex-col shadow-lg overflow-hidden">
+<div class="p-margin-md border-b border-outline-variant bg-surface-container-low">
+<h2 class="font-headline-lg text-headline-lg text-primary">Style Technical Specs</h2>
+<p class="font-headline-md text-headline-md text-on-surface-variant mt-1">STY-5001 • Slim Taper Denim</p>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-margin-md flex flex-col gap-6">
+<!-- Technical Summary -->
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-3">TECHNICAL SUMMARY</h3>
+<div class="space-y-2">
+<div class="flex justify-between border-b border-grid-border pb-1">
+<span class="text-body-sm text-on-surface-variant">Category</span>
+<span class="text-body-sm font-semibold">Mens Bottoms</span>
+</div>
+<div class="flex justify-between border-b border-grid-border pb-1">
+<span class="text-body-sm text-on-surface-variant">Fabric Type</span>
+<span class="text-body-sm font-semibold">12oz Indigo Twill</span>
+</div>
+<div class="flex justify-between border-b border-grid-border pb-1">
+<span class="text-body-sm text-on-surface-variant">Complexity Rating</span>
+<span class="text-body-sm font-semibold text-risk-action">9.2 / 10.0</span>
+</div>
+</div>
+</div>
+<!-- Machine Requirements -->
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-3">MACHINE REQUIREMENTS</h3>
+<div class="bg-surface-container-low p-3 rounded-lg flex flex-col gap-2">
+<div class="flex items-center gap-2 text-body-sm">
+<span class="material-symbols-outlined text-primary scale-75">settings_input_component</span>
+<span>Single Needle Lockstitch (SNLS) x 12</span>
+</div>
+<div class="flex items-center gap-2 text-body-sm">
+<span class="material-symbols-outlined text-primary scale-75">settings_input_component</span>
+<span>5-Thread Overlock x 8</span>
+</div>
+<div class="flex items-center gap-2 text-body-sm">
+<span class="material-symbols-outlined text-primary scale-75">settings_input_component</span>
+<span>Feed-off-the-arm x 4</span>
+</div>
+</div>
+</div>
+<!-- Critical Operations -->
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-3">CRITICAL OPERATIONS</h3>
+<div class="space-y-3">
+<div class="border-l-4 border-risk-action bg-risk-action/5 p-3">
+<div class="flex justify-between items-start">
+<span class="font-headline-md text-headline-md">Waistband Attachment</span>
+<span class="bg-primary text-white text-[9px] px-1.5 py-0.5 rounded">GRADE A</span>
+</div>
+<p class="text-body-sm text-on-surface-variant mt-1 italic">High precision alignment required for center front.</p>
+</div>
+<div class="border-l-4 border-risk-action bg-risk-action/5 p-3">
+<div class="flex justify-between items-start">
+<span class="font-headline-md text-headline-md">Inseam Felling</span>
+<span class="bg-primary text-white text-[9px] px-1.5 py-0.5 rounded">GRADE A</span>
+</div>
+<p class="text-body-sm text-on-surface-variant mt-1 italic">Heavy weight seam passage creates needle breakage risk.</p>
+</div>
+</div>
+</div>
+<!-- Version History -->
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-3">VERSION HISTORY</h3>
+<div class="relative pl-6 space-y-4 before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-[2px] before:bg-outline-variant">
+<div class="relative">
+<span class="absolute -left-[23px] top-1 w-3 h-3 rounded-full bg-risk-on-track border-2 border-white"></span>
+<div class="flex flex-col">
+<span class="text-body-sm font-semibold">V2.4 - Current Active</span>
+<span class="text-mono-data text-[10px] text-on-surface-variant">24 Oct 2023 • Approver: J. Miller</span>
+</div>
+</div>
+<div class="relative">
+<span class="absolute -left-[23px] top-1 w-3 h-3 rounded-full bg-outline-variant border-2 border-white"></span>
+<div class="flex flex-col">
+<span class="text-body-sm font-semibold">V2.3 - Superseded</span>
+<span class="text-mono-data text-[10px] text-on-surface-variant">12 Sep 2023 • Approver: A. Khan</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Actions -->
+<div class="p-margin-md border-t border-outline-variant flex flex-col gap-2">
+<button class="w-full bg-primary text-white font-headline-md py-2 px-4 flex items-center justify-center gap-2 hover:bg-primary-container transition-all">
+<span class="material-symbols-outlined text-lg">verified</span> Approve Version
+            </button>
+<div class="grid grid-cols-2 gap-2">
+<button class="bg-white border border-outline text-primary font-headline-md py-2 px-4 hover:bg-surface-container-low transition-all">
+                    Edit SMVs
+                </button>
+<button class="bg-white border border-outline text-primary font-headline-md py-2 px-4 hover:bg-surface-container-low transition-all">
+                    Export PDF
+                </button>
+</div>
+</div>
+</aside>
+<script>
+        // Micro-interactions for table rows
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('click', () => {
+                // Clear active states
+                document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('bg-secondary-container/20'));
+                // Set active
+                row.classList.add('bg-secondary-container/20');
+            });
+        });
+
+        // Hover effect for side nav
+        const sideNav = document.querySelector('nav');
+        sideNav.addEventListener('mouseenter', () => {
+            sideNav.style.width = '240px';
+        });
+        sideNav.addEventListener('mouseleave', () => {
+            sideNav.style.width = '64px';
+        });
+    </script>
+</body></html>

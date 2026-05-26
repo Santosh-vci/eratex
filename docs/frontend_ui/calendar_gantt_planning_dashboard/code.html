@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Industrial Logic | Planning Workbench 10.13</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#ddc39d",
+                        "secondary-fixed": "#d5e3fd",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#bcc7de",
+                        "on-background": "#1b1b1d",
+                        "outline": "#75777d",
+                        "on-surface": "#1b1b1d",
+                        "secondary": "#515f74",
+                        "tertiary-fixed": "#fadfb8",
+                        "secondary-container": "#d5e3fd",
+                        "on-tertiary-fixed": "#271902",
+                        "surface-tint": "#545f73",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "tertiary": "#1e1200",
+                        "risk-critical": "#111827",
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "background": "#fbf8fa",
+                        "on-error": "#ffffff",
+                        "primary-container": "#1e293b",
+                        "tertiary-container": "#35260c",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "outline-variant": "#c5c6cd",
+                        "risk-on-track": "#10B981",
+                        "surface-dim": "#dcd9db",
+                        "risk-action": "#EF4444",
+                        "primary-fixed-dim": "#bcc7de",
+                        "surface": "#fbf8fa",
+                        "on-tertiary-container": "#a38c6a",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "on-primary-container": "#8590a6",
+                        "surface-container-highest": "#e4e2e3",
+                        "primary": "#091426",
+                        "on-tertiary-fixed-variant": "#564427",
+                        "surface-container-high": "#eae7e9",
+                        "inverse-on-surface": "#f3f0f2",
+                        "error": "#ba1a1a",
+                        "surface-muted": "#F8FAFC",
+                        "risk-watch": "#F59E0B",
+                        "primary-fixed": "#d8e3fb",
+                        "surface-container-low": "#f5f3f4",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed": "#111c2d",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "grid-border": "#E2E8F0",
+                        "inverse-surface": "#303032",
+                        "surface-bright": "#fbf8fa",
+                        "surface-container": "#f0edef",
+                        "on-secondary-container": "#57657b",
+                        "on-surface-variant": "#45474c",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#e4e2e3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "nav-collapsed-width": "64px",
+                        "gutter": "12px",
+                        "margin-md": "16px",
+                        "grid-row-height": "32px",
+                        "drawer-width": "400px",
+                        "nav-expanded-width": "240px",
+                        "margin-sm": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "mono-data": ["JetBrains Mono"],
+                        "body-sm": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "data-tabular": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #fbf8fa; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .gantt-grid { 
+            background-image: linear-gradient(to right, #E2E8F0 1px, transparent 1px);
+            background-size: 80px 100%;
+        }
+        .custom-scrollbar::-webkit-scrollbar { height: 4px; width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+        .connector-line { stroke: #94a3b8; stroke-width: 1.5; fill: none; }
+    </style>
+</head>
+<body class="overflow-hidden">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-surface dark:bg-surface-dim border-b border-grid-border dark:border-outline-variant flex justify-between items-center h-grid-row-height px-gutter w-full">
+<div class="flex items-center gap-4">
+<span class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary-fixed">Industrial Logic</span>
+<div class="flex items-center bg-surface-container-low px-2 h-6 rounded border border-outline-variant ml-4">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">search</span>
+<input class="bg-transparent border-none text-body-sm focus:ring-0 w-48" placeholder="Search PO, Buyer, or SKU..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="hover:bg-surface-container-low transition-colors p-1 rounded cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined text-primary" data-icon="notifications">notifications</span>
+</button>
+<button class="hover:bg-surface-container-low transition-colors p-1 rounded cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined text-primary" data-icon="sync">sync</span>
+</button>
+<button class="hover:bg-surface-container-low transition-colors p-1 rounded cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined text-primary" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full w-nav-collapsed-width hover:w-nav-expanded-width z-40 transition-all duration-300 bg-surface-container-low dark:bg-surface-container-lowest border-r border-grid-border dark:border-outline-variant flex flex-col h-full pt-16 pb-4 overflow-hidden group">
+<div class="flex items-center px-4 mb-8">
+<div class="w-8 h-8 rounded bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-container text-sm">factory</span>
+</div>
+<div class="ml-3 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+<p class="font-headline-md text-headline-md text-primary leading-tight">Plant 04</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Main Assembly</p>
+</div>
+</div>
+<div class="flex-1 space-y-1">
+<a class="flex items-center px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span class="ml-4 opacity-0 group-hover:opacity-100 font-body-sm text-body-sm">Orders</span>
+</a>
+<a class="flex items-center px-4 py-2 bg-primary-container text-on-primary-container font-semibold transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+<span class="ml-4 opacity-0 group-hover:opacity-100 font-body-sm text-body-sm">Planning</span>
+</a>
+<a class="flex items-center px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span class="ml-4 opacity-0 group-hover:opacity-100 font-body-sm text-body-sm">Capacity</span>
+</a>
+<a class="flex items-center px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="ml-4 opacity-0 group-hover:opacity-100 font-body-sm text-body-sm">Inventory</span>
+</a>
+<a class="flex items-center px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span class="ml-4 opacity-0 group-hover:opacity-100 font-body-sm text-body-sm">Master Data</span>
+</a>
+</div>
+<div class="mt-auto space-y-1">
+<a class="flex items-center px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="ml-4 opacity-0 group-hover:opacity-100 font-body-sm text-body-sm">Settings</span>
+</a>
+<a class="flex items-center px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="ml-4 opacity-0 group-hover:opacity-100 font-body-sm text-body-sm">Support</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-nav-collapsed-width pt-grid-row-height h-screen flex flex-col bg-surface-muted overflow-hidden transition-all duration-300">
+<!-- Timeline Navigation -->
+<div class="h-12 border-b border-grid-border bg-white flex items-center justify-between px-4 shrink-0">
+<div class="flex items-center gap-2">
+<h1 class="font-headline-md text-headline-md text-primary mr-4">Production Gantt</h1>
+<div class="flex bg-surface-container rounded p-0.5">
+<button class="px-3 py-1 text-label-caps bg-white shadow-sm rounded-sm">WEEK</button>
+<button class="px-3 py-1 text-label-caps text-on-surface-variant">MONTH</button>
+<button class="px-3 py-1 text-label-caps text-on-surface-variant">QUARTER</button>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 border-r pr-4 border-grid-border">
+<button class="p-1 hover:bg-surface-container rounded"><span class="material-symbols-outlined text-sm">chevron_left</span></button>
+<span class="font-body-sm text-body-sm font-semibold">Oct 23 - Oct 29, 2023</span>
+<button class="p-1 hover:bg-surface-container rounded"><span class="material-symbols-outlined text-sm">chevron_right</span></button>
+</div>
+<button class="bg-primary text-on-primary px-3 py-1 text-body-sm rounded flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>New Order</span>
+</button>
+</div>
+</div>
+<!-- Gantt Toolbar / Filter -->
+<div class="h-8 border-b border-grid-border bg-surface-container-low flex items-center px-4 gap-6 shrink-0">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">filter_alt</span>
+<span class="text-label-caps">FILTERS: ALL BUYERS</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1">
+<div class="w-2 h-2 rounded-full bg-risk-on-track"></div>
+<span class="text-[10px] font-bold text-on-surface-variant">ON TRACK</span>
+</div>
+<div class="flex items-center gap-1">
+<div class="w-2 h-2 rounded-full bg-risk-watch"></div>
+<span class="text-[10px] font-bold text-on-surface-variant">AT RISK</span>
+</div>
+<div class="flex items-center gap-1">
+<div class="w-2 h-2 rounded-full bg-risk-action"></div>
+<span class="text-[10px] font-bold text-on-surface-variant">CRITICAL</span>
+</div>
+</div>
+<div class="ml-auto text-[10px] font-mono text-on-surface-variant">
+                SYNC: 2m ago
+            </div>
+</div>
+<!-- Gantt Surface Container -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Fixed Left Column (Order IDs) -->
+<div class="w-64 border-r border-grid-border bg-white flex flex-col shrink-0">
+<div class="h-10 border-b border-grid-border flex items-center px-3 font-label-caps bg-surface-container-low">ORDER DETAILS</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar">
+<!-- Group 1: Nike -->
+<div class="border-b border-grid-border">
+<div class="h-8 flex items-center px-3 bg-surface-container-highest font-bold text-[11px] text-primary">
+                            NIKE - ACTIVEWEAR
+                        </div>
+<div class="divide-y divide-grid-border">
+<div class="h-12 flex flex-col justify-center px-3 cursor-pointer hover:bg-surface-container-low" onclick="toggleDrawer()">
+<span class="font-mono-data text-[12px] font-bold">PO-9821-X</span>
+<span class="text-[10px] text-on-surface-variant uppercase">Tech Fleece Hoodie</span>
+</div>
+<div class="h-12 flex flex-col justify-center px-3 cursor-pointer hover:bg-surface-container-low" onclick="toggleDrawer()">
+<span class="font-mono-data text-[12px] font-bold">PO-9825-B</span>
+<span class="text-[10px] text-on-surface-variant uppercase">Core Training Tee</span>
+</div>
+</div>
+</div>
+<!-- Group 2: Zara -->
+<div class="border-b border-grid-border">
+<div class="h-8 flex items-center px-3 bg-surface-container-highest font-bold text-[11px] text-primary">
+                            ZARA - ESSENTIALS
+                        </div>
+<div class="divide-y divide-grid-border">
+<div class="h-12 flex flex-col justify-center px-3 cursor-pointer hover:bg-surface-container-low" onclick="toggleDrawer()">
+<span class="font-mono-data text-[12px] font-bold">Z-4401-AA</span>
+<span class="text-[10px] text-on-surface-variant uppercase">Slim Fit Chino</span>
+</div>
+<div class="h-12 flex flex-col justify-center px-3 cursor-pointer hover:bg-surface-container-low" onclick="toggleDrawer()">
+<span class="font-mono-data text-[12px] font-bold">Z-4408-LK</span>
+<span class="text-[10px] text-on-surface-variant uppercase">Oversized Cardigan</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Scrollable Timeline Grid -->
+<div class="flex-1 overflow-x-auto custom-scrollbar relative flex flex-col">
+<!-- Timeline Header -->
+<div class="h-10 flex border-b border-grid-border sticky top-0 bg-white z-10 w-[2400px]">
+<!-- Days -->
+<script>
+                        const days = ['Mon 23', 'Tue 24', 'Wed 25', 'Thu 26', 'Fri 27', 'Sat 28', 'Sun 29'];
+                        for (let i = 0; i < 30; i++) {
+                            document.write(`<div class="w-20 border-r border-grid-border shrink-0 flex items-center justify-center font-label-caps text-[10px] ${i === 2 ? 'bg-primary-container text-on-primary-container' : ''}">${days[i % 7]}</div>`);
+                        }
+                    </script>
+</div>
+<!-- Timeline Body -->
+<div class="flex-1 relative w-[2400px] gantt-grid bg-white">
+<!-- Current Date Line -->
+<div class="absolute left-[160px] top-0 bottom-0 w-px bg-risk-action z-20 shadow-[0_0_8px_rgba(239,68,68,0.5)]">
+<div class="bg-risk-action text-white text-[9px] px-1 absolute -left-4 top-0 font-bold">NOW</div>
+</div>
+<!-- Row: Nike PO-9821-X -->
+<div class="h-12 border-b border-grid-border flex items-center relative">
+<!-- PCD Milestone -->
+<div class="absolute left-[400px] top-0 bottom-0 w-px border-l-2 border-dashed border-primary z-10"></div>
+<!-- Order Bars (Segmented) -->
+<div class="absolute left-10 flex gap-0.5">
+<div class="h-6 w-20 bg-risk-on-track rounded-sm border border-green-700/20 flex items-center justify-center group relative cursor-pointer" title="Material Readiness">
+<span class="text-[9px] font-bold text-white uppercase">MAT</span>
+<div class="absolute bottom-full mb-2 hidden group-hover:block bg-primary text-white p-2 rounded text-[10px] w-32 z-50">
+                                    Status: Ready<br/>Completion: 100%
+                                </div>
+</div>
+<div class="h-6 w-40 bg-risk-on-track/80 rounded-sm border border-green-700/20 flex items-center justify-center cursor-pointer">
+<span class="text-[9px] font-bold text-white uppercase">CUTTING</span>
+</div>
+<div class="h-6 w-80 bg-risk-watch rounded-sm border border-amber-600/20 flex items-center justify-center animate-pulse cursor-pointer">
+<span class="text-[9px] font-bold text-white uppercase">SEWING (IN PROGRESS)</span>
+</div>
+</div>
+</div>
+<!-- Row: Nike PO-9825-B -->
+<div class="h-12 border-b border-grid-border flex items-center relative">
+<div class="absolute left-[240px] flex gap-0.5">
+<div class="h-6 w-16 bg-risk-on-track rounded-sm border border-green-700/20 flex items-center justify-center">
+<span class="text-[9px] font-bold text-white uppercase">MAT</span>
+</div>
+<div class="h-6 w-24 bg-risk-action rounded-sm border border-red-900/30 flex items-center justify-center">
+<span class="text-[9px] font-bold text-white uppercase">LATE CUT</span>
+</div>
+</div>
+</div>
+<!-- Spacer for Zara Group -->
+<div class="h-8 border-b border-grid-border bg-transparent"></div>
+<!-- Row: Zara Z-4401-AA -->
+<div class="h-12 border-b border-grid-border flex items-center relative">
+<div class="absolute left-[80px] flex gap-0.5">
+<div class="h-6 w-[600px] bg-slate-200 rounded-sm border border-slate-300 flex items-center px-4">
+<span class="text-[10px] font-bold text-slate-600 uppercase">Planned Production Window</span>
+</div>
+</div>
+</div>
+<!-- Row: Zara Z-4408-LK -->
+<div class="h-12 border-b border-grid-border flex items-center relative">
+<div class="absolute left-[480px] flex gap-0.5">
+<div class="h-6 w-32 bg-risk-critical rounded-sm border border-black flex items-center justify-center">
+<span class="text-[9px] font-bold text-white uppercase">PRIORITY MAT</span>
+</div>
+</div>
+</div>
+<!-- SVG Overlays for Dependency Lines -->
+<svg class="absolute inset-0 pointer-events-none w-[2400px] h-full" style="z-index: 5;">
+<!-- Arrow from MAT to CUT on Nike row 1 -->
+<path class="connector-line" d="M 110 24 L 115 24 L 115 24 L 122 24" marker-end="url(#arrowhead)"></path>
+<defs>
+<marker id="arrowhead" markerheight="6" markerwidth="6" orient="auto" refx="5" refy="3">
+<polygon fill="#94a3b8" points="0 0, 6 3, 0 6"></polygon>
+</marker>
+</defs>
+</svg>
+</div>
+<!-- Departmental Capacity Overlay (Sticky Footer) -->
+<div class="sticky bottom-0 bg-white border-t border-grid-border z-30 w-[2400px]">
+<div class="h-8 flex">
+<div class="w-64 border-r border-grid-border bg-surface-container flex items-center px-3 text-label-caps text-[10px] shrink-0">SEWING LOAD</div>
+<div class="flex flex-1">
+<script>
+                                const loads = [82, 85, 92, 98, 104, 60, 40];
+                                for (let i = 0; i < 30; i++) {
+                                    const load = loads[i % 7];
+                                    const color = load > 100 ? 'bg-risk-action' : load > 90 ? 'bg-risk-watch' : 'bg-risk-on-track';
+                                    document.write(`
+                                        <div class="w-20 border-r border-grid-border p-1 flex flex-col justify-end shrink-0">
+                                            <div class="text-[9px] font-bold mb-0.5 text-center">${load}%</div>
+                                            <div class="w-full h-1 bg-surface-container rounded-full overflow-hidden">
+                                                <div class="${color}" style="width: ${Math.min(load, 100)}%; height: 100%;"></div>
+                                            </div>
+                                        </div>
+                                    `);
+                                }
+                            </script>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Right Action Drawer -->
+<aside class="fixed right-0 top-0 h-full w-drawer-width bg-white shadow-2xl z-[60] translate-x-full transition-transform duration-300 border-l border-grid-border flex flex-col" id="detailDrawer">
+<div class="h-14 border-b border-grid-border flex items-center justify-between px-6 shrink-0">
+<h2 class="font-headline-md text-headline-md text-primary">Order Detail &amp; Impact</h2>
+<button class="p-1 hover:bg-surface-container-low rounded-full" onclick="toggleDrawer()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-6 space-y-8">
+<!-- Order Header -->
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-risk-watch/10 text-risk-watch font-label-caps text-[11px] rounded">AT RISK</span>
+<span class="text-body-sm text-on-surface-variant">PO-9821-X</span>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-primary">Nike Tech Fleece Hoodie</h3>
+<p class="text-body-sm text-on-surface-variant">Line: B-04 | 1,200 Units | Target: Oct 30</p>
+</div>
+<!-- Impact Preview -->
+<div class="bg-surface-container-low border border-grid-border rounded p-4">
+<p class="font-label-caps text-[10px] text-on-surface-variant mb-3">IMPACT PREVIEW: SEWING DELAY</p>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="text-[10px] text-on-surface-variant">ORIGINAL SHIP</p>
+<p class="font-mono-data text-body-md line-through text-on-surface-variant">Oct 30</p>
+</div>
+<div>
+<p class="text-[10px] text-risk-action">FORECAST SHIP</p>
+<p class="font-mono-data text-body-md font-bold text-risk-action">Nov 02</p>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-grid-border">
+<div class="flex items-center justify-between">
+<span class="text-body-sm">Penalty Exposure</span>
+<span class="font-mono-data font-bold text-risk-action">$4,250</span>
+</div>
+</div>
+</div>
+<!-- Readiness Checklist -->
+<div class="space-y-4">
+<h4 class="font-label-caps text-[11px] text-on-surface-variant flex items-center justify-between">
+                    READINESS CHECKLIST
+                    <span class="text-risk-action">2 BLOCKERS</span>
+</h4>
+<div class="space-y-2">
+<div class="flex items-start gap-3 p-3 border border-grid-border rounded hover:bg-surface-muted transition-colors">
+<span class="material-symbols-outlined text-risk-on-track" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="flex-1">
+<p class="text-body-sm font-semibold">Fabric Approval (PCD)</p>
+<p class="text-[11px] text-on-surface-variant">Approved by Q. Zhang on Oct 21</p>
+</div>
+</div>
+<div class="flex items-start gap-3 p-3 border-2 border-risk-action/30 bg-risk-action/5 rounded">
+<span class="material-symbols-outlined text-risk-action">error</span>
+<div class="flex-1">
+<p class="text-body-sm font-semibold">Trim Readiness (Zipper 18cm)</p>
+<p class="text-[11px] text-on-surface-variant">Delayed in Customs. ETA: Oct 26</p>
+<div class="flex items-center gap-2 mt-2">
+<img alt="User" class="w-5 h-5 rounded-full" data-alt="A professional headshot of a logistics manager in a modern industrial setting. The person has a serious, focused expression and is wearing a dark navy corporate uniform. The lighting is crisp and cool, reflecting a high-tech manufacturing environment with a clean, professional aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuByiyxitx7e3aKKycULBzU58ifUFLhhTKVaK_IbstSAJsFy_gwprCLCaopnt739yhJKgYT4Q9429f8Ln3RctI_oKIGreo7cwlwUrreSbrKZy_r46mJz-l2Xfs-azojn7IXjIiB_MDhIVqjpICWmo8hc1o25ybmhKAlCld_Opv8KQGJCiujulR8GWaBg-b-YKA6h-Sr9yEjh_iIVcQNUvBb8efAcqkfkmRzphyLkfh8AoYKdKgSkxkIyaB8XQgLrrgckBrqS23tPPSY"/>
+<span class="text-[10px] font-bold uppercase">Actions Required</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="pt-4">
+<button class="w-full bg-primary text-on-primary py-3 font-semibold rounded shadow-sm hover:opacity-90 transition-opacity">
+                    POST RECOVERY ACTION
+                </button>
+<button class="w-full mt-2 bg-transparent border border-grid-border text-primary py-3 font-semibold rounded hover:bg-surface-container transition-colors">
+                    GENERATE IMPACT REPORT
+                </button>
+</div>
+</div>
+</aside>
+<script>
+        function toggleDrawer() {
+            const drawer = document.getElementById('detailDrawer');
+            if (drawer.classList.contains('translate-x-full')) {
+                drawer.classList.remove('translate-x-full');
+            } else {
+                drawer.classList.add('translate-x-full');
+            }
+        }
+    </script>
+</body></html>

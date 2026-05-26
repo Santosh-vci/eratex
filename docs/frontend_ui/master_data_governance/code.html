@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Master Data Governance | Industrial Logic</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-primary": "#bcc7de",
+                        "primary-fixed": "#d8e3fb",
+                        "tertiary-fixed-dim": "#ddc39d",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "secondary-fixed": "#d5e3fd",
+                        "on-tertiary-fixed": "#271902",
+                        "on-surface-variant": "#45474c",
+                        "on-tertiary-container": "#a38c6a",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#545f73",
+                        "primary-container": "#1e293b",
+                        "on-surface": "#1b1b1d",
+                        "primary": "#091426",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary": "#1e1200",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "on-error-container": "#93000a",
+                        "surface-container-high": "#eae7e9",
+                        "primary-fixed-dim": "#bcc7de",
+                        "surface-variant": "#e4e2e3",
+                        "secondary": "#515f74",
+                        "on-primary-container": "#8590a6",
+                        "background": "#fbf8fa",
+                        "surface-container-low": "#f5f3f4",
+                        "on-tertiary-fixed-variant": "#564427",
+                        "outline-variant": "#c5c6cd",
+                        "secondary-container": "#d5e3fd",
+                        "surface": "#fbf8fa",
+                        "risk-on-track": "#10B981",
+                        "outline": "#75777d",
+                        "on-primary-fixed": "#111c2d",
+                        "on-tertiary": "#ffffff",
+                        "risk-critical": "#111827",
+                        "inverse-surface": "#303032",
+                        "surface-muted": "#F8FAFC",
+                        "on-secondary-container": "#57657b",
+                        "inverse-on-surface": "#f3f0f2",
+                        "surface-container": "#f0edef",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "tertiary-fixed": "#fadfb8",
+                        "tertiary-container": "#35260c",
+                        "surface-dim": "#dcd9db",
+                        "surface-container-highest": "#e4e2e3",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "error-container": "#ffdad6",
+                        "grid-border": "#E2E8F0",
+                        "surface-bright": "#fbf8fa",
+                        "on-error": "#ffffff",
+                        "risk-watch": "#F59E0B",
+                        "risk-action": "#EF4444",
+                        "error": "#ba1a1a",
+                        "on-background": "#1b1b1d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "12px",
+                        "drawer-width": "400px",
+                        "nav-expanded-width": "240px",
+                        "margin-md": "16px",
+                        "grid-row-height": "32px",
+                        "margin-sm": "8px",
+                        "nav-collapsed-width": "64px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "mono-data": ["JetBrains Mono"],
+                        "label-caps": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "data-tabular": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "mono-data": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-md": ["16px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            font-size: 20px;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
+        .grid-row-active { background-color: #F1F5F9; border-left: 2px solid #091426; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md text-body-md overflow-hidden">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface border-b border-grid-border flex justify-between items-center h-grid-row-height px-gutter w-full">
+<div class="flex items-center gap-4">
+<span class="font-headline-lg text-headline-lg font-bold text-primary">Industrial Logic</span>
+<div class="h-4 w-px bg-outline-variant mx-2"></div>
+<span class="font-headline-md text-headline-md text-primary">Master Data Governance</span>
+</div>
+<div class="flex-1 max-w-xl px-8">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg pl-9 pr-4 py-1 h-7 text-body-sm focus:ring-2 focus:ring-primary outline-none" placeholder="Search styles, workcenters, or recipes..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-1 px-2 py-1 hover:bg-surface-container-low rounded transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="text-label-caps font-label-caps">AUDIT LOG</span>
+</button>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" data-icon="sync">sync</span>
+<div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-[10px] text-white font-bold">JD</div>
+</div>
+</nav>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-nav-collapsed-width hover:w-nav-expanded-width z-40 transition-all duration-300 bg-surface-container-low border-r border-grid-border group flex flex-col pt-16 pb-4">
+<div class="flex-1 flex flex-col gap-1 px-2">
+<div class="flex items-center gap-4 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded cursor-pointer transition-all">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span class="opacity-0 group-hover:opacity-100 whitespace-nowrap font-body-sm text-body-sm">Orders</span>
+</div>
+<div class="flex items-center gap-4 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded cursor-pointer transition-all">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+<span class="opacity-0 group-hover:opacity-100 whitespace-nowrap font-body-sm text-body-sm">Planning</span>
+</div>
+<div class="flex items-center gap-4 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded cursor-pointer transition-all">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span class="opacity-0 group-hover:opacity-100 whitespace-nowrap font-body-sm text-body-sm">Capacity</span>
+</div>
+<div class="flex items-center gap-4 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded cursor-pointer transition-all">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="opacity-0 group-hover:opacity-100 whitespace-nowrap font-body-sm text-body-sm">Inventory</span>
+</div>
+<div class="flex items-center gap-4 px-3 py-2 bg-primary-container text-on-primary-container font-semibold rounded cursor-pointer transition-all">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span class="opacity-0 group-hover:opacity-100 whitespace-nowrap font-body-sm text-body-sm">Master Data</span>
+</div>
+</div>
+<div class="px-2 flex flex-col gap-1 border-t border-outline-variant pt-4">
+<div class="flex items-center gap-4 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded cursor-pointer transition-all">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="opacity-0 group-hover:opacity-100 whitespace-nowrap font-body-sm text-body-sm">Settings</span>
+</div>
+<div class="flex items-center gap-4 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded cursor-pointer transition-all">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="opacity-0 group-hover:opacity-100 whitespace-nowrap font-body-sm text-body-sm">Support</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="pl-nav-collapsed-width pr-drawer-width pt-grid-row-height h-screen flex flex-col">
+<!-- Tab Bar -->
+<div class="bg-surface border-b border-grid-border flex items-center px-6 gap-8 h-12 shrink-0">
+<button class="h-full border-b-2 border-primary text-primary font-semibold flex items-center px-1 text-body-sm">Style Master</button>
+<button class="h-full border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors flex items-center px-1 text-body-sm">Workcenter Capacity</button>
+<button class="h-full border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors flex items-center px-1 text-body-sm">Machine Master</button>
+<button class="h-full border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors flex items-center px-1 text-body-sm">Wash Recipes</button>
+<button class="h-full border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors flex items-center px-1 text-body-sm">Shift Calendars</button>
+<button class="h-full border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors flex items-center px-1 text-body-sm">Lead-Time Rules</button>
+</div>
+<!-- Dashboard Content -->
+<div class="flex-1 overflow-y-auto p-6 flex flex-col gap-6 custom-scrollbar">
+<!-- Summary Cards -->
+<div class="grid grid-cols-4 gap-4">
+<div class="bg-white p-4 border border-grid-border rounded-lg shadow-sm">
+<p class="text-label-caps font-label-caps text-on-surface-variant mb-1">TOTAL STYLE RECORDS</p>
+<div class="flex items-baseline gap-2">
+<span class="text-headline-lg font-headline-lg text-primary">12,842</span>
+<span class="text-risk-on-track text-[10px] font-bold">+12% vs LY</span>
+</div>
+</div>
+<div class="bg-white p-4 border border-grid-border rounded-lg shadow-sm">
+<p class="text-label-caps font-label-caps text-on-surface-variant mb-1">PENDING APPROVALS</p>
+<div class="flex items-center justify-between">
+<span class="text-headline-lg font-headline-lg text-risk-action">48</span>
+<span class="bg-error-container text-on-error-container px-2 py-0.5 rounded text-[10px] font-bold">URGENT</span>
+</div>
+</div>
+<div class="bg-white p-4 border border-grid-border rounded-lg shadow-sm">
+<p class="text-label-caps font-label-caps text-on-surface-variant mb-1">STALE PARAMETERS (&gt;90D)</p>
+<div class="flex items-baseline gap-2">
+<span class="text-headline-lg font-headline-lg text-risk-watch">312</span>
+<span class="text-on-surface-variant text-[11px]">Styles</span>
+</div>
+</div>
+<div class="bg-white p-4 border border-grid-border rounded-lg shadow-sm">
+<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">DATA COMPLETENESS</p>
+<div class="flex items-center gap-3">
+<span class="text-headline-md font-headline-md text-primary">88%</span>
+<div class="flex-1 bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[88%]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Toolbar -->
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2">
+<button class="bg-primary text-white px-3 py-1.5 rounded flex items-center gap-2 text-body-sm font-semibold hover:bg-primary-container transition-colors shadow-sm">
+<span class="material-symbols-outlined !text-[18px]" data-icon="add">add</span>
+                        Request Change
+                    </button>
+<button class="bg-white border border-grid-border text-primary px-3 py-1.5 rounded text-body-sm font-semibold hover:bg-surface-container-low transition-colors">Bulk Update</button>
+<button class="bg-white border border-grid-border text-primary px-3 py-1.5 rounded text-body-sm font-semibold hover:bg-surface-container-low transition-colors">Export Master Data</button>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant text-body-sm">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined !text-[16px]" data-icon="filter_list">filter_list</span> Filter</span>
+<span class="flex items-center gap-1 font-mono-data text-mono-data">SYNC: 2m ago</span>
+</div>
+</div>
+<!-- Data Grid -->
+<div class="bg-white border border-grid-border rounded overflow-hidden flex flex-col flex-1">
+<div class="grid grid-cols-12 bg-surface-container-low border-b border-grid-border text-label-caps font-label-caps text-on-surface-variant h-grid-row-height items-center px-4 sticky top-0 z-10">
+<div class="col-span-2">STYLE ID</div>
+<div class="col-span-1">CUSTOMER</div>
+<div class="col-span-1">CATEGORY</div>
+<div class="col-span-1 text-center">SMV (LIVE)</div>
+<div class="col-span-1 text-center">SMV (DRAFT)</div>
+<div class="col-span-1">WASH ID</div>
+<div class="col-span-2">LAST VERIFIED</div>
+<div class="col-span-2">STATUS</div>
+<div class="col-span-1">OWNER</div>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar">
+<!-- Row 1 (Active) -->
+<div class="grid grid-cols-12 border-b border-grid-border h-grid-row-height items-center px-4 text-data-tabular font-data-tabular grid-row-active cursor-pointer">
+<div class="col-span-2 font-bold text-primary">ERX-2024-WL-091</div>
+<div class="col-span-1">Levi's</div>
+<div class="col-span-1">Womens</div>
+<div class="col-span-1 text-center font-mono-data">18.45</div>
+<div class="col-span-1 text-center font-mono-data text-risk-action">19.10</div>
+<div class="col-span-1">W-DARK-04</div>
+<div class="col-span-2">2023-11-15 09:42</div>
+<div class="col-span-2">
+<span class="bg-primary-container text-on-primary-container px-2 py-0.5 rounded-full text-[10px] font-bold">PENDING APPROVAL</span>
+</div>
+<div class="col-span-1 text-on-surface-variant">A. Tan</div>
+</div>
+<!-- Row 2 -->
+<div class="grid grid-cols-12 border-b border-grid-border h-grid-row-height items-center px-4 text-data-tabular font-data-tabular hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="col-span-2 font-bold text-primary">ERX-2024-WL-088</div>
+<div class="col-span-1">Gap</div>
+<div class="col-span-1">Mens</div>
+<div class="col-span-1 text-center font-mono-data">22.10</div>
+<div class="col-span-1 text-center font-mono-data text-on-surface-variant">-</div>
+<div class="col-span-1">W-LT-BLUE</div>
+<div class="col-span-2">2024-01-20 14:15</div>
+<div class="col-span-2">
+<span class="bg-risk-on-track/10 text-risk-on-track px-2 py-0.5 rounded-full text-[10px] font-bold border border-risk-on-track/20">VERIFIED</span>
+</div>
+<div class="col-span-1 text-on-surface-variant">S. Lim</div>
+</div>
+<!-- Row 3 -->
+<div class="grid grid-cols-12 border-b border-grid-border h-grid-row-height items-center px-4 text-data-tabular font-data-tabular hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="col-span-2 font-bold text-primary">ERX-2024-WL-085</div>
+<div class="col-span-1">Uniqlo</div>
+<div class="col-span-1">Kids</div>
+<div class="col-span-1 text-center font-mono-data">14.20</div>
+<div class="col-span-1 text-center font-mono-data text-on-surface-variant">14.25</div>
+<div class="col-span-1">W-ECO-01</div>
+<div class="col-span-2">2024-02-05 11:30</div>
+<div class="col-span-2">
+<span class="bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded-full text-[10px] font-bold border border-outline-variant">DRAFT</span>
+</div>
+<div class="col-span-1 text-on-surface-variant">M. Rossi</div>
+</div>
+<!-- Repeat for Density -->
+<template id="grid-row-template">
+<div class="grid grid-cols-12 border-b border-grid-border h-grid-row-height items-center px-4 text-data-tabular font-data-tabular hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="col-span-2 font-bold text-primary">ERX-2024-WL-0XX</div>
+<div class="col-span-1">Global Client</div>
+<div class="col-span-1">Apparel</div>
+<div class="col-span-1 text-center font-mono-data">20.00</div>
+<div class="col-span-1 text-center font-mono-data text-on-surface-variant">-</div>
+<div class="col-span-1">W-BASE</div>
+<div class="col-span-2">2024-02-10 10:00</div>
+<div class="col-span-2">
+<span class="bg-risk-on-track/10 text-risk-on-track px-2 py-0.5 rounded-full text-[10px] font-bold border border-risk-on-track/20">VERIFIED</span>
+</div>
+<div class="col-span-1 text-on-surface-variant">Admin</div>
+</div>
+</template>
+<script>
+                        const template = document.getElementById('grid-row-template');
+                        for(let i=0; i<15; i++) {
+                            const clone = template.content.cloneNode(true);
+                            document.querySelector('.flex-1.overflow-y-auto').appendChild(clone);
+                        }
+                    </script>
+</div>
+</div>
+</div>
+</main>
+<!-- Right Action Drawer -->
+<aside class="fixed right-0 top-grid-row-height h-[calc(100vh-32px)] w-drawer-width bg-white border-l border-grid-border shadow-lg z-30 flex flex-col">
+<div class="p-4 border-b border-grid-border flex justify-between items-center bg-surface-muted">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary">Parameter Detail</h2>
+<p class="text-[11px] text-on-surface-variant font-mono-data">ERX-2024-WL-091 • Levi's 501</p>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-4 flex flex-col gap-6 custom-scrollbar">
+<!-- SMV History -->
+<section>
+<div class="flex items-center justify-between mb-3">
+<h3 class="text-label-caps font-label-caps text-on-surface-variant">SMV HISTORY &amp; VERSIONING</h3>
+<button class="text-[11px] font-bold text-primary hover:underline">VIEW ALL</button>
+</div>
+<div class="border border-grid-border rounded overflow-hidden">
+<div class="bg-surface-container-low px-3 py-1.5 grid grid-cols-3 text-[10px] font-bold text-on-surface-variant border-b border-grid-border">
+<div>VERSION</div>
+<div>DATE</div>
+<div>AUTHOR</div>
+</div>
+<div class="divide-y divide-grid-border">
+<div class="px-3 py-2 grid grid-cols-3 text-data-tabular bg-primary-container/5">
+<div class="flex items-center gap-1">
+<span class="font-bold">v2.1</span>
+<span class="text-[10px] bg-error-container text-on-error-container px-1 rounded">DRAFT</span>
+</div>
+<div class="text-on-surface-variant">2024-02-12</div>
+<div class="text-on-surface-variant">A. Tan</div>
+</div>
+<div class="px-3 py-2 grid grid-cols-3 text-data-tabular">
+<div class="font-bold">v2.0 (LIVE)</div>
+<div class="text-on-surface-variant">2023-11-15</div>
+<div class="text-on-surface-variant">S. Lim</div>
+</div>
+<div class="px-3 py-2 grid grid-cols-3 text-data-tabular opacity-50">
+<div>v1.8</div>
+<div class="text-on-surface-variant">2023-08-01</div>
+<div class="text-on-surface-variant">S. Lim</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Critical Path Offsets -->
+<section>
+<h3 class="text-label-caps font-label-caps text-on-surface-variant mb-3">CRITICAL PATH OFFSETS (DAYS)</h3>
+<div class="space-y-2">
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant">Fabric Procurement</span>
+<div class="flex items-center gap-2">
+<input class="w-12 h-6 border border-outline-variant text-center rounded text-data-tabular font-mono-data" type="text" value="45"/>
+<span class="text-[11px] text-risk-watch">STALE</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant">Trim Sourcing</span>
+<input class="w-12 h-6 border border-outline-variant text-center rounded text-data-tabular font-mono-data" type="text" value="14"/>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant">PPS Approval</span>
+<input class="w-12 h-6 border border-outline-variant text-center rounded text-data-tabular font-mono-data" type="text" value="7"/>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant">Testing (External)</span>
+<input class="w-12 h-6 border border-outline-variant text-center rounded text-data-tabular font-mono-data" type="text" value="5"/>
+</div>
+</div>
+</section>
+<!-- Governance Audit -->
+<section>
+<h3 class="text-label-caps font-label-caps text-on-surface-variant mb-3">GOVERNANCE AUDIT</h3>
+<div class="space-y-4 relative before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-px before:bg-grid-border">
+<div class="relative pl-6">
+<div class="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-primary flex items-center justify-center">
+<div class="w-1.5 h-1.5 bg-white rounded-full"></div>
+</div>
+<p class="text-[11px] font-bold text-primary">Proposed SMV Increase</p>
+<p class="text-[10px] text-on-surface-variant">A. Tan • 2 hours ago</p>
+<p class="text-[11px] bg-surface-container text-on-surface-variant p-1.5 rounded mt-1">Requested 18.45 → 19.10 due to additional back-pocket embroidery step added in wash recipe update.</p>
+</div>
+<div class="relative pl-6 opacity-60">
+<div class="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-grid-border flex items-center justify-center">
+<div class="w-1.5 h-1.5 bg-white rounded-full"></div>
+</div>
+<p class="text-[11px] font-bold">Record Verified (v2.0)</p>
+<p class="text-[10px] text-on-surface-variant">Governance Bot • Nov 15, 2023</p>
+</div>
+</div>
+</section>
+</div>
+<div class="p-4 border-t border-grid-border bg-surface-muted flex flex-col gap-2">
+<button class="w-full bg-primary text-white py-2 rounded text-body-sm font-semibold hover:bg-primary-container transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined !text-[18px]" data-icon="check_circle">check_circle</span>
+                Approve Version (v2.1)
+            </button>
+<button class="w-full bg-white border border-outline-variant text-on-surface-variant py-2 rounded text-body-sm font-semibold hover:bg-surface-container-low transition-all">Discard Changes</button>
+</div>
+</aside>
+<!-- Stale Data Indicator -->
+<footer class="fixed bottom-0 left-0 w-full h-6 bg-surface-container-lowest border-t border-grid-border px-gutter flex items-center justify-between z-50">
+<div class="flex items-center gap-4 text-[10px] text-on-surface-variant font-mono-data">
+<span>DATABASE: PRD-CLUSTER-04</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-risk-on-track"></span> CONNECTED</span>
+</div>
+<div class="text-[10px] text-on-surface-variant font-mono-data">
+            INSTANCE: MASTER_DATA_SVC_v10.17 • {{SYNC: 2m ago}}
+        </div>
+</footer>
+<script>
+        // Micro-interactions
+        document.querySelectorAll('.cursor-pointer').forEach(el => {
+            el.addEventListener('click', () => {
+                el.classList.add('active:opacity-80');
+                setTimeout(() => el.classList.remove('active:opacity-80'), 100);
+            });
+        });
+
+        // Search Bar Focus Effect
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-2', 'ring-primary/20');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('ring-2', 'ring-primary/20');
+        });
+    </script>
+</body></html>

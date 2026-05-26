@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Eratex Performance Analytics Dashboard | Pro-Garment OS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary": "#1e1200",
+                      "on-tertiary-container": "#a38c6a",
+                      "secondary": "#515f74",
+                      "on-secondary-container": "#57657b",
+                      "on-surface-variant": "#45474c",
+                      "primary-fixed": "#d8e3fb",
+                      "on-error": "#ffffff",
+                      "primary-fixed-dim": "#bcc7de",
+                      "tertiary-fixed": "#fadfb8",
+                      "inverse-surface": "#303032",
+                      "on-tertiary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "outline": "#75777d",
+                      "error-container": "#ffdad6",
+                      "surface-dim": "#dcd9db",
+                      "background": "#fbf8fa",
+                      "surface-container-high": "#eae7e9",
+                      "risk-on-track": "#10B981",
+                      "on-tertiary-fixed-variant": "#564427",
+                      "primary-container": "#1e293b",
+                      "risk-action": "#EF4444",
+                      "inverse-on-surface": "#f3f0f2",
+                      "surface-muted": "#F8FAFC",
+                      "on-primary-container": "#8590a6",
+                      "risk-critical": "#111827",
+                      "on-error-container": "#93000a",
+                      "surface-container": "#f0edef",
+                      "surface": "#fbf8fa",
+                      "error": "#ba1a1a",
+                      "on-primary-fixed": "#111c2d",
+                      "secondary-container": "#d5e3fd",
+                      "surface-bright": "#fbf8fa",
+                      "on-tertiary-fixed": "#271902",
+                      "on-primary": "#ffffff",
+                      "on-secondary-fixed-variant": "#3a485c",
+                      "inverse-primary": "#bcc7de",
+                      "secondary-fixed": "#d5e3fd",
+                      "grid-border": "#E2E8F0",
+                      "surface-container-highest": "#e4e2e3",
+                      "surface-container-low": "#f5f3f4",
+                      "outline-variant": "#c5c6cd",
+                      "tertiary-container": "#35260c",
+                      "on-surface": "#1b1b1d",
+                      "on-secondary-fixed": "#0d1c2f",
+                      "on-background": "#1b1b1d",
+                      "primary": "#091426",
+                      "on-primary-fixed-variant": "#3c475a",
+                      "secondary-fixed-dim": "#b9c7e0",
+                      "tertiary-fixed-dim": "#ddc39d",
+                      "on-secondary": "#ffffff",
+                      "surface-tint": "#545f73",
+                      "risk-watch": "#F59E0B",
+                      "surface-variant": "#e4e2e3"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "gutter": "12px",
+                      "nav-expanded-width": "240px",
+                      "nav-collapsed-width": "64px",
+                      "margin-md": "16px",
+                      "drawer-width": "400px",
+                      "grid-row-height": "32px",
+                      "margin-sm": "8px"
+              },
+              "fontFamily": {
+                      "mono-data": ["JetBrains Mono"],
+                      "data-tabular": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "body-md": ["Inter"],
+                      "label-caps": ["Inter"],
+                      "headline-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                      "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .chart-grid { background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 20px 20px; }
+    </style>
+</head>
+<body class="bg-surface-muted text-on-surface overflow-hidden h-screen flex flex-col">
+<!-- Top Navigation Bar -->
+<header class="bg-surface dark:bg-surface-container flex justify-between items-center w-full px-gutter h-nav-collapsed-width border-b border-grid-border dark:border-outline-variant z-50">
+<div class="flex items-center gap-8">
+<span class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed">Pro-Garment OS</span>
+<nav class="hidden md:flex gap-6">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors font-body-md text-body-md" href="#">Line View</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors font-body-md text-body-md" href="#">Shift Report</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors font-body-md text-body-md" href="#">Asset Health</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" href="#">Performance Analytics</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-lg hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-on-surface-variant">notifications</span></button>
+<button class="p-2 rounded-lg hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-on-surface-variant">settings</span></button>
+<img alt="Manager Profile" class="w-8 h-8 rounded-full border border-outline-variant object-cover" data-alt="A professional headshot of a corporate manufacturing executive in a modern, brightly lit office environment. The subject is wearing a crisp professional shirt, projecting an air of authority and competence. The background is softly blurred with hints of industrial blueprints and technical equipment. High-key lighting emphasizes a clean, modern aesthetic with a palette of whites, slates, and deep navies." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmVZ_2yynLsO_KIhIRmufjPtFbMtRqOQdbP16EtpPj_6yng3_BqYjkYZ0rq3qfN30MWoWupoV8lLL_Kmuc1CbU6s3KLbr90Bjp1VeOjy5fz14-RMvqe-NQAYANEvQ1qF1w1NjN50D7FEz4DaUiW45Cl2goEWs-5gCmq5XH7Wz9krYqf_muo8kv6SEVuudtr6HuPaHNSqFxpAApSNsl0jIl7jZ6pQrU-wiGM9uqli5gMgaRpvr2xmcNM9T-Fl-RSqatrNAXQa6v6Gw"/>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="fixed md:relative left-0 top-0 h-full flex flex-col z-40 bg-primary dark:bg-primary-container text-on-primary dark:text-on-primary-container w-nav-collapsed-width hover:w-nav-expanded-width transition-all duration-300 shadow-sm">
+<div class="p-4 flex flex-col items-center gap-2">
+<div class="w-10 h-10 bg-on-primary rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">factory</span>
+</div>
+</div>
+<nav class="flex-1 mt-4 space-y-1">
+<a class="flex items-center gap-4 px-5 py-3 text-on-primary opacity-70 hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-all group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 whitespace-nowrap">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-5 py-3 text-on-primary opacity-70 hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-all group" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 whitespace-nowrap">Planning</span>
+</a>
+<a class="flex items-center gap-4 px-5 py-3 text-on-primary opacity-70 hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-all group" href="#">
+<span class="material-symbols-outlined">precision_manufacturing</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 whitespace-nowrap">Production</span>
+</a>
+<a class="flex items-center gap-4 px-5 py-3 bg-on-primary-container text-primary-fixed-dim rounded-lg mx-2 transition-all group" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 whitespace-nowrap ml-2">Analytics</span>
+</a>
+<a class="flex items-center gap-4 px-5 py-3 text-on-primary opacity-70 hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-all group" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 whitespace-nowrap">Inventory</span>
+</a>
+</nav>
+<div class="mt-auto p-4 space-y-1">
+<div class="flex items-center gap-4 px-1 py-2 text-on-primary opacity-70 font-label-caps text-label-caps">
+<span class="material-symbols-outlined">sync</span>
+<span class="opacity-0 hover:opacity-100">Live</span>
+</div>
+<div class="flex items-center gap-4 px-1 py-2 text-on-primary opacity-70 font-label-caps text-label-caps">
+<span class="material-symbols-outlined">help</span>
+<span class="opacity-0 hover:opacity-100">Help</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto custom-scrollbar p-gutter relative">
+<div class="max-w-[1600px] mx-auto space-y-6">
+<!-- Header Stats Section -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- OTIF Card -->
+<div class="bg-white border border-grid-border p-4 shadow-sm flex flex-col justify-between hover:border-primary transition-all cursor-pointer">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">OTIF (On-Time In-Full)</span>
+<span class="text-risk-on-track bg-risk-on-track/10 px-1.5 py-0.5 rounded text-[10px] font-bold">+0.4%</span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<h2 class="font-headline-lg text-headline-lg text-primary">96.2%</h2>
+<span class="text-body-sm text-on-surface-variant italic">vs LW</span>
+</div>
+<div class="mt-4 h-1 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-risk-on-track w-[96.2%]"></div>
+</div>
+</div>
+<!-- Utilization Card -->
+<div class="bg-white border border-grid-border p-4 shadow-sm flex flex-col justify-between hover:border-primary transition-all cursor-pointer">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Resource Utilization</span>
+<span class="text-risk-watch bg-risk-watch/10 px-1.5 py-0.5 rounded text-[10px] font-bold">+2.1%</span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<h2 class="font-headline-lg text-headline-lg text-primary">72.8%</h2>
+<span class="text-body-sm text-on-surface-variant italic">Target: 75%</span>
+</div>
+<div class="mt-4 h-1 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-risk-watch w-[72.8%]"></div>
+</div>
+</div>
+<!-- Quality Adjusted Throughput -->
+<div class="bg-white border border-grid-border p-4 shadow-sm flex flex-col justify-between hover:border-primary transition-all cursor-pointer">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Net-Good Throughput</span>
+<span class="text-risk-action bg-risk-action/10 px-1.5 py-0.5 rounded text-[10px] font-bold">-1.2%</span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<h2 class="font-headline-lg text-headline-lg text-primary">88.4%</h2>
+<span class="text-body-sm text-on-surface-variant italic">Quality Adjusted</span>
+</div>
+<div class="mt-4 flex gap-1">
+<div class="h-2 flex-1 bg-risk-on-track opacity-20"></div>
+<div class="h-2 flex-1 bg-risk-on-track"></div>
+<div class="h-2 flex-1 bg-risk-on-track"></div>
+<div class="h-2 flex-1 bg-risk-on-track"></div>
+<div class="h-2 flex-1 bg-risk-action opacity-60"></div>
+</div>
+</div>
+<!-- Cost of Quality -->
+<div class="bg-white border border-grid-border p-4 shadow-sm flex flex-col justify-between hover:border-primary transition-all cursor-pointer">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Cost of Quality (COQ)</span>
+<span class="text-risk-critical bg-risk-critical/10 px-1.5 py-0.5 rounded text-[10px] font-bold">ESTIMATED</span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<h2 class="font-headline-lg text-headline-lg text-primary">$14.2k</h2>
+<span class="text-body-sm text-on-surface-variant italic">Week TD</span>
+</div>
+<div class="mt-4 text-[10px] font-mono-data text-on-surface-variant flex justify-between">
+<span>REWORK: $8.4k</span>
+<span>SCRAP: $5.8k</span>
+</div>
+</div>
+</div>
+<!-- Correlation Charts -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<!-- Line Chart: OTIF vs DHU -->
+<div class="bg-white border border-grid-border p-6 shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-headline-md text-primary">OTIF Correlation vs. Defect Rate (DHU)</h3>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 bg-primary rounded-full"></span>
+<span class="text-label-caps font-label-caps text-on-surface-variant">OTIF %</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 bg-risk-action rounded-full"></span>
+<span class="text-label-caps font-label-caps text-on-surface-variant">DHU %</span>
+</div>
+</div>
+</div>
+<div class="h-[300px] w-full relative flex items-end justify-between px-2 chart-grid border-l border-b border-outline-variant">
+<!-- SVG Polyline for chart would go here, simulated with divs/bars for static demo -->
+<div class="absolute inset-0 flex items-end justify-around pb-1">
+<!-- Simulated Data Points -->
+<div class="w-2 bg-primary/20 h-[80%] relative group">
+<div class="absolute top-0 -mt-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-primary ring-2 ring-white"></div>
+<div class="absolute bottom-0 -mb-6 text-[10px] font-mono-data">W12</div>
+</div>
+<div class="w-2 bg-primary/20 h-[85%] relative">
+<div class="absolute top-0 -mt-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-primary ring-2 ring-white"></div>
+<div class="absolute bottom-0 -mb-6 text-[10px] font-mono-data">W13</div>
+</div>
+<div class="w-2 bg-primary/20 h-[75%] relative">
+<div class="absolute top-0 -mt-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-primary ring-2 ring-white"></div>
+<div class="absolute bottom-0 -mb-6 text-[10px] font-mono-data">W14</div>
+</div>
+<div class="w-2 bg-primary/20 h-[92%] relative">
+<div class="absolute top-0 -mt-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-primary ring-2 ring-white"></div>
+<div class="absolute bottom-0 -mb-6 text-[10px] font-mono-data">W15</div>
+</div>
+<div class="w-2 bg-primary/20 h-[88%] relative">
+<div class="absolute top-0 -mt-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-primary ring-2 ring-white"></div>
+<div class="absolute bottom-0 -mb-6 text-[10px] font-mono-data">W16</div>
+</div>
+<div class="w-2 bg-primary/20 h-[90%] relative">
+<div class="absolute top-0 -mt-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-primary ring-2 ring-white"></div>
+<div class="absolute bottom-0 -mb-6 text-[10px] font-mono-data">W17</div>
+</div>
+<div class="w-2 bg-primary/20 h-[82%] relative">
+<div class="absolute top-0 -mt-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-primary ring-2 ring-white"></div>
+<div class="absolute bottom-0 -mb-6 text-[10px] font-mono-data">W18</div>
+</div>
+</div>
+<!-- Second Line (DHU) Simulated -->
+<div class="absolute inset-0 flex items-end justify-around pb-1">
+<div class="w-1 h-[20%] mb-[15%] relative group">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-risk-action"></div>
+</div>
+<div class="w-1 h-[15%] mb-[20%] relative group">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-risk-action"></div>
+</div>
+<div class="w-1 h-[25%] mb-[10%] relative group">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-risk-action"></div>
+</div>
+<div class="w-1 h-[10%] mb-[25%] relative group">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-risk-action"></div>
+</div>
+<div class="w-1 h-[12%] mb-[22%] relative group">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-risk-action"></div>
+</div>
+<div class="w-1 h-[11%] mb-[23%] relative group">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-risk-action"></div>
+</div>
+<div class="w-1 h-[18%] mb-[17%] relative group">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-risk-action"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bar Chart: Utilization vs Rework -->
+<div class="bg-white border border-grid-border p-6 shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-headline-md text-primary">Utilization vs. Rework (by Line)</h3>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-secondary"></div>
+<span class="text-label-caps font-label-caps text-on-surface-variant">Util %</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-risk-watch"></div>
+<span class="text-label-caps font-label-caps text-on-surface-variant">Rework %</span>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<!-- Line 1 -->
+<div class="space-y-1">
+<div class="flex justify-between text-label-caps font-label-caps">
+<span>LINE 01 (Knits)</span>
+<span>82% / 4%</span>
+</div>
+<div class="flex h-3 gap-0.5">
+<div class="h-full bg-secondary w-[82%]"></div>
+<div class="h-full bg-risk-watch w-[4%]"></div>
+</div>
+</div>
+<!-- Line 2 -->
+<div class="space-y-1">
+<div class="flex justify-between text-label-caps font-label-caps">
+<span>LINE 02 (Woven)</span>
+<span>68% / 12%</span>
+</div>
+<div class="flex h-3 gap-0.5">
+<div class="h-full bg-secondary w-[68%]"></div>
+<div class="h-full bg-risk-watch w-[12%]"></div>
+</div>
+</div>
+<!-- Line 3 -->
+<div class="space-y-1">
+<div class="flex justify-between text-label-caps font-label-caps">
+<span>LINE 03 (Outerwear)</span>
+<span>75% / 7%</span>
+</div>
+<div class="flex h-3 gap-0.5">
+<div class="h-full bg-secondary w-[75%]"></div>
+<div class="h-full bg-risk-watch w-[7%]"></div>
+</div>
+</div>
+<!-- Line 4 -->
+<div class="space-y-1">
+<div class="flex justify-between text-label-caps font-label-caps">
+<span>LINE 04 (Denim)</span>
+<span>91% / 2%</span>
+</div>
+<div class="flex h-3 gap-0.5">
+<div class="h-full bg-secondary w-[91%]"></div>
+<div class="h-full bg-risk-watch w-[2%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Customer Performance Table -->
+<div class="bg-white border border-grid-border shadow-sm overflow-hidden">
+<div class="p-4 bg-surface-container flex justify-between items-center border-b border-grid-border">
+<h3 class="font-headline-md text-headline-md text-primary">Performance by Customer / Buyer</h3>
+<div class="flex gap-2">
+<button class="px-3 py-1 bg-primary text-white text-label-caps font-label-caps rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">download</span> EXPORT
+                            </button>
+<button class="px-3 py-1 border border-outline-variant text-on-surface-variant text-label-caps font-label-caps rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">filter_list</span> FILTER
+                            </button>
+</div>
+</div>
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-muted sticky top-0 border-b border-grid-border">
+<tr>
+<th class="px-4 py-2 font-label-caps text-label-caps text-on-surface-variant">BUYER NAME</th>
+<th class="px-4 py-2 font-label-caps text-label-caps text-on-surface-variant text-center">ACTIVE ORDERS</th>
+<th class="px-4 py-2 font-label-caps text-label-caps text-on-surface-variant text-center">LEAD TIME VAR (D)</th>
+<th class="px-4 py-2 font-label-caps text-label-caps text-on-surface-variant text-center">REWORK %</th>
+<th class="px-4 py-2 font-label-caps text-label-caps text-on-surface-variant text-center">OTIF PERFORMANCE</th>
+<th class="px-4 py-2 font-label-caps text-label-caps text-on-surface-variant">STATUS</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-grid-border">
+<tr class="hover:bg-surface-container-low cursor-pointer transition-colors group" onclick="toggleDrawer()">
+<td class="px-4 py-grid-row-height text-body-md font-medium text-primary">Global Apparel Group</td>
+<td class="px-4 py-grid-row-height text-mono-data text-center">42</td>
+<td class="px-4 py-grid-row-height text-mono-data text-center text-risk-on-track">-1.5</td>
+<td class="px-4 py-grid-row-height text-mono-data text-center">2.4%</td>
+<td class="px-4 py-grid-row-height text-center">
+<div class="flex items-center justify-center gap-2">
+<span class="text-mono-data">98.1%</span>
+<div class="w-12 h-1 bg-surface-container overflow-hidden rounded-full">
+<div class="h-full bg-risk-on-track w-[98%]"></div>
+</div>
+</div>
+</td>
+<td class="px-4 py-grid-row-height">
+<span class="text-[10px] font-bold bg-risk-on-track/10 text-risk-on-track px-2 py-0.5 rounded uppercase tracking-tighter">EXCELLENT</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low cursor-pointer transition-colors group" onclick="toggleDrawer()">
+<td class="px-4 py-grid-row-height text-body-md font-medium text-primary">Urban Outfitters Inc.</td>
+<td class="px-4 py-grid-row-height text-mono-data text-center">18</td>
+<td class="px-4 py-grid-row-height text-mono-data text-center text-risk-action">+4.2</td>
+<td class="px-4 py-grid-row-height text-mono-data text-center">8.7%</td>
+<td class="px-4 py-grid-row-height text-center">
+<div class="flex items-center justify-center gap-2">
+<span class="text-mono-data">84.5%</span>
+<div class="w-12 h-1 bg-surface-container overflow-hidden rounded-full">
+<div class="h-full bg-risk-action w-[84%]"></div>
+</div>
+</div>
+</td>
+<td class="px-4 py-grid-row-height">
+<span class="text-[10px] font-bold bg-risk-action/10 text-risk-action px-2 py-0.5 rounded uppercase tracking-tighter">AT RISK</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low cursor-pointer transition-colors group" onclick="toggleDrawer()">
+<td class="px-4 py-grid-row-height text-body-md font-medium text-primary">Nordic Retail Alliance</td>
+<td class="px-4 py-grid-row-height text-mono-data text-center">29</td>
+<td class="px-4 py-grid-row-height text-mono-data text-center text-risk-watch">+0.8</td>
+<td class="px-4 py-grid-row-height text-mono-data text-center">4.1%</td>
+<td class="px-4 py-grid-row-height text-center">
+<div class="flex items-center justify-center gap-2">
+<span class="text-mono-data">92.3%</span>
+<div class="w-12 h-1 bg-surface-container overflow-hidden rounded-full">
+<div class="h-full bg-risk-watch w-[92%]"></div>
+</div>
+</div>
+</td>
+<td class="px-4 py-grid-row-height">
+<span class="text-[10px] font-bold bg-risk-watch/10 text-risk-watch px-2 py-0.5 rounded uppercase tracking-tighter">WATCH LIST</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low cursor-pointer transition-colors group" onclick="toggleDrawer()">
+<td class="px-4 py-grid-row-height text-body-md font-medium text-primary">Fast Fashion Direct</td>
+<td class="px-4 py-grid-row-height text-mono-data text-center">56</td>
+<td class="px-4 py-grid-row-height text-mono-data text-center text-risk-on-track">-0.2</td>
+<td class="px-4 py-grid-row-height text-mono-data text-center">3.8%</td>
+<td class="px-4 py-grid-row-height text-center">
+<div class="flex items-center justify-center gap-2">
+<span class="text-mono-data">95.6%</span>
+<div class="w-12 h-1 bg-surface-container overflow-hidden rounded-full">
+<div class="h-full bg-risk-on-track w-[95%]"></div>
+</div>
+</div>
+</td>
+<td class="px-4 py-grid-row-height">
+<span class="text-[10px] font-bold bg-risk-on-track/10 text-risk-on-track px-2 py-0.5 rounded uppercase tracking-tighter">STABLE</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Detail Drawer (Overlay) -->
+<div class="fixed top-0 right-0 h-screen w-drawer-width bg-white shadow-2xl z-[60] transform translate-x-full transition-transform duration-300 border-l border-grid-border overflow-y-auto" id="detailDrawer">
+<div class="sticky top-0 bg-white p-6 border-b border-grid-border flex justify-between items-center">
+<div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">PERFORMANCE DEEP DIVE</span>
+<h2 class="font-headline-lg text-headline-lg text-primary">Urban Outfitters Inc.</h2>
+</div>
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors" onclick="toggleDrawer()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="p-6 space-y-8">
+<!-- Bottleneck History -->
+<div>
+<h4 class="font-label-caps text-label-caps text-on-surface-variant mb-4 border-b border-grid-border pb-2">BOTTLENECK HISTORY</h4>
+<div class="space-y-4">
+<div class="flex gap-4">
+<div class="flex flex-col items-center">
+<div class="w-3 h-3 rounded-full bg-risk-action"></div>
+<div class="w-0.5 h-full bg-grid-border"></div>
+</div>
+<div class="pb-4">
+<p class="text-body-md font-bold text-primary">Fabric Delay - Order #UK829</p>
+<p class="text-body-sm text-on-surface-variant">4-day delay in sourcing denim blend. Impacted OTIF.</p>
+<span class="text-mono-data text-[10px] text-on-secondary-container bg-secondary-container px-2 py-0.5 rounded mt-2 inline-block">22 OCT 2023</span>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="flex flex-col items-center">
+<div class="w-3 h-3 rounded-full bg-risk-watch"></div>
+<div class="w-0.5 h-full bg-grid-border"></div>
+</div>
+<div class="pb-4">
+<p class="text-body-md font-bold text-primary">Wash Rework - Order #UK901</p>
+<p class="text-body-sm text-on-surface-variant">Excessive shade variance detected. Rework cycle initiated.</p>
+<span class="text-mono-data text-[10px] text-on-secondary-container bg-secondary-container px-2 py-0.5 rounded mt-2 inline-block">18 OCT 2023</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Root Causes Pareto -->
+<div>
+<h4 class="font-label-caps text-label-caps text-on-surface-variant mb-4 border-b border-grid-border pb-2">ROOT CAUSES (LATE SHIPMENTS)</h4>
+<div class="space-y-3">
+<div class="space-y-1">
+<div class="flex justify-between text-body-sm">
+<span>Fabric Delay</span>
+<span class="font-bold">45%</span>
+</div>
+<div class="h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[45%]"></div>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between text-body-sm">
+<span>Wash Rework</span>
+<span class="font-bold">25%</span>
+</div>
+<div class="h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[25%]"></div>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between text-body-sm">
+<span>Capacity Overload</span>
+<span class="font-bold">20%</span>
+</div>
+<div class="h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[20%]"></div>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between text-body-sm">
+<span>Other</span>
+<span class="font-bold">10%</span>
+</div>
+<div class="h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[10%]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Efficiency Trends -->
+<div class="bg-surface-muted p-4 border border-grid-border">
+<h4 class="font-label-caps text-label-caps text-on-surface-variant mb-4">PLANNED VS. ACTUAL EFFICIENCY</h4>
+<div class="flex items-center justify-between mb-2">
+<div class="text-center flex-1">
+<p class="text-label-caps text-on-surface-variant">PLANNED</p>
+<p class="font-mono-data text-headline-md">78%</p>
+</div>
+<div class="w-px h-8 bg-grid-border"></div>
+<div class="text-center flex-1">
+<p class="text-label-caps text-on-surface-variant">ACTUAL</p>
+<p class="font-mono-data text-headline-md text-risk-action">64%</p>
+</div>
+</div>
+<div class="flex gap-1 h-12 items-end">
+<div class="bg-primary/20 flex-1 h-[78%]"></div>
+<div class="bg-risk-action flex-1 h-[64%]"></div>
+<div class="bg-primary/20 flex-1 h-[75%]"></div>
+<div class="bg-risk-action flex-1 h-[60%]"></div>
+<div class="bg-primary/20 flex-1 h-[80%]"></div>
+<div class="bg-risk-action flex-1 h-[68%]"></div>
+</div>
+</div>
+<button class="w-full py-3 bg-primary text-white font-label-caps text-label-caps hover:bg-opacity-90 transition-all rounded">
+                        GENERATE DETAILED REPORT
+                    </button>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer Status -->
+<footer class="bg-white border-t border-grid-border h-8 flex items-center px-gutter justify-between">
+<div class="flex items-center gap-4">
+<span class="text-mono-data text-[10px] text-on-surface-variant flex items-center gap-1">
+<span class="w-2 h-2 bg-risk-on-track rounded-full animate-pulse"></span> SYSTEM STATUS: OPTIMAL
+            </span>
+<span class="text-mono-data text-[10px] text-on-surface-variant">SYNC: 2m ago</span>
+</div>
+<div class="flex gap-4">
+<span class="text-mono-data text-[10px] text-on-surface-variant">REGION: SE ASIA</span>
+<span class="text-mono-data text-[10px] text-on-surface-variant">V 3.4.2</span>
+</div>
+</footer>
+<script>
+        function toggleDrawer() {
+            const drawer = document.getElementById('detailDrawer');
+            if (drawer.classList.contains('translate-x-full')) {
+                drawer.classList.remove('translate-x-full');
+            } else {
+                drawer.classList.add('translate-x-full');
+            }
+        }
+
+        // Close drawer on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const drawer = document.getElementById('detailDrawer');
+                drawer.classList.add('translate-x-full');
+            }
+        });
+    </script>
+</body></html>

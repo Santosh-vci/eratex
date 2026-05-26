@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OpsControl Cockpit - Reconciliation Manager</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#303032",
+                        "surface": "#fbf8fa",
+                        "on-background": "#1b1b1d",
+                        "on-tertiary-fixed": "#271902",
+                        "on-surface-variant": "#45474c",
+                        "tertiary": "#1e1200",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#e4e2e3",
+                        "on-secondary-container": "#57657b",
+                        "inverse-primary": "#bcc7de",
+                        "risk-on-track": "#10B981",
+                        "surface-bright": "#fbf8fa",
+                        "inverse-on-surface": "#f3f0f2",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#ddc39d",
+                        "surface-muted": "#F8FAFC",
+                        "outline": "#75777d",
+                        "tertiary-container": "#35260c",
+                        "risk-critical": "#111827",
+                        "on-tertiary-container": "#a38c6a",
+                        "tertiary-fixed": "#fadfb8",
+                        "on-tertiary": "#ffffff",
+                        "background": "#fbf8fa",
+                        "outline-variant": "#c5c6cd",
+                        "surface-container-low": "#f5f3f4",
+                        "surface-container-high": "#eae7e9",
+                        "secondary": "#515f74",
+                        "primary-fixed": "#d8e3fb",
+                        "secondary-fixed": "#d5e3fd",
+                        "risk-action": "#EF4444",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#545f73",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "on-primary-fixed": "#111c2d",
+                        "primary": "#091426",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "on-tertiary-fixed-variant": "#564427",
+                        "surface-dim": "#dcd9db",
+                        "on-primary-container": "#8590a6",
+                        "grid-border": "#E2E8F0",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "primary-container": "#1e293b",
+                        "risk-watch": "#F59E0B",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "secondary-container": "#d5e3fd",
+                        "surface-container": "#f0edef",
+                        "on-surface": "#1b1b1d",
+                        "surface-variant": "#e4e2e3",
+                        "primary-fixed-dim": "#bcc7de"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "grid-row-height": "32px",
+                        "drawer-width": "400px",
+                        "margin-sm": "8px",
+                        "margin-md": "16px",
+                        "gutter": "12px",
+                        "nav-expanded-width": "240px",
+                        "nav-collapsed-width": "64px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "mono-data": ["JetBrains Mono"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "data-tabular": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for dense grids */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+        
+        .grid-cell { @apply h-grid-row-height flex items-center px-2 border-r border-grid-border overflow-hidden whitespace-nowrap text-ellipsis; }
+        .sticky-col { @apply sticky left-0 z-10 bg-white; }
+        .header-cell { @apply bg-surface-muted font-label-caps text-label-caps text-on-surface-variant border-b border-grid-border; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface select-none">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full h-12 bg-surface dark:bg-surface-dim flex justify-between items-center px-margin-md border-b border-grid-border dark:border-outline-variant z-50">
+<div class="flex items-center gap-4">
+<span class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary-fixed">OpsControl Cockpit</span>
+<div class="h-6 w-[1px] bg-outline-variant mx-2"></div>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center text-outline">
+<span class="material-symbols-outlined text-[18px]" data-icon="search">search</span>
+</span>
+<input class="h-8 pl-10 pr-4 bg-surface-container-low border-none rounded text-body-sm focus:ring-2 focus:ring-primary w-64" placeholder="Search orders, batches..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 px-3 py-1 bg-surface-container-highest rounded text-mono-data">
+<span class="material-symbols-outlined text-[16px]" data-icon="sync">sync</span>
+<span>SYNC: 2m ago</span>
+</div>
+<div class="flex items-center gap-3">
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-1 rounded transition-colors" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-1 rounded transition-colors" data-icon="sync">sync</button>
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</div>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-12 bottom-0 w-nav-collapsed-width overflow-hidden bg-primary dark:bg-primary-container flex flex-col h-full py-4 items-center z-40 transition-all duration-200 ease-in-out">
+<div class="flex flex-col gap-6 w-full items-center">
+<!-- Active: Shopfloor (Semantic mapping for reconciliation) -->
+<div class="flex flex-col items-center gap-1 group cursor-pointer w-full">
+<div class="p-2 text-on-primary-fixed-variant group-hover:bg-on-primary-fixed-variant/20 rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer w-full">
+<div class="p-2 text-on-primary-fixed-variant group-hover:bg-on-primary-fixed-variant/20 rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer w-full">
+<div class="p-2 bg-on-primary-container text-on-primary rounded-lg">
+<span class="material-symbols-outlined" data-icon="factory">factory</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer w-full">
+<div class="p-2 text-on-primary-fixed-variant group-hover:bg-on-primary-fixed-variant/20 rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer w-full">
+<div class="p-2 text-on-primary-fixed-variant group-hover:bg-on-primary-fixed-variant/20 rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+</div>
+</div>
+</div>
+<div class="mt-auto flex flex-col gap-4 w-full items-center pb-4">
+<button class="material-symbols-outlined text-on-primary-fixed-variant hover:text-on-primary" data-icon="settings">settings</button>
+<button class="material-symbols-outlined text-on-primary-fixed-variant hover:text-on-primary" data-icon="help_outline">help_outline</button>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="ml-nav-collapsed-width mt-12 p-margin-md h-[calc(100vh-48px)] overflow-hidden flex flex-col gap-4">
+<!-- Dashboard Header / Control Bar -->
+<div class="flex justify-between items-end">
+<div class="flex flex-col gap-1">
+<h1 class="font-headline-lg text-headline-lg text-primary">Pipeline Quantity Reconciliation</h1>
+<p class="text-body-sm text-on-surface-variant">Industrial integrity audit • 48 exceptions requiring attention</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center bg-white border border-grid-border rounded overflow-hidden">
+<div class="px-3 py-1 text-label-caps border-r border-grid-border bg-surface-muted">CUSTOMER</div>
+<select class="border-none text-body-sm py-1 pl-2 pr-8 focus:ring-0">
+<option>All Key Accounts</option>
+<option>Velox Athletics</option>
+<option>Nordic Wear</option>
+</select>
+</div>
+<div class="flex items-center bg-white border border-grid-border rounded overflow-hidden">
+<div class="px-3 py-1 text-label-caps border-r border-grid-border bg-surface-muted">SHIP WEEK</div>
+<select class="border-none text-body-sm py-1 pl-2 pr-8 focus:ring-0">
+<option>W42 - Oct 21</option>
+<option>W43 - Oct 28</option>
+<option>W44 - Nov 04</option>
+</select>
+</div>
+<button class="flex items-center gap-2 bg-primary text-on-primary px-3 py-1.5 rounded font-label-caps text-label-caps hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[16px]" data-icon="file_download">file_download</span>
+                    EXPORT LOG
+                </button>
+</div>
+</div>
+<!-- Metric Overview Bento -->
+<div class="grid grid-cols-4 gap-3">
+<div class="bg-white border border-grid-border p-3 flex flex-col gap-1">
+<span class="text-label-caps text-on-surface-variant">TOTAL PIPELINE GAP</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-risk-action">4,812</span>
+<span class="text-mono-data text-on-surface-variant text-[10px]">UNITS</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-risk-action h-full" style="width: 12%"></div>
+</div>
+</div>
+<div class="bg-white border border-grid-border p-3 flex flex-col gap-1">
+<span class="text-label-caps text-on-surface-variant">UNEXPLAINED LOSS RATE</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-risk-watch">0.84%</span>
+<span class="text-mono-data text-on-surface-variant text-[10px]">VS 0.50% THRESHOLD</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-risk-watch h-full" style="width: 68%"></div>
+</div>
+</div>
+<div class="bg-white border border-grid-border p-3 flex flex-col gap-1">
+<span class="text-label-caps text-on-surface-variant">DATA INTEGRITY SCORE</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-risk-on-track">94.2%</span>
+<span class="text-mono-data text-on-surface-variant text-[10px]">STATION SYNC</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-risk-on-track h-full" style="width: 94%"></div>
+</div>
+</div>
+<div class="bg-white border border-grid-border p-3 flex flex-col gap-1">
+<span class="text-label-caps text-on-surface-variant">CRITICAL EXCEPTIONS</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-primary">12</span>
+<span class="text-mono-data text-on-surface-variant text-[10px]">RESOLVE IN 24H</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full" style="width: 45%"></div>
+</div>
+</div>
+</div>
+<!-- High-Density Reconciliation Grid -->
+<div class="flex-1 bg-white border border-grid-border overflow-hidden flex flex-col relative">
+<div class="flex-1 overflow-auto custom-scrollbar">
+<table class="w-full border-collapse text-left">
+<thead class="sticky top-0 z-30">
+<tr>
+<th class="grid-cell header-cell sticky-col z-40 w-32 min-w-[128px]">ORDER ID</th>
+<th class="grid-cell header-cell w-40 min-w-[160px]">STYLE</th>
+<th class="grid-cell header-cell w-24 text-right">ORD QTY</th>
+<th class="grid-cell header-cell w-28 text-right">FABRIC EQ</th>
+<th class="grid-cell header-cell w-24 text-right">CUT</th>
+<th class="grid-cell header-cell w-24 text-right">SEWN</th>
+<th class="grid-cell header-cell w-24 text-right">WASHED</th>
+<th class="grid-cell header-cell w-24 text-right">FINISHED</th>
+<th class="grid-cell header-cell w-24 text-right">PACKED</th>
+<th class="grid-cell header-cell w-28 text-right">SHIP READY</th>
+<th class="grid-cell header-cell w-24 text-right">DISP</th>
+<th class="grid-cell header-cell flex-1 min-w-[200px]">EXCEPTION AUDIT</th>
+</tr>
+</thead>
+<tbody class="text-data-tabular">
+<!-- Row 1: Exception -->
+<tr class="hover:bg-surface-muted group transition-colors">
+<td class="grid-cell sticky-col group-hover:bg-surface-muted font-mono-data text-primary font-medium">#ORD-9021-A</td>
+<td class="grid-cell text-on-surface-variant">Core Tech Hoodie - Navy</td>
+<td class="grid-cell text-right text-mono-data">2,400</td>
+<td class="grid-cell text-right text-mono-data">2,410</td>
+<td class="grid-cell text-right text-mono-data bg-error-container/20 text-error">2,450</td>
+<td class="grid-cell text-right text-mono-data">2,380</td>
+<td class="grid-cell text-right text-mono-data">2,375</td>
+<td class="grid-cell text-right text-mono-data">2,370</td>
+<td class="grid-cell text-right text-mono-data">2,370</td>
+<td class="grid-cell text-right text-mono-data">2,360</td>
+<td class="grid-cell text-right text-mono-data">0</td>
+<td class="grid-cell text-error flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
+<span class="font-label-caps text-[10px]">CUT &gt; FABRIC (+40)</span>
+</td>
+</tr>
+<!-- Row 2: Clean -->
+<tr class="hover:bg-surface-muted group transition-colors">
+<td class="grid-cell sticky-col group-hover:bg-surface-muted font-mono-data text-primary font-medium">#ORD-8852-C</td>
+<td class="grid-cell text-on-surface-variant">Apex Seamless T-Shirt</td>
+<td class="grid-cell text-right text-mono-data">1,200</td>
+<td class="grid-cell text-right text-mono-data">1,200</td>
+<td class="grid-cell text-right text-mono-data">1,195</td>
+<td class="grid-cell text-right text-mono-data">1,190</td>
+<td class="grid-cell text-right text-mono-data">1,190</td>
+<td class="grid-cell text-right text-mono-data">1,190</td>
+<td class="grid-cell text-right text-mono-data">1,188</td>
+<td class="grid-cell text-right text-mono-data">1,188</td>
+<td class="grid-cell text-right text-mono-data">1,188</td>
+<td class="grid-cell text-risk-on-track flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span>
+<span class="font-label-caps text-[10px]">BALANCED</span>
+</td>
+</tr>
+<!-- Row 3: Loss Warning -->
+<tr class="hover:bg-surface-muted group transition-colors">
+<td class="grid-cell sticky-col group-hover:bg-surface-muted font-mono-data text-primary font-medium">#ORD-9044-K</td>
+<td class="grid-cell text-on-surface-variant">Merino Jogger - Slate</td>
+<td class="grid-cell text-right text-mono-data">5,000</td>
+<td class="grid-cell text-right text-mono-data">5,000</td>
+<td class="grid-cell text-right text-mono-data">4,950</td>
+<td class="grid-cell text-right text-mono-data">4,800</td>
+<td class="grid-cell text-right text-mono-data">4,780</td>
+<td class="grid-cell text-right text-mono-data">4,775</td>
+<td class="grid-cell text-right text-mono-data">4,775</td>
+<td class="grid-cell text-right text-mono-data">4,770</td>
+<td class="grid-cell text-right text-mono-data">0</td>
+<td class="grid-cell text-risk-watch flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]" data-icon="trending_down">trending_down</span>
+<span class="font-label-caps text-[10px]">UNEXPLAINED LOSS &gt; 3%</span>
+</td>
+</tr>
+<!-- Row 4: Data Anomaly -->
+<tr class="hover:bg-surface-muted group transition-colors">
+<td class="grid-cell sticky-col group-hover:bg-surface-muted font-mono-data text-primary font-medium">#ORD-9112-X</td>
+<td class="grid-cell text-on-surface-variant">Compression Shorts</td>
+<td class="grid-cell text-right text-mono-data">3,600</td>
+<td class="grid-cell text-right text-mono-data">3,600</td>
+<td class="grid-cell text-right text-mono-data">3,600</td>
+<td class="grid-cell text-right text-mono-data">3,580</td>
+<td class="grid-cell text-right text-mono-data">3,580</td>
+<td class="grid-cell text-right text-mono-data">3,580</td>
+<td class="grid-cell text-right text-mono-data bg-error-container/20 text-error">3,610</td>
+<td class="grid-cell text-right text-mono-data">3,580</td>
+<td class="grid-cell text-right text-mono-data">0</td>
+<td class="grid-cell text-error flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]" data-icon="rule" style="font-variation-settings: 'FILL' 1;">rule</span>
+<span class="font-label-caps text-[10px]">PACKED &gt; FINISHED (+30)</span>
+</td>
+</tr>
+<!-- More dynamic rows placeholder -->
+<script>
+                            const tbody = document.querySelector('tbody');
+                            const rows = [
+                                {id: "9212-A", style: "Polar Fleece Jacket", qty: 850, loss: false},
+                                {id: "9213-B", style: "Polar Fleece Jacket", qty: 1200, loss: true},
+                                {id: "9214-C", style: "Running Cap", qty: 4500, loss: false},
+                                {id: "9215-D", style: "Running Cap", qty: 3200, loss: false},
+                                {id: "9216-E", style: "Training Vest", qty: 1500, loss: true},
+                                {id: "9217-F", style: "Training Vest", qty: 1800, loss: false},
+                                {id: "9218-G", style: "Cycling Jersey", qty: 900, loss: false},
+                                {id: "9219-H", style: "Cycling Jersey", qty: 1100, loss: false},
+                                {id: "9220-I", style: "Yoga Mat Towel", qty: 2000, loss: false},
+                                {id: "9221-J", style: "Windbreaker Pro", qty: 750, loss: true}
+                            ];
+                            
+                            rows.forEach(r => {
+                                const tr = document.createElement('tr');
+                                tr.className = "hover:bg-surface-muted group transition-colors";
+                                tr.innerHTML = `
+                                    <td class="grid-cell sticky-col group-hover:bg-surface-muted font-mono-data text-primary font-medium">#ORD-${r.id}</td>
+                                    <td class="grid-cell text-on-surface-variant">${r.style}</td>
+                                    <td class="grid-cell text-right text-mono-data">${r.qty.toLocaleString()}</td>
+                                    <td class="grid-cell text-right text-mono-data">${Math.floor(r.qty * 1.01)}</td>
+                                    <td class="grid-cell text-right text-mono-data">${r.qty}</td>
+                                    <td class="grid-cell text-right text-mono-data">${Math.floor(r.qty * 0.99)}</td>
+                                    <td class="grid-cell text-right text-mono-data">${Math.floor(r.qty * 0.99)}</td>
+                                    <td class="grid-cell text-right text-mono-data">${Math.floor(r.qty * 0.985)}</td>
+                                    <td class="grid-cell text-right text-mono-data">${Math.floor(r.qty * 0.985)}</td>
+                                    <td class="grid-cell text-right text-mono-data">${Math.floor(r.qty * 0.98)}</td>
+                                    <td class="grid-cell text-right text-mono-data">0</td>
+                                    <td class="grid-cell ${r.loss ? 'text-risk-watch' : 'text-risk-on-track'} flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-[14px]" data-icon="${r.loss ? 'info' : 'check_circle'}" ${r.loss ? "style=\"font-variation-settings: 'FILL' 1;\"" : ""}>${r.loss ? 'info' : 'check_circle'}</span>
+                                        <span class="font-label-caps text-[10px]">${r.loss ? 'POSSIBLE YIELD LOSS' : 'BALANCED'}</span>
+                                    </td>
+                                `;
+                                tbody.appendChild(tr);
+                            });
+                        </script>
+</tbody>
+</table>
+</div>
+<!-- Grid Footer / Selection State -->
+<div class="h-8 border-t border-grid-border bg-surface-container-low flex items-center px-margin-md justify-between">
+<div class="flex items-center gap-4 text-mono-data text-[10px] text-on-surface-variant">
+<span>ROWS: 142</span>
+<span>FILTERED: 14</span>
+<span class="text-risk-action">EXCEPTIONS: 48</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="h-6 w-6 flex items-center justify-center hover:bg-surface-container-high rounded transition-colors"><span class="material-symbols-outlined text-[16px]" data-icon="chevron_left">chevron_left</span></button>
+<span class="text-mono-data text-[10px]">PAGE 1 OF 8</span>
+<button class="h-6 w-6 flex items-center justify-center hover:bg-surface-container-high rounded transition-colors"><span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span></button>
+</div>
+</div>
+</div>
+</main>
+<!-- Side Drawer: Action Drawer for Detail Reconciliation -->
+<aside class="fixed right-0 top-12 bottom-0 w-drawer-width bg-white border-l border-grid-border shadow-[0_0_20px_rgba(0,0,0,0.05)] z-40 transform translate-x-full transition-transform duration-300 ease-in-out" id="action-drawer">
+<div class="p-4 flex flex-col h-full gap-6">
+<div class="flex justify-between items-start border-b border-grid-border pb-3">
+<div class="flex flex-col">
+<span class="text-label-caps text-on-surface-variant">AUDIT DETAIL</span>
+<h2 class="font-headline-md text-headline-md text-primary">#ORD-9021-A</h2>
+</div>
+<button class="material-symbols-outlined hover:bg-surface-container-high p-1 rounded" data-icon="close" onclick="toggleDrawer()">close</button>
+</div>
+<div class="flex flex-col gap-4">
+<div class="p-3 bg-error-container/10 border border-error/20 rounded">
+<div class="flex items-center gap-2 text-error mb-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="error">error</span>
+<span class="font-label-caps">CRITICAL ANOMALY DETECTED</span>
+</div>
+<p class="text-body-sm text-on-error-container">The recorded <strong>Cut Quantity (2,450)</strong> exceeds the total <strong>Fabric Equivalent (2,410)</strong> issued for this batch. This indicates either a duplicate scan in the cutting room or unregistered material movement.</p>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-label-caps text-on-surface-variant">READINESS CHECKLIST</span>
+<div class="flex flex-col border border-grid-border rounded overflow-hidden">
+<div class="flex items-center justify-between p-2 border-b border-grid-border">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-risk-on-track text-[18px]" data-icon="check_circle">check_circle</span>
+<span class="text-body-sm">Material Issue Match</span>
+</div>
+<span class="text-mono-data text-[10px] text-on-surface-variant">VERIFIED</span>
+</div>
+<div class="flex items-center justify-between p-2 border-b border-grid-border bg-surface-muted">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-risk-action text-[18px]" data-icon="pending">pending</span>
+<span class="text-body-sm font-medium">Recount Cut Bundles</span>
+</div>
+<span class="px-2 py-0.5 bg-risk-action text-on-primary font-label-caps text-[9px] rounded">ACTION REQ</span>
+</div>
+<div class="flex items-center justify-between p-2">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline text-[18px]" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+<span class="text-body-sm">Sign-off Reconciliation</span>
+</div>
+<span class="text-mono-data text-[10px] text-outline">PENDING</span>
+</div>
+</div>
+</div>
+<div class="mt-4 flex flex-col gap-2">
+<span class="text-label-caps text-on-surface-variant">IMPACT PREVIEW</span>
+<div class="grid grid-cols-2 gap-2">
+<div class="p-3 bg-surface-muted border border-grid-border rounded text-center">
+<span class="text-[10px] text-on-surface-variant block uppercase">CURRENT GAP</span>
+<span class="text-headline-md font-mono-data text-error">+40</span>
+</div>
+<div class="p-3 bg-surface-muted border border-grid-border rounded text-center">
+<span class="text-[10px] text-on-surface-variant block uppercase">PROJ. RECTIFIED</span>
+<span class="text-headline-md font-mono-data text-risk-on-track">0</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-auto flex gap-2">
+<button class="flex-1 py-2 border border-grid-border font-label-caps text-label-caps hover:bg-surface-muted transition-colors">FLAG FOR SUPERVISOR</button>
+<button class="flex-1 py-2 bg-primary text-on-primary font-label-caps text-label-caps hover:opacity-90 transition-opacity">OVERRIDE &amp; BALANCE</button>
+</div>
+</div>
+</aside>
+<script>
+        function toggleDrawer() {
+            const drawer = document.getElementById('action-drawer');
+            drawer.classList.toggle('translate-x-full');
+        }
+
+        // Simulate row click to open drawer
+        document.querySelector('tbody tr').addEventListener('click', () => {
+            toggleDrawer();
+        });
+
+        // Micro-interaction: Sync pulse
+        setInterval(() => {
+            const syncIcon = document.querySelector('[data-icon="sync"]');
+            syncIcon.classList.add('rotate-180');
+            setTimeout(() => syncIcon.classList.remove('rotate-180'), 500);
+        }, 15000);
+    </script>
+</body></html>

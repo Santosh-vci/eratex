@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Supervisor Shift Closure | Shopfloor Control</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        /* Custom Scrollbar for Dense Grids */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+        }
+        
+        .pin-input:focus {
+            letter-spacing: 0.5em;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "risk-critical": "#111827",
+                    "surface-container-high": "#eae7e9",
+                    "on-tertiary-fixed-variant": "#564427",
+                    "surface-tint": "#545f73",
+                    "on-primary-fixed": "#111c2d",
+                    "on-surface-variant": "#45474c",
+                    "on-primary": "#ffffff",
+                    "risk-action": "#EF4444",
+                    "secondary-fixed": "#d5e3fd",
+                    "outline-variant": "#c5c6cd",
+                    "on-tertiary-container": "#a38c6a",
+                    "on-secondary-fixed": "#0d1c2f",
+                    "grid-border": "#E2E8F0",
+                    "secondary-fixed-dim": "#b9c7e0",
+                    "surface-container-low": "#f5f3f4",
+                    "secondary": "#515f74",
+                    "risk-on-track": "#10B981",
+                    "outline": "#75777d",
+                    "on-surface": "#1b1b1d",
+                    "inverse-surface": "#303032",
+                    "inverse-on-surface": "#f3f0f2",
+                    "on-tertiary-fixed": "#271902",
+                    "surface-dim": "#dcd9db",
+                    "on-background": "#1b1b1d",
+                    "background": "#fbf8fa",
+                    "on-primary-fixed-variant": "#3c475a",
+                    "on-error": "#ffffff",
+                    "primary-fixed-dim": "#bcc7de",
+                    "surface-bright": "#fbf8fa",
+                    "surface-container-highest": "#e4e2e3",
+                    "surface-muted": "#F8FAFC",
+                    "primary-container": "#1e293b",
+                    "tertiary-fixed": "#fadfb8",
+                    "error-container": "#ffdad6",
+                    "secondary-container": "#d5e3fd",
+                    "on-secondary-container": "#57657b",
+                    "risk-watch": "#F59E0B",
+                    "on-secondary": "#ffffff",
+                    "tertiary-container": "#35260c",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-container": "#8590a6",
+                    "primary": "#091426",
+                    "on-tertiary": "#ffffff",
+                    "surface": "#fbf8fa",
+                    "surface-container": "#f0edef",
+                    "on-secondary-fixed-variant": "#3a485c",
+                    "inverse-primary": "#bcc7de",
+                    "tertiary": "#1e1200",
+                    "error": "#ba1a1a",
+                    "on-error-container": "#93000a",
+                    "primary-fixed": "#d8e3fb",
+                    "surface-variant": "#e4e2e3",
+                    "tertiary-fixed-dim": "#ddc39d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "drawer-width": "400px",
+                    "gutter": "12px",
+                    "nav-collapsed-width": "64px",
+                    "grid-row-height": "32px",
+                    "margin-md": "16px",
+                    "nav-expanded-width": "240px",
+                    "margin-sm": "8px"
+            },
+            "fontFamily": {
+                    "data-tabular": ["Inter"],
+                    "mono-data": ["JetBrains Mono"],
+                    "headline-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "headline-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-muted text-on-surface font-body-md selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 w-full h-12 z-50 bg-surface flex justify-between items-center px-margin-md border-b border-grid-border">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">factory</span>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Shopfloor Control</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 bg-surface-container-low px-3 py-1 rounded-lg">
+<span class="w-2 h-2 rounded-full bg-risk-on-track"></span>
+<span class="font-mono-data text-mono-data text-on-surface-variant uppercase">Sync: Active</span>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low p-1 transition-colors">notifications_active</button>
+</div>
+</header>
+<!-- Side Navigation Shell -->
+<aside class="fixed left-0 top-12 h-[calc(100vh-3rem)] w-nav-collapsed-width md:w-nav-expanded-width bg-surface-container-lowest border-r border-grid-border shadow-md z-40 transition-all duration-300">
+<div class="flex flex-col h-full p-margin-md overflow-hidden">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary">person</span>
+</div>
+<div class="hidden md:block">
+<p class="font-headline-md text-headline-md font-bold text-primary truncate">Line Supervisor</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Line 04 - Denim Section</p>
+</div>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-low transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="hidden md:block font-label-caps text-label-caps uppercase">Supervisor Home</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-low transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined">precision_manufacturing</span>
+<span class="hidden md:block font-label-caps text-label-caps uppercase">Output Capture</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-low transition-all rounded-lg group" href="#">
+<span class="material-symbols-outlined">checklist_rtl</span>
+<span class="hidden md:block font-label-caps text-label-caps uppercase">QC Interface</span>
+</a>
+<a class="flex items-center gap-3 p-3 bg-secondary-container text-on-secondary-container font-bold rounded-lg group" href="#">
+<span class="material-symbols-outlined">event_busy</span>
+<span class="hidden md:block font-label-caps text-label-caps uppercase">Shift Closure</span>
+</a>
+</nav>
+<div class="mt-auto hidden md:block p-3 bg-surface-container-low rounded-xl">
+<p class="font-label-caps text-[10px] text-outline mb-1 uppercase">Shift Status</p>
+<div class="flex justify-between items-end">
+<span class="font-headline-md text-headline-md font-bold text-risk-watch">Ending In 14m</span>
+<span class="font-mono-data text-[10px] text-outline">Shift A</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-nav-collapsed-width md:ml-nav-expanded-width pt-12 pb-24 min-h-screen">
+<div class="p-6 max-w-7xl mx-auto">
+<!-- Page Header -->
+<div class="flex justify-between items-end mb-8">
+<div>
+<div class="flex items-center gap-2 text-outline mb-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span class="font-label-caps text-label-caps uppercase">Friday, Oct 27 • Shift A</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-primary">Shift Closure Protocol</h2>
+</div>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-risk-on-track/10 text-risk-on-track font-label-caps text-label-caps rounded flex items-center gap-1 border border-risk-on-track/20">
+<span class="material-symbols-outlined text-[14px]">cloud_done</span> SYNCED
+                    </span>
+</div>
+</div>
+<!-- Bento Layout -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Performance Summary Card (Left Span) -->
+<div class="col-span-12 lg:col-span-4 space-y-6">
+<div class="bg-surface border border-grid-border p-6 shadow-sm">
+<h3 class="font-label-caps text-label-caps text-outline uppercase mb-6">Shift Summary (PLANNED vs ACTUAL)</h3>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between mb-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Output Efficiency</span>
+<span class="font-mono-data text-mono-data text-primary">94.2%</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest overflow-hidden">
+<div class="h-full bg-primary" style="width: 94.2%"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-muted p-4 border-l-2 border-primary">
+<p class="font-label-caps text-[10px] text-outline uppercase">Total Target</p>
+<p class="font-headline-md text-headline-md font-bold text-primary">1,200 <span class="text-[12px] font-normal text-on-surface-variant">Units</span></p>
+</div>
+<div class="bg-surface-muted p-4 border-l-2 border-risk-watch">
+<p class="font-label-caps text-[10px] text-outline uppercase">Actual Out</p>
+<p class="font-headline-md text-headline-md font-bold text-primary">1,131 <span class="text-[12px] font-normal text-on-surface-variant">Units</span></p>
+</div>
+</div>
+<div class="pt-4 border-t border-grid-border space-y-3">
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Defect Rate</span>
+<span class="px-2 py-0.5 bg-risk-on-track/10 text-risk-on-track font-mono-data text-[12px] rounded">1.2% (Target &lt;2%)</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Machine Downtime</span>
+<span class="px-2 py-0.5 bg-risk-watch/10 text-risk-watch font-mono-data text-[12px] rounded">28 Min</span>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-primary-container p-6 text-on-primary-container relative overflow-hidden">
+<div class="relative z-10">
+<h3 class="font-label-caps text-label-caps uppercase mb-2 text-on-primary-container/60">System Notice</h3>
+<p class="font-body-sm text-body-sm leading-relaxed mb-4">Once closure is finalized, all machine logs for Line 04 Shift A will be locked. Any discrepancies must be resolved now.</p>
+<button class="font-label-caps text-label-caps uppercase underline underline-offset-4 hover:text-on-primary transition-colors">View Audit Log</button>
+</div>
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-[120px] text-on-primary-container/5 pointer-events-none">gavel</span>
+</div>
+</div>
+<!-- Closure Checklist (Center/Right Span) -->
+<div class="col-span-12 lg:col-span-8 bg-surface border border-grid-border shadow-sm flex flex-col">
+<div class="p-6 border-b border-grid-border flex justify-between items-center bg-surface-muted">
+<h3 class="font-label-caps text-label-caps text-primary uppercase">Readiness Checklist</h3>
+<span class="font-body-sm text-body-sm text-on-surface-variant" id="checklist-progress">2/5 Complete</span>
+</div>
+<div class="flex-1">
+<!-- Checklist Item 1 -->
+<div class="flex items-center gap-4 p-6 border-b border-grid-border hover:bg-surface-container-low transition-colors group">
+<input checked="" class="w-5 h-5 rounded border-outline text-primary focus:ring-primary transition-all" type="checkbox"/>
+<div class="flex-1">
+<div class="flex items-center gap-3">
+<span class="font-headline-md text-headline-md font-bold text-primary">Hourly Output Logged</span>
+<span class="px-2 py-0.5 bg-risk-on-track/10 text-risk-on-track font-mono-data text-[10px] rounded uppercase">Verified</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">8/8 hourly intervals recorded and synced.</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors cursor-pointer">visibility</span>
+</div>
+<!-- Checklist Item 2 -->
+<div class="flex items-center gap-4 p-6 border-b border-grid-border hover:bg-surface-container-low transition-colors group">
+<input checked="" class="w-5 h-5 rounded border-outline text-primary focus:ring-primary transition-all" type="checkbox"/>
+<div class="flex-1">
+<div class="flex items-center gap-3">
+<span class="font-headline-md text-headline-md font-bold text-primary">Defects Accounted For</span>
+<span class="px-2 py-0.5 bg-risk-on-track/10 text-risk-on-track font-mono-data text-[10px] rounded uppercase">Verified</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">14 Major, 22 Minor defects categorized.</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors cursor-pointer">visibility</span>
+</div>
+<!-- Checklist Item 3 -->
+<div class="flex items-center gap-4 p-6 border-b border-grid-border hover:bg-surface-container-low transition-colors group">
+<input class="w-5 h-5 rounded border-outline text-primary focus:ring-primary transition-all" type="checkbox"/>
+<div class="flex-1">
+<div class="flex items-center gap-3">
+<span class="font-headline-md text-headline-md font-bold text-primary">WIP Handover Complete</span>
+<span class="px-2 py-0.5 bg-risk-watch/10 text-risk-watch font-mono-data text-[10px] rounded uppercase">Draft</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">420 units currently in station buffers.</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors cursor-pointer">edit</span>
+</div>
+<!-- Checklist Item 4 -->
+<div class="flex items-center gap-4 p-6 border-b border-grid-border hover:bg-surface-container-low transition-colors group">
+<input class="w-5 h-5 rounded border-outline text-primary focus:ring-primary transition-all" type="checkbox"/>
+<div class="flex-1">
+<div class="flex items-center gap-3">
+<span class="font-headline-md text-headline-md font-bold text-primary">Downtime Logged</span>
+<span class="px-2 py-0.5 bg-risk-action/10 text-risk-action font-mono-data text-[10px] rounded uppercase">Incomplete</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">1 unassigned downtime event (12 min at 14:20).</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors cursor-pointer">warning</span>
+</div>
+<!-- Checklist Item 5 -->
+<div class="flex items-center gap-4 p-6 hover:bg-surface-container-low transition-colors group">
+<input class="w-5 h-5 rounded border-outline text-primary focus:ring-primary transition-all" type="checkbox"/>
+<div class="flex-1">
+<div class="flex items-center gap-3">
+<span class="font-headline-md text-headline-md font-bold text-primary">Next Shift Notes</span>
+<span class="px-2 py-0.5 bg-surface-container-highest text-outline font-mono-data text-[10px] rounded uppercase">Empty</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Mandatory instructions for Shift B supervisor.</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors cursor-pointer">add_comment</span>
+</div>
+</div>
+</div>
+</div>
+<!-- PIN Verification & Action Footer -->
+<div class="mt-8 grid grid-cols-12 gap-6">
+<div class="col-span-12 lg:col-start-9 lg:col-span-4">
+<div class="bg-surface-container-high border border-grid-border p-6 shadow-lg rounded-xl">
+<label class="block font-label-caps text-label-caps text-on-surface-variant uppercase mb-4">Supervisor Authorization PIN</label>
+<div class="flex gap-4 mb-6">
+<input class="pin-input flex-1 bg-surface-container-lowest border-grid-border h-12 text-center text-xl font-bold tracking-widest focus:ring-2 focus:ring-primary transition-all placeholder:tracking-normal" maxlength="4" placeholder="••••" type="password"/>
+<button class="w-12 h-12 bg-surface-container-lowest border border-grid-border flex items-center justify-center hover:bg-surface-container-highest transition-all rounded">
+<span class="material-symbols-outlined">fingerprint</span>
+</button>
+</div>
+<button class="w-full h-12 bg-primary text-on-primary font-label-caps text-label-caps uppercase flex items-center justify-center gap-2 hover:bg-risk-critical active:scale-95 transition-all shadow-md" id="close-shift-btn">
+                            Close Shift &amp; Finalize
+                            <span class="material-symbols-outlined">lock</span>
+</button>
+<p class="mt-4 text-center font-body-sm text-[11px] text-outline italic">By signing off, you confirm all data is accurate under Section 12-A Corporate Compliance.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Mobile Navigation Shell -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full h-16 bg-surface border-t border-grid-border flex justify-around items-center px-margin-sm pb-safe z-50">
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-caps text-[9px] uppercase">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-label-caps text-[9px] uppercase">Output</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">fact_check</span>
+<span class="font-label-caps text-[9px] uppercase">QC</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary bg-secondary-container rounded-full px-4 py-1" href="#">
+<span class="material-symbols-outlined">event_busy</span>
+<span class="font-label-caps text-[9px] uppercase">Close</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">menu</span>
+<span class="font-label-caps text-[9px] uppercase">More</span>
+</a>
+</nav>
+<!-- Success Overlay (Hidden) -->
+<div class="fixed inset-0 z-[100] flex items-center justify-center bg-risk-critical/90 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 p-6" id="success-modal">
+<div class="bg-surface max-w-md w-full p-8 text-center border-t-4 border-risk-on-track">
+<div class="w-16 h-16 bg-risk-on-track/10 text-risk-on-track rounded-full flex items-center justify-center mx-auto mb-6">
+<span class="material-symbols-outlined text-[40px]">check_circle</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-primary mb-2">Shift A Closed Successfully</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8">Data has been locked and archived. Production report for Oct 27 - Line 04 has been generated and sent to Management.</p>
+<button class="w-full h-12 border border-primary text-primary font-label-caps text-label-caps uppercase hover:bg-surface-container-low transition-all" onclick="window.location.reload()">Return to Dashboard</button>
+</div>
+</div>
+<script>
+        // Simple Interaction Logic
+        document.getElementById('close-shift-btn').addEventListener('click', function() {
+            const pin = document.querySelector('.pin-input').value;
+            if(pin.length === 4) {
+                this.innerHTML = '<span class="animate-spin material-symbols-outlined">progress_activity</span> FINALIZING...';
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    document.getElementById('success-modal').classList.remove('opacity-0', 'pointer-events-none');
+                }, 1500);
+            } else {
+                alert('Please enter your 4-digit Authorization PIN');
+                document.querySelector('.pin-input').classList.add('border-risk-action', 'animate-shake');
+                setTimeout(() => {
+                    document.querySelector('.pin-input').classList.remove('border-risk-action', 'animate-shake');
+                }, 500);
+            }
+        });
+
+        // Dynamic Progress Tracking
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        const progressText = document.getElementById('checklist-progress');
+        
+        function updateProgress() {
+            const checked = Array.from(checkboxes).filter(c => c.checked).length;
+            progressText.innerText = `${checked}/${checkboxes.length} Complete`;
+            if(checked === checkboxes.length) {
+                progressText.classList.add('text-risk-on-track', 'font-bold');
+            } else {
+                progressText.classList.remove('text-risk-on-track', 'font-bold');
+            }
+        }
+
+        checkboxes.forEach(cb => cb.addEventListener('change', updateProgress));
+    </script>
+</body></html>

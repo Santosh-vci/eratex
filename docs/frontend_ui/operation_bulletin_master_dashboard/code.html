@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OpsControl Cockpit - Operation Bulletins</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#303032",
+                        "surface": "#fbf8fa",
+                        "on-background": "#1b1b1d",
+                        "on-tertiary-fixed": "#271902",
+                        "on-surface-variant": "#45474c",
+                        "tertiary": "#1e1200",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#e4e2e3",
+                        "on-secondary-container": "#57657b",
+                        "inverse-primary": "#bcc7de",
+                        "risk-on-track": "#10B981",
+                        "surface-bright": "#fbf8fa",
+                        "inverse-on-surface": "#f3f0f2",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#ddc39d",
+                        "surface-muted": "#F8FAFC",
+                        "outline": "#75777d",
+                        "tertiary-container": "#35260c",
+                        "risk-critical": "#111827",
+                        "on-tertiary-container": "#a38c6a",
+                        "tertiary-fixed": "#fadfb8",
+                        "on-tertiary": "#ffffff",
+                        "background": "#fbf8fa",
+                        "outline-variant": "#c5c6cd",
+                        "surface-container-low": "#f5f3f4",
+                        "surface-container-high": "#eae7e9",
+                        "secondary": "#515f74",
+                        "primary-fixed": "#d8e3fb",
+                        "secondary-fixed": "#d5e3fd",
+                        "risk-action": "#EF4444",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#545f73",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "on-primary-fixed": "#111c2d",
+                        "primary": "#091426",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "on-tertiary-fixed-variant": "#564427",
+                        "surface-dim": "#dcd9db",
+                        "on-primary-container": "#8590a6",
+                        "grid-border": "#E2E8F0",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "primary-container": "#1e293b",
+                        "risk-watch": "#F59E0B",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "secondary-container": "#d5e3fd",
+                        "surface-container": "#f0edef",
+                        "on-surface": "#1b1b1d",
+                        "surface-variant": "#e4e2e3",
+                        "primary-fixed-dim": "#bcc7de"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "grid-row-height": "32px",
+                        "drawer-width": "400px",
+                        "margin-sm": "8px",
+                        "margin-md": "16px",
+                        "gutter": "12px",
+                        "nav-expanded-width": "240px",
+                        "nav-collapsed-width": "64px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "mono-data": ["JetBrains Mono"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "data-tabular": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #CBD5E1; }
+        
+        /* Sticky Column logic for industrial grids */
+        .sticky-col { position: sticky; left: 0; z-index: 10; background: inherit; }
+        .grid-header-cell { height: 32px; background: #F8FAFC; border-bottom: 1px solid #CBD5E1; }
+        .grid-row { height: 32px; transition: background-color 0.1s ease; }
+        .grid-row:hover { background-color: #F1F5F9; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md selection:bg-primary-fixed overflow-hidden">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full h-12 flex justify-between items-center px-margin-md bg-surface border-b border-grid-border z-50">
+<div class="flex items-center gap-4">
+<span class="font-headline-lg text-headline-lg font-bold text-primary">OpsControl Cockpit</span>
+<div class="h-6 w-px bg-outline-variant"></div>
+<div class="relative flex items-center group">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px]">search</span>
+<input class="pl-10 pr-4 h-8 w-64 bg-surface-container-low border border-outline-variant rounded-lg text-body-sm focus:ring-2 focus:ring-primary-fixed focus:border-primary transition-all outline-none" placeholder="Search Style or OB ID..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors cursor-pointer relative">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-risk-action rounded-full border border-surface"></span>
+</button>
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-[20px]">sync</span>
+</button>
+<button class="flex items-center gap-2 pl-2 pr-1 h-8 rounded-full border border-outline-variant hover:bg-surface-container-high transition-all cursor-pointer">
+<span class="font-label-caps text-label-caps">SYSTEM ADMIN</span>
+<span class="material-symbols-outlined text-[24px]">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Side Navigation Bar -->
+<aside class="fixed left-0 top-12 bottom-0 w-nav-collapsed-width bg-primary flex flex-col items-center py-4 z-40 transition-all duration-200">
+<nav class="flex flex-col gap-4 w-full items-center">
+<div class="group relative">
+<button class="p-2 text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant/20 rounded-lg transition-all">
+<span class="material-symbols-outlined">assignment</span>
+</button>
+<span class="absolute left-14 top-1/2 -translate-y-1/2 bg-primary-container text-white px-2 py-1 rounded text-[10px] opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">Orders</span>
+</div>
+<div class="group relative">
+<button class="p-2 text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant/20 rounded-lg transition-all">
+<span class="material-symbols-outlined">event_note</span>
+</button>
+<span class="absolute left-14 top-1/2 -translate-y-1/2 bg-primary-container text-white px-2 py-1 rounded text-[10px] opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">Planning</span>
+</div>
+<div class="group relative">
+<button class="p-2 bg-on-primary-container text-on-primary rounded-lg transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">factory</span>
+</button>
+<span class="absolute left-14 top-1/2 -translate-y-1/2 bg-primary-container text-white px-2 py-1 rounded text-[10px] opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">Shopfloor</span>
+</div>
+<div class="group relative">
+<button class="p-2 text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant/20 rounded-lg transition-all">
+<span class="material-symbols-outlined">inventory_2</span>
+</button>
+<span class="absolute left-14 top-1/2 -translate-y-1/2 bg-primary-container text-white px-2 py-1 rounded text-[10px] opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">Inventory</span>
+</div>
+<div class="group relative">
+<button class="p-2 text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant/20 rounded-lg transition-all">
+<span class="material-symbols-outlined">analytics</span>
+</button>
+<span class="absolute left-14 top-1/2 -translate-y-1/2 bg-primary-container text-white px-2 py-1 rounded text-[10px] opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none">Analytics</span>
+</div>
+</nav>
+<div class="mt-auto flex flex-col gap-4 w-full items-center">
+<button class="p-2 text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant/20 rounded-lg transition-all">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="p-2 text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant/20 rounded-lg transition-all">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-nav-collapsed-width mt-12 p-margin-md h-[calc(100vh-48px)] overflow-y-auto custom-scrollbar">
+<!-- Dashboard Header & KPI Cards -->
+<section class="flex flex-col gap-margin-md mb-margin-md">
+<div class="flex justify-between items-end">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-primary">Operation Bulletins (OB)</h1>
+<p class="text-body-sm text-on-surface-variant">Manage technical routing, machine allocation, and SMV for Denim and Chino styles.</p>
+</div>
+<button class="flex items-center gap-2 bg-primary text-white px-4 h-8 rounded hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span class="font-label-caps text-label-caps">CREATE NEW BULLETIN</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-5 gap-gutter">
+<!-- KPI Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-3 flex flex-col gap-1 hover:shadow-sm transition-shadow">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Approved Bulletins</span>
+<div class="flex items-baseline justify-between">
+<span class="font-headline-lg text-headline-lg text-primary">1,248</span>
+<span class="text-[10px] font-bold text-risk-on-track bg-risk-on-track/10 px-1 rounded">ACTIVE</span>
+</div>
+</div>
+<!-- KPI Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-3 flex flex-col gap-1 hover:shadow-sm transition-shadow">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Drafts</span>
+<div class="flex items-baseline justify-between">
+<span class="font-headline-lg text-headline-lg text-primary">42</span>
+<span class="material-symbols-outlined text-[16px] text-outline">edit_note</span>
+</div>
+</div>
+<!-- KPI Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-3 flex flex-col gap-1 border-l-4 border-l-risk-watch hover:shadow-sm transition-shadow">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Pending IE Approval</span>
+<div class="flex items-baseline justify-between">
+<span class="font-headline-lg text-headline-lg text-risk-watch">18</span>
+<span class="material-symbols-outlined text-[16px] text-risk-watch">pending_actions</span>
+</div>
+</div>
+<!-- KPI Card 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-3 flex flex-col gap-1 border-l-4 border-l-risk-action hover:shadow-sm transition-shadow">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Styles without OB</span>
+<div class="flex items-baseline justify-between">
+<span class="font-headline-lg text-headline-lg text-risk-action">09</span>
+<span class="material-symbols-outlined text-[16px] text-risk-action">warning</span>
+</div>
+</div>
+<!-- KPI Card 5 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-3 flex flex-col gap-1 hover:shadow-sm transition-shadow">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Active Production OBs</span>
+<div class="flex items-baseline justify-between">
+<span class="font-headline-lg text-headline-lg text-primary">156</span>
+<div class="flex -space-x-1.5 overflow-hidden">
+<div class="h-5 w-5 rounded-full border border-white bg-slate-200"></div>
+<div class="h-5 w-5 rounded-full border border-white bg-slate-300"></div>
+<div class="h-5 w-5 rounded-full border border-white bg-slate-400"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Data Grid Wrapper -->
+<section class="bg-surface-container-lowest border border-grid-border overflow-hidden rounded-lg shadow-sm">
+<div class="flex items-center justify-between p-2 border-b border-grid-border bg-white">
+<div class="flex gap-2">
+<button class="px-3 h-7 border border-outline-variant text-label-caps font-label-caps hover:bg-surface-container-low transition-colors rounded">ALL TYPES</button>
+<button class="px-3 h-7 bg-primary-container text-white text-label-caps font-label-caps rounded">DENIM ONLY</button>
+<button class="px-3 h-7 border border-outline-variant text-label-caps font-label-caps hover:bg-surface-container-low transition-colors rounded">CHINO ONLY</button>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-mono-data font-mono-data text-on-surface-variant uppercase">SYNC: 2m ago</span>
+<div class="h-4 w-px bg-outline-variant"></div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+</div>
+</div>
+<!-- High Density Table -->
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full text-left border-collapse min-w-[1200px]">
+<thead>
+<tr>
+<th class="grid-header-cell px-4 font-label-caps text-label-caps text-on-surface-variant sticky-col">BULLETIN ID</th>
+<th class="grid-header-cell px-4 font-label-caps text-label-caps text-on-surface-variant">STYLE CODE</th>
+<th class="grid-header-cell px-4 font-label-caps text-label-caps text-on-surface-variant">TYPE</th>
+<th class="grid-header-cell px-4 font-label-caps text-label-caps text-on-surface-variant">CUSTOMER</th>
+<th class="grid-header-cell px-4 font-label-caps text-label-caps text-on-surface-variant">VER</th>
+<th class="grid-header-cell px-4 font-label-caps text-label-caps text-on-surface-variant">TOTAL SMV</th>
+<th class="grid-header-cell px-4 font-label-caps text-label-caps text-on-surface-variant">OPS</th>
+<th class="grid-header-cell px-4 font-label-caps text-label-caps text-on-surface-variant">MACHINE PROFILE</th>
+<th class="grid-header-cell px-4 font-label-caps text-label-caps text-on-surface-variant">STATUS</th>
+<th class="grid-header-cell px-4 font-label-caps text-label-caps text-on-surface-variant">UPDATED</th>
+<th class="grid-header-cell px-4 font-label-caps text-label-caps text-on-surface-variant text-right">ACTION</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-grid-border">
+<!-- Row 1 -->
+<tr class="grid-row group">
+<td class="px-4 font-mono-data text-mono-data text-primary sticky-col">OB-24-9001</td>
+<td class="px-4 font-tabular text-data-tabular">501-DNM-2024-V2</td>
+<td class="px-4 text-body-sm">Denim (Heavy)</td>
+<td class="px-4 text-body-sm font-semibold">LEVI'S</td>
+<td class="px-4 font-mono-data text-mono-data">v1.4</td>
+<td class="px-4 font-tabular text-data-tabular">14.22m</td>
+<td class="px-4 font-tabular text-data-tabular">42</td>
+<td class="px-4">
+<div class="flex gap-1">
+<span class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 text-[9px] font-bold rounded">SNLS</span>
+<span class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 text-[9px] font-bold rounded">O/L</span>
+<span class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 text-[9px] font-bold rounded">K/S</span>
+</div>
+</td>
+<td class="px-4">
+<span class="bg-risk-on-track/10 text-risk-on-track font-label-caps text-[10px] px-2 py-0.5 rounded-full border border-risk-on-track/20">APPROVED</span>
+</td>
+<td class="px-4 text-[11px] text-on-surface-variant">12 OCT 08:30</td>
+<td class="px-4 text-right">
+<button class="text-primary hover:underline font-label-caps text-label-caps cursor-pointer" onclick="toggleDrawer()">VIEW DETAIL</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="grid-row group">
+<td class="px-4 font-mono-data text-mono-data text-primary sticky-col">OB-24-9005</td>
+<td class="px-4 font-tabular text-data-tabular">CH-SLM-99-BLU</td>
+<td class="px-4 text-body-sm">Chino (Stretch)</td>
+<td class="px-4 text-body-sm font-semibold">GAP</td>
+<td class="px-4 font-mono-data text-mono-data">v2.1</td>
+<td class="px-4 font-tabular text-data-tabular">11.45m</td>
+<td class="px-4 font-tabular text-data-tabular">36</td>
+<td class="px-4">
+<div class="flex gap-1">
+<span class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 text-[9px] font-bold rounded">SNLS</span>
+<span class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 text-[9px] font-bold rounded">F/L</span>
+</div>
+</td>
+<td class="px-4">
+<span class="bg-risk-watch/10 text-risk-watch font-label-caps text-[10px] px-2 py-0.5 rounded-full border border-risk-watch/20">PENDING IE</span>
+</td>
+<td class="px-4 text-[11px] text-on-surface-variant">14 OCT 11:20</td>
+<td class="px-4 text-right">
+<button class="text-primary hover:underline font-label-caps text-label-caps cursor-pointer">VIEW DETAIL</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="grid-row group">
+<td class="px-4 font-mono-data text-mono-data text-primary sticky-col">OB-24-9102</td>
+<td class="px-4 font-tabular text-data-tabular">511-DNM-SLM</td>
+<td class="px-4 text-body-sm">Denim (Mid)</td>
+<td class="px-4 text-body-sm font-semibold">LEVI'S</td>
+<td class="px-4 font-mono-data text-mono-data">v0.9</td>
+<td class="px-4 font-tabular text-data-tabular">13.80m</td>
+<td class="px-4 font-tabular text-data-tabular">40</td>
+<td class="px-4">
+<div class="flex gap-1">
+<span class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 text-[9px] font-bold rounded">SNLS</span>
+<span class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 text-[9px] font-bold rounded">O/L</span>
+</div>
+</td>
+<td class="px-4">
+<span class="bg-outline-variant/20 text-on-surface-variant font-label-caps text-[10px] px-2 py-0.5 rounded-full border border-outline-variant/30 uppercase">Draft</span>
+</td>
+<td class="px-4 text-[11px] text-on-surface-variant">15 OCT 09:45</td>
+<td class="px-4 text-right">
+<button class="text-primary hover:underline font-label-caps text-label-caps cursor-pointer">VIEW DETAIL</button>
+</td>
+</tr>
+<!-- Repeat Rows for Density -->
+<tr class="grid-row group">
+<td class="px-4 font-mono-data text-mono-data text-primary sticky-col">OB-24-9214</td>
+<td class="px-4 font-tabular text-data-tabular">WR-CARGO-BRW</td>
+<td class="px-4 text-body-sm">Chino (Heavy)</td>
+<td class="px-4 text-body-sm font-semibold">WRANGLER</td>
+<td class="px-4 font-mono-data text-mono-data">v3.0</td>
+<td class="px-4 font-tabular text-data-tabular">16.12m</td>
+<td class="px-4 font-tabular text-data-tabular">48</td>
+<td class="px-4">
+<div class="flex gap-1">
+<span class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 text-[9px] font-bold rounded">D/L</span>
+<span class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 text-[9px] font-bold rounded">B/H</span>
+</div>
+</td>
+<td class="px-4">
+<span class="bg-risk-on-track/10 text-risk-on-track font-label-caps text-[10px] px-2 py-0.5 rounded-full border border-risk-on-track/20 uppercase">Approved</span>
+</td>
+<td class="px-4 text-[11px] text-on-surface-variant">15 OCT 14:02</td>
+<td class="px-4 text-right">
+<button class="text-primary hover:underline font-label-caps text-label-caps cursor-pointer">VIEW DETAIL</button>
+</td>
+</tr>
+<!-- row 5 -->
+<tr class="grid-row group">
+<td class="px-4 font-mono-data text-mono-data text-primary sticky-col">OB-24-9330</td>
+<td class="px-4 font-tabular text-data-tabular">ZRA-DNM-SKNY</td>
+<td class="px-4 text-body-sm">Denim (Light)</td>
+<td class="px-4 text-body-sm font-semibold">ZARA</td>
+<td class="px-4 font-mono-data text-mono-data">v1.0</td>
+<td class="px-4 font-tabular text-data-tabular">12.20m</td>
+<td class="px-4 font-tabular text-data-tabular">38</td>
+<td class="px-4">
+<div class="flex gap-1">
+<span class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 text-[9px] font-bold rounded">SNLS</span>
+<span class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 text-[9px] font-bold rounded">S/C</span>
+</div>
+</td>
+<td class="px-4">
+<span class="bg-risk-action/10 text-risk-action font-label-caps text-[10px] px-2 py-0.5 rounded-full border border-risk-action/20 uppercase">Rejected</span>
+</td>
+<td class="px-4 text-[11px] text-on-surface-variant">15 OCT 16:15</td>
+<td class="px-4 text-right">
+<button class="text-primary hover:underline font-label-caps text-label-caps cursor-pointer">VIEW DETAIL</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer / Pagination -->
+<div class="p-2 flex items-center justify-between border-t border-grid-border bg-white">
+<span class="text-[11px] text-on-surface-variant">Showing 1-15 of 1,324 Bulletins</span>
+<div class="flex gap-1">
+<button class="h-6 w-6 flex items-center justify-center border border-outline-variant hover:bg-surface-container-low rounded"><span class="material-symbols-outlined text-[14px]">chevron_left</span></button>
+<button class="h-6 px-2 text-[11px] font-bold bg-primary text-white rounded">1</button>
+<button class="h-6 px-2 text-[11px] border border-outline-variant hover:bg-surface-container-low rounded">2</button>
+<button class="h-6 px-2 text-[11px] border border-outline-variant hover:bg-surface-container-low rounded">3</button>
+<button class="h-6 w-6 flex items-center justify-center border border-outline-variant hover:bg-surface-container-low rounded"><span class="material-symbols-outlined text-[14px]">chevron_right</span></button>
+</div>
+</div>
+</section>
+</main>
+<!-- Right Action Drawer (Collapsible) -->
+<div class="fixed right-0 top-12 bottom-0 w-drawer-width bg-white border-l border-grid-border shadow-2xl transform translate-x-full transition-transform duration-300 z-50" id="right-drawer">
+<div class="flex flex-col h-full">
+<div class="p-4 border-b border-grid-border flex justify-between items-center bg-surface-muted">
+<div>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Detail View</span>
+<h2 class="font-headline-md text-headline-md text-primary">OB-24-9001: 501-DNM-2024</h2>
+</div>
+<button class="p-1 hover:bg-surface-container-high rounded transition-colors" onclick="toggleDrawer()">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-4 flex flex-col gap-6 custom-scrollbar">
+<!-- Impact Preview (Before vs After Simulation) -->
+<div class="bg-surface-container border border-outline-variant rounded-lg p-3">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-primary text-[18px]">query_stats</span>
+<h3 class="font-headline-md text-headline-md">Impact Simulation</h3>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-2 border border-outline-variant rounded bg-white">
+<span class="text-[10px] text-on-surface-variant font-bold uppercase block mb-1">Current SMV</span>
+<span class="text-headline-lg font-mono-data">14.22</span>
+</div>
+<div class="p-2 border border-primary/20 rounded bg-primary/5">
+<span class="text-[10px] text-primary font-bold uppercase block mb-1">Optimized SMV</span>
+<span class="text-headline-lg font-mono-data text-primary">13.85*</span>
+</div>
+</div>
+<p class="mt-2 text-[11px] text-on-surface-variant italic">*Reduced via automated seam allowance correction.</p>
+</div>
+<!-- Readiness Checklist -->
+<div>
+<h3 class="font-headline-md text-headline-md mb-3 flex items-center justify-between">
+                        Readiness Checklist
+                        <span class="text-[11px] font-bold text-risk-on-track">80% COMPLETE</span>
+</h3>
+<div class="space-y-2">
+<div class="flex items-center gap-3 p-2 bg-surface-container-low border border-outline-variant rounded">
+<input checked="" class="rounded-sm border-outline-variant text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
+<div class="flex-1">
+<p class="text-body-sm font-semibold">Technical Pattern Verified</p>
+<span class="text-[11px] text-on-surface-variant">Owner: John Doe (IE Dept)</span>
+</div>
+<span class="bg-risk-on-track/10 text-risk-on-track font-label-caps text-[9px] px-1 rounded">READY</span>
+</div>
+<div class="flex items-center gap-3 p-2 bg-surface-container-low border border-outline-variant rounded">
+<input checked="" class="rounded-sm border-outline-variant text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
+<div class="flex-1">
+<p class="text-body-sm font-semibold">SMV Calculation Finalized</p>
+<span class="text-[11px] text-on-surface-variant">Owner: Sarah Jenkins</span>
+</div>
+<span class="bg-risk-on-track/10 text-risk-on-track font-label-caps text-[9px] px-1 rounded">READY</span>
+</div>
+<div class="flex items-center gap-3 p-2 bg-surface-container-low border border-outline-variant rounded">
+<input class="rounded-sm border-outline-variant text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
+<div class="flex-1">
+<p class="text-body-sm font-semibold">Machine Allocation Plan</p>
+<span class="text-[11px] text-on-surface-variant">Owner: Mark Robinson</span>
+</div>
+<span class="bg-risk-watch/10 text-risk-watch font-label-caps text-[9px] px-1 rounded">PENDING</span>
+</div>
+</div>
+</div>
+<!-- Operation Sequence Summary -->
+<div>
+<h3 class="font-headline-md text-headline-md mb-3">Top Bottleneck Operations</h3>
+<div class="space-y-3">
+<div>
+<div class="flex justify-between text-[11px] font-bold mb-1">
+<span>SIDE SEAM CLOSING (O/L)</span>
+<span>0.85 SMV</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-risk-action w-4/5"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[11px] font-bold mb-1">
+<span>POCKET ATTACHMENT (SNLS)</span>
+<span>0.62 SMV</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-risk-watch w-3/5"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-4 p-4 rounded-lg bg-surface border border-outline-variant">
+<img class="w-full aspect-video object-cover rounded-md mb-2 grayscale brightness-90" data-alt="A professional top-down studio photograph of a technical sewing workbench for denim production. The setting is clean and industrial with high-key neutral lighting. Blue denim fabric pieces are neatly arranged alongside industrial silver sewing machines and measuring tapes. The style is modern, minimalist, and authoritative, emphasizing operational precision in a garment factory." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-fV_KdQu0ptGNJgwWEM1f8uYd9ShsW8i-jrLOpcCcQbpxdC-dLP2DmeEiORgXuslxEOCeq_kq1Jq-40QsQV-3tz5w-INfCX90NudrHWpRiXoPafUSCLSTPzksWSxoiHkImJj0ONqc8O3-RlD8uw-QkwwNOXQLCZJblKzJEqWS2oGqDWUfpHH7C_uPGEs7L4QbFHLFqneORKJ96SgvD6QR4-z7PMoxOGmC6q27T_ZTLPS_hjOhdNAsBqs0QjZ9QlYfQbYZmubwIYY"/>
+<p class="text-[11px] text-on-surface-variant leading-relaxed">Technical sketch for 501-DNM-2024 revised v1.4. All seam allowances confirmed at 1/2 inch except for hem.</p>
+</div>
+</div>
+<div class="p-4 border-t border-grid-border bg-white flex gap-2">
+<button class="flex-1 bg-primary text-white font-label-caps text-label-caps h-9 rounded shadow-sm hover:opacity-95 transition-all">APPROVE BULLETIN</button>
+<button class="px-4 border border-outline-variant text-on-surface-variant font-label-caps text-label-caps h-9 rounded hover:bg-surface-container-low transition-all">REJECT</button>
+</div>
+</div>
+</div>
+<script>
+        function toggleDrawer() {
+            const drawer = document.getElementById('right-drawer');
+            drawer.classList.toggle('translate-x-full');
+        }
+
+        // Atmospheric micro-interaction: Add a slight pulse to the sync indicator
+        setInterval(() => {
+            const syncIcon = document.querySelector('.material-symbols-outlined:nth-child(2)');
+            if(syncIcon && syncIcon.innerText === 'sync') {
+                syncIcon.classList.add('animate-spin');
+                setTimeout(() => syncIcon.classList.remove('animate-spin'), 2000);
+            }
+        }, 15000);
+    </script>
+</body></html>

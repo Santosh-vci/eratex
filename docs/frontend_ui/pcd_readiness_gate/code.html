@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ERATEX OPS CONTROL - PCD Readiness Gate</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-surface": "#303032",
+                      "error-container": "#ffdad6",
+                      "on-secondary-fixed": "#0d1c2f",
+                      "primary-container": "#1e293b",
+                      "on-background": "#1b1b1d",
+                      "secondary-fixed-dim": "#b9c7e0",
+                      "on-error": "#ffffff",
+                      "on-primary-container": "#8590a6",
+                      "on-secondary-container": "#57657b",
+                      "tertiary-fixed": "#fadfb8",
+                      "on-surface-variant": "#45474c",
+                      "secondary-fixed": "#d5e3fd",
+                      "secondary": "#515f74",
+                      "risk-action": "#EF4444",
+                      "grid-border": "#E2E8F0",
+                      "primary-fixed-dim": "#bcc7de",
+                      "on-surface": "#1b1b1d",
+                      "on-error-container": "#93000a",
+                      "on-secondary": "#ffffff",
+                      "surface-container-highest": "#e4e2e3",
+                      "on-tertiary-container": "#a38c6a",
+                      "surface-container-low": "#f5f3f4",
+                      "on-primary-fixed-variant": "#3c475a",
+                      "inverse-on-surface": "#f3f0f2",
+                      "surface-container-lowest": "#ffffff",
+                      "on-tertiary-fixed": "#271902",
+                      "surface-container": "#f0edef",
+                      "risk-watch": "#F59E0B",
+                      "background": "#fbf8fa",
+                      "on-tertiary": "#ffffff",
+                      "risk-critical": "#111827",
+                      "on-secondary-fixed-variant": "#3a485c",
+                      "inverse-primary": "#bcc7de",
+                      "outline": "#75777d",
+                      "tertiary": "#1e1200",
+                      "risk-on-track": "#10B981",
+                      "surface-dim": "#dcd9db",
+                      "error": "#ba1a1a",
+                      "surface-muted": "#F8FAFC",
+                      "on-primary": "#ffffff",
+                      "surface-container-high": "#eae7e9",
+                      "outline-variant": "#c5c6cd",
+                      "surface-bright": "#fbf8fa",
+                      "surface-variant": "#e4e2e3",
+                      "secondary-container": "#d5e3fd",
+                      "surface-tint": "#545f73",
+                      "primary": "#091426",
+                      "primary-fixed": "#d8e3fb",
+                      "on-primary-fixed": "#111c2d",
+                      "tertiary-fixed-dim": "#ddc39d",
+                      "tertiary-container": "#35260c",
+                      "on-tertiary-fixed-variant": "#564427",
+                      "surface": "#fbf8fa"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "gutter": "12px",
+                      "drawer-width": "400px",
+                      "nav-expanded-width": "240px",
+                      "nav-collapsed-width": "64px",
+                      "margin-md": "16px",
+                      "margin-sm": "8px",
+                      "grid-row-height": "32px"
+              },
+              "fontFamily": {
+                      "data-tabular": ["Inter"],
+                      "mono-data": ["JetBrains Mono"],
+                      "headline-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "label-caps": ["Inter"]
+              },
+              "fontSize": {
+                      "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                      "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                      "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            font-size: 18px;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .active-row { background-color: #F1F5F9; border-left: 4px solid #091426; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed overflow-hidden">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full h-12 flex justify-between items-center px-gutter z-50 bg-surface dark:bg-primary border-b border-grid-border dark:border-outline-variant">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold tracking-tight text-primary dark:text-inverse-primary">ERATEX OPS CONTROL</span>
+<div class="h-6 w-[1px] bg-grid-border"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">PCD READINESS GATE</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 px-3 py-1 bg-surface-container-low dark:bg-primary-container rounded border border-grid-border">
+<span class="material-symbols-outlined text-primary" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm w-48 p-0" placeholder="Search orders..." type="text"/>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-label-caps text-label-caps text-primary">This Week</span>
+<button class="material-symbols-outlined hover:bg-surface-container-low p-1 rounded transition-colors" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined hover:bg-surface-container-low p-1 rounded transition-colors" data-icon="sync">sync</button>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-12 h-[calc(100vh-48px)] z-40 flex flex-col items-center py-4 bg-surface-muted dark:bg-inverse-surface border-r border-grid-border dark:border-outline w-nav-collapsed-width transition-all duration-300 ease-in-out">
+<div class="flex flex-col gap-6 items-center w-full">
+<div class="group relative flex flex-col items-center w-full py-2 cursor-pointer hover:bg-surface-container-high dark:hover:bg-secondary-container">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="assignment">assignment</span>
+<span class="text-[8px] font-label-caps mt-1">ORDERS</span>
+</div>
+<div class="group relative flex flex-col items-center w-full py-2 cursor-pointer bg-primary-container dark:bg-primary-fixed-dim text-on-primary-container dark:text-on-primary-fixed border-r-4 border-primary">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+<span class="text-[8px] font-label-caps mt-1">PLANNING</span>
+</div>
+<div class="group relative flex flex-col items-center w-full py-2 cursor-pointer hover:bg-surface-container-high dark:hover:bg-secondary-container">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="factory">factory</span>
+<span class="text-[8px] font-label-caps mt-1">UNITS</span>
+</div>
+<div class="group relative flex flex-col items-center w-full py-2 cursor-pointer hover:bg-surface-container-high dark:hover:bg-secondary-container">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="analytics">analytics</span>
+<span class="text-[8px] font-label-caps mt-1">METRICS</span>
+</div>
+</div>
+<div class="mt-auto flex flex-col gap-6 items-center w-full">
+<div class="group relative flex flex-col items-center w-full py-2 cursor-pointer hover:bg-surface-container-high dark:hover:bg-secondary-container">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="help">help</span>
+<span class="text-[8px] font-label-caps mt-1">HELP</span>
+</div>
+<div class="group relative flex flex-col items-center w-full py-2 cursor-pointer hover:bg-surface-container-high dark:hover:bg-secondary-container">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="settings">settings</span>
+<span class="text-[8px] font-label-caps mt-1">SETTINGS</span>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-nav-collapsed-width mt-12 h-[calc(100vh-48px)] flex flex-col">
+<!-- Header Stats Bar -->
+<div class="grid grid-cols-4 border-b border-grid-border bg-white">
+<div class="p-4 border-r border-grid-border flex flex-col justify-center">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Ready for PCD</span>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-3xl font-bold text-risk-on-track">08</span>
+<span class="material-symbols-outlined text-risk-on-track" data-icon="check_circle">check_circle</span>
+</div>
+</div>
+<div class="p-4 border-r border-grid-border flex flex-col justify-center bg-error-container/20">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Blocked</span>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-3xl font-bold text-risk-action">05</span>
+<span class="material-symbols-outlined text-risk-action" data-icon="block">block</span>
+</div>
+</div>
+<div class="p-4 border-r border-grid-border flex flex-col justify-center">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Conditional</span>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-3xl font-bold text-risk-watch">03</span>
+<span class="material-symbols-outlined text-risk-watch" data-icon="warning">warning</span>
+</div>
+</div>
+<div class="p-4 flex flex-col justify-center">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Due This Week</span>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-3xl font-bold text-primary">24</span>
+<span class="material-symbols-outlined text-primary" data-icon="calendar_today">calendar_today</span>
+</div>
+</div>
+</div>
+<!-- Workbench Area -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Left: Order Selection List -->
+<div class="w-1/3 min-w-[400px] border-r border-grid-border bg-white overflow-y-auto no-scrollbar">
+<div class="sticky top-0 bg-white z-10 px-4 py-3 border-b border-grid-border flex justify-between items-center">
+<h2 class="font-headline-md text-headline-md text-primary">Priority Orders</h2>
+<div class="flex gap-2">
+<button class="material-symbols-outlined text-on-surface-variant p-1 border border-grid-border rounded" data-icon="filter_list">filter_list</button>
+</div>
+</div>
+<!-- Order Cards -->
+<div class="divide-y divide-grid-border">
+<!-- Active Order -->
+<div class="p-4 active-row cursor-pointer transition-colors">
+<div class="flex justify-between items-start mb-2">
+<div>
+<span class="font-mono-data text-mono-data text-primary">ORD-7742-DM</span>
+<h3 class="font-headline-md text-headline-md leading-tight">Slim Fit Denim - Indigo</h3>
+</div>
+<span class="px-2 py-0.5 bg-error-container text-on-error-container font-label-caps text-[10px] rounded">CRITICAL</span>
+</div>
+<div class="grid grid-cols-2 gap-y-2 text-body-sm text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined scale-75" data-icon="straighten">straighten</span>
+                                12,400 Units
+                            </div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined scale-75" data-icon="schedule">schedule</span>
+                                PCD: Oct 24
+                            </div>
+<div class="col-span-2 flex items-center gap-2">
+<div class="flex-1 h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-risk-watch h-full" style="width: 65%"></div>
+</div>
+<span class="font-mono-data text-[10px]">65% READY</span>
+</div>
+</div>
+</div>
+<!-- Blocked Order -->
+<div class="p-4 hover:bg-surface-container-low cursor-pointer transition-colors">
+<div class="flex justify-between items-start mb-2">
+<div>
+<span class="font-mono-data text-mono-data text-on-surface-variant">ORD-8119-JG</span>
+<h3 class="font-headline-md text-headline-md leading-tight">Cargo Jogger 2.0</h3>
+</div>
+<span class="px-2 py-0.5 bg-surface-container text-on-surface-variant font-label-caps text-[10px] rounded">BLOCKED</span>
+</div>
+<div class="grid grid-cols-2 gap-y-2 text-body-sm text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined scale-75" data-icon="straighten">straighten</span>
+                                8,500 Units
+                            </div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined scale-75" data-icon="schedule">schedule</span>
+                                PCD: Oct 26
+                            </div>
+</div>
+</div>
+<!-- Ready Order -->
+<div class="p-4 hover:bg-surface-container-low cursor-pointer transition-colors opacity-70">
+<div class="flex justify-between items-start mb-2">
+<div>
+<span class="font-mono-data text-mono-data text-on-surface-variant">ORD-3321-TS</span>
+<h3 class="font-headline-md text-headline-md leading-tight">Basic Tee Multi-Pack</h3>
+</div>
+<span class="px-2 py-0.5 bg-risk-on-track/10 text-risk-on-track font-label-caps text-[10px] rounded">READY</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Readiness Checklist Drawer Area -->
+<div class="flex-1 bg-surface-muted p-6 overflow-y-auto">
+<div class="max-w-4xl mx-auto space-y-6">
+<!-- Detail Header -->
+<div class="flex justify-between items-end border-b border-grid-border pb-4">
+<div>
+<span class="font-label-caps text-label-caps text-primary">Unit 04 - Denim / Gate 1</span>
+<h1 class="text-3xl font-extrabold text-primary tracking-tight mt-1">PCD Readiness Checklist</h1>
+<p class="text-on-surface-variant mt-2 max-w-lg">Order <span class="font-bold">ORD-7742-DM</span> is currently blocked. Two critical technical approvals are pending before PCD can be authorized.</p>
+</div>
+<div class="flex flex-col items-end gap-2">
+<div class="flex -space-x-2">
+<img class="w-8 h-8 rounded-full border-2 border-white" data-alt="Close-up portrait of a male production manager with a serious, professional expression, in a high-density industrial office setting. The lighting is crisp and cool, reflecting a modern corporate manufacturing environment. He is wearing a dark polo shirt, and the background shows blurred production charts." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhCIuZ5uSJcDzF0UVjLgwGUBSORVklEJjenZCD7rteMS2gcVI8xu1KRGlQDfCNPqwIQuHunehceLrTM8WOJBbsQQYcHog6yp91k_PcHvEypUBHD0zrYFWhFrQUhnhjazAhGs2wbF359_891xzv0KRrwdn3Ia5f3fwVlfJhFyyujadYeJ2LRPVT3itrBY_fHV1BqIn_fPy0St24eOpBgKVxy5o-VFUHWe_3pNei4RyfdnGMStCv6KtdYjVbTUgyWM4aoh2uHmG_ReQ"/>
+<img class="w-8 h-8 rounded-full border-2 border-white" data-alt="Portrait of a female technical auditor in a bright, modern garment factory office. She has a focused and confident demeanor. The lighting is natural and high-key, highlighting the clean and disciplined aesthetic of the workplace. She is wearing a professional light-colored blazer." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKdfAXWQnKfYVwEXX4JP3a3VKZJYsP6I9Hm5WnbsPQ_v4fxejqo0dndlVHGE420MhTQIn48WVh5t3-Z1PnQNAh_XUMducg-00fCNe9IKV4U8affBt2ndP2vPPQ116zaYLvv8__Ghu8shBks6O-IG1DeRi1iTWXVWAxOAGm75tyds77hM7Babj2z4W8keIxETew8NrmAvLM3BiP9PFgcD2a3uoLg-SND6jxIfpYyHC1B5Mrdo4SJARS12PhTBsMgK3qBA2lxO2ExZo"/>
+<div class="w-8 h-8 rounded-full border-2 border-white bg-primary text-white flex items-center justify-center text-[10px] font-bold">+2</div>
+</div>
+<span class="font-mono-data text-[10px] text-on-surface-variant uppercase">Gatekeepers Assigned</span>
+</div>
+</div>
+<!-- Checklist Sections -->
+<div class="grid grid-cols-1 gap-6">
+<!-- Materials Section -->
+<div class="bg-white rounded-lg border border-grid-border overflow-hidden shadow-sm">
+<div class="bg-surface-container-low px-4 py-2 border-b border-grid-border flex justify-between items-center">
+<span class="font-label-caps text-label-caps text-primary">01. MATERIALS &amp; INVENTORY</span>
+<span class="px-2 py-0.5 bg-risk-on-track text-white font-label-caps text-[10px] rounded">PASSED</span>
+</div>
+<div class="divide-y divide-grid-border">
+<div class="flex items-center p-3 gap-4">
+<span class="material-symbols-outlined text-risk-on-track" data-icon="check_circle">check_circle</span>
+<div class="flex-1">
+<div class="font-headline-md text-headline-md">Fabric Received &amp; Inspected</div>
+<div class="text-[11px] text-on-surface-variant font-mono-data uppercase">Batch ID: FBR-990-2</div>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant" data-icon="description">description</button>
+</div>
+<div class="flex items-center p-3 gap-4">
+<span class="material-symbols-outlined text-risk-on-track" data-icon="check_circle">check_circle</span>
+<div class="flex-1">
+<div class="font-headline-md text-headline-md">Trims &amp; Accessories Available</div>
+<div class="text-[11px] text-on-surface-variant font-mono-data uppercase">Full Kit Verified</div>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant" data-icon="description">description</button>
+</div>
+</div>
+</div>
+<!-- Approvals Section -->
+<div class="bg-white rounded-lg border border-grid-border overflow-hidden shadow-sm">
+<div class="bg-surface-container-low px-4 py-2 border-b border-grid-border flex justify-between items-center">
+<span class="font-label-caps text-label-caps text-primary">02. APPROVALS &amp; SAMPLING</span>
+<span class="px-2 py-0.5 bg-risk-watch text-white font-label-caps text-[10px] rounded">CONDITIONAL</span>
+</div>
+<div class="divide-y divide-grid-border">
+<div class="flex items-center p-3 gap-4">
+<span class="material-symbols-outlined text-risk-on-track" data-icon="check_circle">check_circle</span>
+<div class="flex-1">
+<div class="font-headline-md text-headline-md">Pattern Approved</div>
+<div class="text-[11px] text-on-surface-variant font-mono-data uppercase">Approved by Technical Team</div>
+</div>
+</div>
+<div class="flex items-center p-3 gap-4 bg-secondary-container/10">
+<span class="material-symbols-outlined text-secondary" data-icon="info">info</span>
+<div class="flex-1">
+<div class="font-headline-md text-headline-md">PP Sample Approved</div>
+<div class="text-[11px] text-on-surface-variant font-mono-data uppercase">Waived for repeat order</div>
+</div>
+<span class="px-2 py-0.5 bg-secondary text-white font-label-caps text-[10px] rounded uppercase">WAIVED</span>
+</div>
+</div>
+</div>
+<!-- Technical Section -->
+<div class="bg-white rounded-lg border border-grid-border overflow-hidden shadow-sm ring-2 ring-risk-action/20">
+<div class="bg-surface-container-low px-4 py-2 border-b border-grid-border flex justify-between items-center">
+<span class="font-label-caps text-label-caps text-primary">03. TECHNICAL READINESS</span>
+<span class="px-2 py-0.5 bg-risk-action text-white font-label-caps text-[10px] rounded">FAILED</span>
+</div>
+<div class="divide-y divide-grid-border">
+<div class="flex items-center p-3 gap-4">
+<span class="material-symbols-outlined text-risk-action" data-icon="cancel">cancel</span>
+<div class="flex-1">
+<div class="font-headline-md text-headline-md">Marker Ready</div>
+<div class="text-[11px] text-risk-action font-mono-data uppercase">Efficiency below threshold (78%)</div>
+</div>
+<button class="bg-primary text-white px-2 py-1 text-[10px] font-bold rounded">RE-RUN</button>
+</div>
+<div class="flex items-center p-3 gap-4">
+<span class="material-symbols-outlined text-risk-watch" data-icon="radio_button_checked">radio_button_checked</span>
+<div class="flex-1">
+<div class="font-headline-md text-headline-md">Shade Lots Mapped</div>
+<div class="text-[11px] text-on-surface-variant font-mono-data uppercase">Pending lab confirmation</div>
+</div>
+<span class="px-2 py-0.5 bg-surface-container text-on-surface-variant font-label-caps text-[10px] rounded uppercase">PENDING</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Footer Actions -->
+<div class="sticky bottom-0 bg-white border border-grid-border p-4 rounded-t-xl shadow-2xl flex justify-between items-center">
+<div class="flex gap-2">
+<button class="px-4 py-2 border border-grid-border text-primary font-bold text-body-sm hover:bg-surface-container-low transition-colors rounded">
+                                Create Exception
+                            </button>
+<button class="px-4 py-2 border border-grid-border text-primary font-bold text-body-sm hover:bg-surface-container-low transition-colors rounded">
+                                Approve Conditional Release
+                            </button>
+</div>
+<button class="px-6 py-2 bg-primary text-white font-bold text-body-md opacity-50 cursor-not-allowed flex items-center gap-2 rounded">
+<span class="material-symbols-outlined" data-icon="lock">lock</span>
+                            Release to Cutting
+                        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Action Drawer (Mini Version) -->
+<aside class="fixed right-0 top-12 h-[calc(100vh-48px)] w-[48px] bg-white border-l border-grid-border flex flex-col items-center py-4 gap-6">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary" data-icon="history">history</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary" data-icon="chat_bubble">chat_bubble</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary" data-icon="attachment">attachment</button>
+</aside>
+<!-- Stale Data Indicator -->
+<footer class="fixed bottom-0 right-0 left-nav-collapsed-width h-6 bg-surface-container-low border-t border-grid-border px-4 flex items-center justify-between text-[10px] font-mono-data text-on-surface-variant z-50">
+<div class="flex items-center gap-4">
+<span>TERMINAL: UNIT-04-A</span>
+<span>USER: M. RAHMAN</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-risk-on-track rounded-full animate-pulse"></span>
+<span>SYNC: 42s ago</span>
+</div>
+</footer>
+</main>
+<script>
+        // Simple micro-interaction for list selection
+        const orderCards = document.querySelectorAll('.divide-y > div');
+        orderCards.forEach(card => {
+            card.addEventListener('click', () => {
+                orderCards.forEach(c => c.classList.remove('active-row'));
+                card.classList.add('active-row');
+            });
+        });
+    </script>
+</body></html>

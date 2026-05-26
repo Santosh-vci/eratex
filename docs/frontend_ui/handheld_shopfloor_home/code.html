@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "risk-critical": "#111827",
+                    "surface-container-high": "#eae7e9",
+                    "on-tertiary-fixed-variant": "#564427",
+                    "surface-tint": "#545f73",
+                    "on-primary-fixed": "#111c2d",
+                    "on-surface-variant": "#45474c",
+                    "on-primary": "#ffffff",
+                    "risk-action": "#EF4444",
+                    "secondary-fixed": "#d5e3fd",
+                    "outline-variant": "#c5c6cd",
+                    "on-tertiary-container": "#a38c6a",
+                    "on-secondary-fixed": "#0d1c2f",
+                    "grid-border": "#E2E8F0",
+                    "secondary-fixed-dim": "#b9c7e0",
+                    "surface-container-low": "#f5f3f4",
+                    "secondary": "#515f74",
+                    "risk-on-track": "#10B981",
+                    "outline": "#75777d",
+                    "on-surface": "#1b1b1d",
+                    "inverse-surface": "#303032",
+                    "inverse-on-surface": "#f3f0f2",
+                    "on-tertiary-fixed": "#271902",
+                    "surface-dim": "#dcd9db",
+                    "on-background": "#1b1b1d",
+                    "background": "#fbf8fa",
+                    "on-primary-fixed-variant": "#3c475a",
+                    "on-error": "#ffffff",
+                    "primary-fixed-dim": "#bcc7de",
+                    "surface-bright": "#fbf8fa",
+                    "surface-container-highest": "#e4e2e3",
+                    "surface-muted": "#F8FAFC",
+                    "primary-container": "#1e293b",
+                    "tertiary-fixed": "#fadfb8",
+                    "error-container": "#ffdad6",
+                    "secondary-container": "#d5e3fd",
+                    "on-secondary-container": "#57657b",
+                    "risk-watch": "#F59E0B",
+                    "on-secondary": "#ffffff",
+                    "tertiary-container": "#35260c",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-container": "#8590a6",
+                    "primary": "#091426",
+                    "on-tertiary": "#ffffff",
+                    "surface": "#fbf8fa",
+                    "surface-container": "#f0edef",
+                    "on-secondary-fixed-variant": "#3a485c",
+                    "inverse-primary": "#bcc7de",
+                    "tertiary": "#1e1200",
+                    "error": "#ba1a1a",
+                    "on-error-container": "#93000a",
+                    "primary-fixed": "#d8e3fb",
+                    "surface-variant": "#e4e2e3",
+                    "tertiary-fixed-dim": "#ddc39d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "drawer-width": "400px",
+                    "gutter": "12px",
+                    "nav-collapsed-width": "64px",
+                    "grid-row-height": "32px",
+                    "margin-md": "16px",
+                    "nav-expanded-width": "240px",
+                    "margin-sm": "8px"
+            },
+            "fontFamily": {
+                    "data-tabular": ["Inter"],
+                    "mono-data": ["JetBrains Mono"],
+                    "headline-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "headline-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: contain;
+        }
+        .active-tap:active {
+            transform: scale(0.96);
+            transition: transform 0.1s;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-fixed">
+<!-- TopNavBar (Shared Component Logic) -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter h-nav-collapsed-width bg-primary text-on-primary border-b border-outline-variant">
+<div class="flex items-center gap-3">
+<span class="text-headline-md font-headline-md font-bold text-on-primary">Shopfloor Control</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-primary">notifications</span>
+<div class="w-8 h-8 rounded-full border border-on-primary-container overflow-hidden">
+<img alt="Operator Avatar" class="w-full h-full object-cover" data-alt="A professional close-up headshot of a sewing supervisor in a modern manufacturing facility. The supervisor is a middle-aged man with a focused and authoritative expression, wearing a clean industrial uniform. The background shows blurred industrial sewing machinery and soft, high-key studio lighting that emphasizes a professional and disciplined operational environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2p7ss4svPOlxpvSeaaeXzb-bx7HolRPLrCiCE93_trJr6yF5nRq24NIbhgaatnzCisWpCE7teKxiAqQbkww5sIA4L1nccPmFqLxU_Tom6TkKKMsbsJiJr_pkcqxgPf6STpr_OigT69VS-KQ4wXV7I012QXqFA0guWSlu7i94GwHtk7LLAIp9dKnTyaaEXN1LesnE7Fyf4_gEBuE3SoE1DW6GxEAqW5FqNsAC26gP9vC-R3qTUjkKvgmOygFmFcKPGFRa_eBUJQWg"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-16 pb-24 px-gutter max-w-lg mx-auto">
+<!-- Context Header (Surface 1) -->
+<section class="mt-6 mb-8">
+<div class="flex justify-between items-end mb-1">
+<h1 class="font-headline-lg text-headline-lg text-primary">Sewing Line 05</h1>
+<span class="font-mono-data text-mono-data text-on-surface-variant opacity-70">SYNC: 1m ago</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded font-label-caps text-label-caps">UNIT 01 ACTIVE</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">Order #SO-99281 • Sportswear Poly</span>
+</div>
+</section>
+<!-- Quick Access Tiles (Grid-Driven) -->
+<section class="grid grid-cols-2 gap-3 mb-8">
+<button class="active-tap bg-surface-container-lowest border border-grid-border p-5 rounded-xl flex flex-col items-start gap-4 shadow-sm">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary">add_circle</span>
+</div>
+<span class="font-label-caps text-label-caps text-primary">REPORT OUTPUT</span>
+</button>
+<button class="active-tap bg-surface-container-lowest border border-grid-border p-5 rounded-xl flex flex-col items-start gap-4 shadow-sm">
+<div class="w-10 h-10 rounded-lg bg-risk-action flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary">warning</span>
+</div>
+<span class="font-label-caps text-label-caps text-primary">RECORD DEFECT</span>
+</button>
+<button class="active-tap bg-surface-container-lowest border border-grid-border p-5 rounded-xl flex flex-col items-start gap-4 shadow-sm">
+<div class="w-10 h-10 rounded-lg bg-risk-watch flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary">pause_circle</span>
+</div>
+<span class="font-label-caps text-label-caps text-primary">REPORT DOWNTIME</span>
+</button>
+<button class="active-tap bg-surface-container-lowest border border-grid-border p-5 rounded-xl flex flex-col items-start gap-4 shadow-sm">
+<div class="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary">sync_alt</span>
+</div>
+<span class="font-label-caps text-label-caps text-primary">HANDOVER</span>
+</button>
+</section>
+<!-- My Pending Actions (High Contrast List) -->
+<section>
+<div class="flex items-center justify-between mb-4">
+<h2 class="font-headline-md text-headline-md text-primary">My Pending Actions</h2>
+<span class="bg-risk-action text-on-primary text-[10px] px-1.5 py-0.5 rounded-full font-bold">3</span>
+</div>
+<div class="space-y-3">
+<!-- Task Card 1 -->
+<div class="bg-surface-container-low border-l-4 border-risk-action p-4 flex justify-between items-center rounded-r-xl">
+<div class="flex gap-4 items-center">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-risk-action">CRITICAL EXCEPTION</span>
+<span class="font-body-md text-body-md font-bold">Thread Tension Issue - Unit 01</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Logged 14 mins ago • Req. Supervisor Sign-off</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</div>
+<!-- Task Card 2 -->
+<div class="bg-surface-container-low border-l-4 border-risk-watch p-4 flex justify-between items-center rounded-r-xl">
+<div class="flex gap-4 items-center">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-risk-watch">SHIFT END</span>
+<span class="font-body-md text-body-md font-bold">Submit Shift Log - 06:00-14:00</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Due in 45 mins</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</div>
+<!-- Task Card 3 -->
+<div class="bg-surface-container-low border-l-4 border-secondary p-4 flex justify-between items-center rounded-r-xl">
+<div class="flex gap-4 items-center">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-secondary">MAINTENANCE</span>
+<span class="font-body-md text-body-md font-bold">Unit 04 Needle Replacement</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Scheduled task pending verification</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</div>
+</div>
+</section>
+<!-- Current Output Status (Capacity Indicator) -->
+<section class="mt-8 bg-primary-container text-on-primary p-5 rounded-2xl shadow-lg">
+<div class="flex justify-between items-center mb-4">
+<span class="font-label-caps text-label-caps text-on-primary-container">CURRENT LINE LOAD</span>
+<span class="font-mono-data text-mono-data text-risk-on-track">92%</span>
+</div>
+<div class="w-full bg-on-primary-container/20 h-2 rounded-full overflow-hidden mb-4">
+<div class="bg-risk-on-track h-full" style="width: 92%"></div>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<div class="text-center">
+<p class="font-label-caps text-[10px] text-on-primary-container">TARGET</p>
+<p class="font-headline-md text-headline-md">1,200</p>
+</div>
+<div class="text-center border-x border-on-primary-container/30">
+<p class="font-label-caps text-[10px] text-on-primary-container">ACTUAL</p>
+<p class="font-headline-md text-headline-md">1,104</p>
+</div>
+<div class="text-center">
+<p class="font-label-caps text-[10px] text-on-primary-container">REJECTS</p>
+<p class="font-headline-md text-headline-md text-risk-action">08</p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Shared Component Logic) -->
+<nav class="fixed bottom-0 left-0 w-full md:hidden flex justify-around items-center px-4 py-2 bg-surface border-t border-grid-border shadow-lg z-50">
+<!-- Home (Active) -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full p-2 scale-90 duration-100" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-caps text-[10px]">HOME</span>
+</a>
+<!-- Alerts -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container" href="#">
+<span class="material-symbols-outlined">warning</span>
+<span class="font-label-caps text-[10px]">ALERTS</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-caps text-[10px]">PROFILE</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for tile tapping
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('click', (e) => {
+                // Haptic feedback simulation if available
+                if (window.navigator.vibrate) {
+                    window.navigator.vibrate(5);
+                }
+            });
+        });
+
+        // Dynamic update of sync time
+        setInterval(() => {
+            const timeEl = document.querySelector('.font-mono-data');
+            if(timeEl) {
+                const now = new Date();
+                const mins = now.getMinutes() % 5; // Simulating "minutes ago"
+                timeEl.textContent = `SYNC: ${mins}m ago`;
+            }
+        }, 60000);
+    </script>
+</body></html>

@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Eratex Cockpit - Procurement &amp; Vendor Follow-Up</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#271902",
+                        "on-tertiary-container": "#a38c6a",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "tertiary": "#1e1200",
+                        "surface-container-highest": "#e4e2e3",
+                        "primary-fixed": "#d8e3fb",
+                        "on-primary-container": "#8590a6",
+                        "inverse-surface": "#303032",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "on-primary-fixed": "#111c2d",
+                        "grid-border": "#E2E8F0",
+                        "on-error": "#ffffff",
+                        "surface-dim": "#dcd9db",
+                        "tertiary-container": "#35260c",
+                        "risk-critical": "#111827",
+                        "secondary-fixed": "#d5e3fd",
+                        "inverse-on-surface": "#f3f0f2",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f5f3f4",
+                        "error": "#ba1a1a",
+                        "on-secondary": "#ffffff",
+                        "outline-variant": "#c5c6cd",
+                        "on-secondary-container": "#57657b",
+                        "background": "#fbf8fa",
+                        "on-tertiary-fixed-variant": "#564427",
+                        "surface-variant": "#e4e2e3",
+                        "surface": "#fbf8fa",
+                        "surface-container": "#f0edef",
+                        "tertiary-fixed": "#fadfb8",
+                        "risk-action": "#EF4444",
+                        "tertiary-fixed-dim": "#ddc39d",
+                        "primary-container": "#1e293b",
+                        "risk-on-track": "#10B981",
+                        "outline": "#75777d",
+                        "inverse-primary": "#bcc7de",
+                        "risk-watch": "#F59E0B",
+                        "on-background": "#1b1b1d",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-high": "#eae7e9",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#45474c",
+                        "primary-fixed-dim": "#bcc7de",
+                        "primary": "#091426",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "surface-tint": "#545f73",
+                        "on-surface": "#1b1b1d",
+                        "secondary-container": "#d5e3fd",
+                        "on-primary": "#ffffff",
+                        "surface-muted": "#F8FAFC",
+                        "secondary": "#515f74",
+                        "surface-bright": "#fbf8fa"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "drawer-width": "400px",
+                        "nav-expanded-width": "240px",
+                        "margin-md": "16px",
+                        "grid-row-height": "32px",
+                        "margin-sm": "8px",
+                        "gutter": "12px",
+                        "nav-collapsed-width": "64px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "mono-data": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            font-size: 20px;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+        .grid-sticky-col { position: sticky; left: 0; background-color: inherit; z-index: 10; border-right: 1px solid #E2E8F0; }
+        .drawer-transition { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-hidden h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-md h-12 bg-surface border-b border-grid-border">
+<div class="flex items-center gap-margin-md">
+<span class="font-headline-lg text-headline-lg font-bold text-primary">Eratex Cockpit</span>
+<div class="ml-8 relative">
+<span class="material-symbols-outlined absolute left-2 top-1.5 text-on-surface-variant text-[18px]">search</span>
+<input class="h-8 pl-8 pr-4 bg-surface-container-low border-none rounded-lg text-body-sm w-64 focus:ring-2 focus:ring-primary-container" placeholder="Global Search PO / Style..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-mono-data text-on-surface-variant">SYNC: 42s ago</span>
+<div class="flex gap-2">
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-low rounded transition-colors">
+<span class="material-symbols-outlined text-primary">notifications</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-low rounded transition-colors">
+<span class="material-symbols-outlined text-primary">sync</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-low rounded transition-colors">
+<span class="material-symbols-outlined text-primary">settings</span>
+</button>
+</div>
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center border border-outline-variant overflow-hidden">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A professional headshot of a middle-aged male operations manager in a clean corporate environment. The lighting is soft and high-key, highlighting a look of technical authority and focus. The background is a blurred modern industrial office space in neutral tones with subtle blue accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0HS6n3GMKQHLUMV95WZWeVFrsI0-C1TA1f6d86-6tC9wlLooWoM8j8qsgBJrASKftIsopO8hZtUPITWtGTN_zF_O9WLc0Fx6KAiaOtimLtH3QtLIrDg_95PcBut2WESwLgn2JJZ9T8I14a-boewTZw6cBQRxzDYwSehZ3OxkB0GgFYyOCJ26-kVXh_9zT1KY4V_91lPsHhh6DwzKNSntkss1TntYeOkr3JoeQ3zv6pwtwPRCsptN2F_be2_CZVe8TZmpssgyWcMA"/>
+</div>
+</div>
+</header>
+<div class="flex flex-1 pt-12">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-12 h-[calc(100vh-48px)] flex flex-col z-40 bg-surface-container-low border-r border-grid-border w-nav-collapsed-width hover:w-nav-expanded-width transition-all duration-300 group overflow-hidden">
+<div class="p-4 flex items-center gap-3">
+<div class="min-w-[32px] h-8 bg-primary rounded flex items-center justify-center text-white font-bold">E</div>
+<div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap overflow-hidden">
+<p class="font-headline-md text-headline-md text-primary leading-tight">Operations</p>
+<p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Denim &amp; Chinos</p>
+</div>
+</div>
+<nav class="flex-1 mt-4">
+<ul class="flex flex-col gap-1 px-2">
+<li class="flex items-center h-10 px-3 rounded hover:bg-surface-container-high cursor-pointer transition-colors text-on-surface-variant group/item">
+<span class="material-symbols-outlined mr-4">dashboard</span>
+<span class="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-label-caps text-label-caps uppercase">Dashboard</span>
+</li>
+<li class="flex items-center h-10 px-3 rounded bg-primary-container text-on-primary-container cursor-pointer transition-colors group/item">
+<span class="material-symbols-outlined mr-4">calendar_view_week</span>
+<span class="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-label-caps text-label-caps uppercase">Production Plan</span>
+</li>
+<li class="flex items-center h-10 px-3 rounded hover:bg-surface-container-high cursor-pointer transition-colors text-on-surface-variant group/item">
+<span class="material-symbols-outlined mr-4">precision_manufacturing</span>
+<span class="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-label-caps text-label-caps uppercase">Workcenter Load</span>
+</li>
+<li class="flex items-center h-10 px-3 rounded hover:bg-surface-container-high cursor-pointer transition-colors text-on-surface-variant group/item">
+<span class="material-symbols-outlined mr-4">warning</span>
+<span class="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-label-caps text-label-caps uppercase">Exceptions</span>
+</li>
+<li class="flex items-center h-10 px-3 rounded hover:bg-surface-container-high cursor-pointer transition-colors text-on-surface-variant group/item">
+<span class="material-symbols-outlined mr-4">analytics</span>
+<span class="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-label-caps text-label-caps uppercase">Reports</span>
+</li>
+</ul>
+</nav>
+<div class="p-2 border-t border-grid-border">
+<li class="flex items-center h-10 px-3 rounded hover:bg-surface-container-high cursor-pointer transition-colors text-on-surface-variant group/item">
+<span class="material-symbols-outlined mr-4">help</span>
+<span class="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-label-caps text-label-caps uppercase">Support</span>
+</li>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-nav-collapsed-width flex-1 overflow-auto p-margin-md bg-background custom-scrollbar">
+<!-- Page Header -->
+<div class="mb-6 flex justify-between items-end">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-primary mb-1">Procurement &amp; Vendor Follow-Up</h1>
+<p class="text-body-sm text-on-surface-variant">Monitoring 1,422 active supply lines across 18 nominated vendors.</p>
+</div>
+<div class="flex gap-2">
+<button class="h-8 px-3 flex items-center gap-2 border border-grid-border bg-white text-on-surface-variant text-body-sm font-medium rounded hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">download</span> Export Report
+                    </button>
+<button class="h-8 px-4 bg-primary text-white text-body-sm font-medium rounded hover:opacity-90 transition-opacity">
+                        + Issue PO
+                    </button>
+</div>
+</div>
+<!-- KPI Cards - Bento Grid Style -->
+<div class="grid grid-cols-5 gap-4 mb-6">
+<div class="bg-white p-4 border border-grid-border flex flex-col justify-between h-28 hover:shadow-sm transition-shadow">
+<span class="text-label-caps text-on-surface-variant uppercase font-bold">Open Vendor POs</span>
+<div class="flex items-baseline gap-2">
+<span class="text-[28px] font-bold text-primary">482</span>
+<span class="text-risk-on-track text-[11px] font-bold">+12% vs LW</span>
+</div>
+<div class="w-full h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="w-3/4 h-full bg-primary"></div>
+</div>
+</div>
+<div class="bg-white p-4 border border-grid-border flex flex-col justify-between h-28 hover:shadow-sm transition-shadow">
+<span class="text-label-caps text-on-surface-variant uppercase font-bold">Late Deliveries</span>
+<div class="flex items-baseline gap-2">
+<span class="text-[28px] font-bold text-risk-action">24</span>
+<span class="text-risk-action text-[11px] font-bold">Critical</span>
+</div>
+<div class="flex gap-1">
+<span class="w-2 h-2 rounded-full bg-risk-action"></span>
+<span class="w-2 h-2 rounded-full bg-risk-action"></span>
+<span class="w-2 h-2 rounded-full bg-surface-container"></span>
+</div>
+</div>
+<div class="bg-white p-4 border border-grid-border flex flex-col justify-between h-28 hover:shadow-sm transition-shadow">
+<span class="text-label-caps text-on-surface-variant uppercase font-bold">Critical Material Shortages</span>
+<div class="flex items-baseline gap-2">
+<span class="text-[28px] font-bold text-risk-critical">09</span>
+<span class="text-on-surface-variant text-[11px] font-bold">PCD &lt; 7d</span>
+</div>
+<div class="w-full h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="w-1/4 h-full bg-risk-critical"></div>
+</div>
+</div>
+<div class="bg-white p-4 border border-grid-border flex flex-col justify-between h-28 hover:shadow-sm transition-shadow">
+<span class="text-label-caps text-on-surface-variant uppercase font-bold">In-Transit Shipments</span>
+<div class="flex items-baseline gap-2">
+<span class="text-[28px] font-bold text-secondary">114</span>
+</div>
+<span class="text-body-sm text-on-surface-variant">En route to Port</span>
+</div>
+<div class="bg-white p-4 border border-grid-border flex flex-col justify-between h-28 hover:shadow-sm transition-shadow border-l-4 border-l-risk-watch">
+<span class="text-label-caps text-on-surface-variant uppercase font-bold">Ack. Pending</span>
+<div class="flex items-baseline gap-2">
+<span class="text-[28px] font-bold text-risk-watch">18</span>
+</div>
+<span class="text-body-sm text-on-surface-variant">New orders issued</span>
+</div>
+</div>
+<!-- Global Filters Bar -->
+<div class="flex items-center gap-4 mb-4 p-2 bg-surface-muted border border-grid-border rounded-lg">
+<span class="material-symbols-outlined text-on-surface-variant ml-2">filter_list</span>
+<select class="h-7 border-none bg-transparent text-body-sm focus:ring-0 cursor-pointer font-medium text-on-surface">
+<option>Vendor: All Nominated</option>
+<option>Cone Denim</option>
+<option>YKK Zippers</option>
+<option>Coats Thread</option>
+</select>
+<div class="w-px h-4 bg-grid-border"></div>
+<select class="h-7 border-none bg-transparent text-body-sm focus:ring-0 cursor-pointer font-medium text-on-surface">
+<option>Category: All Materials</option>
+<option>Fabric</option>
+<option>Trims</option>
+<option>Chemicals</option>
+</select>
+<div class="w-px h-4 bg-grid-border"></div>
+<select class="h-7 border-none bg-transparent text-body-sm focus:ring-0 cursor-pointer font-medium text-on-surface">
+<option>Status: Issued &amp; Shipped</option>
+<option>Draft</option>
+<option>Issued</option>
+<option>Shipped</option>
+<option>Received</option>
+</select>
+<div class="w-px h-4 bg-grid-border"></div>
+<select class="h-7 border-none bg-transparent text-body-sm focus:ring-0 cursor-pointer font-medium text-on-surface">
+<option>PCD Horizon: All</option>
+<option>Next 7 Days</option>
+<option>Next 14 Days</option>
+<option>Next 30 Days</option>
+</select>
+<button class="ml-auto mr-2 text-[11px] font-bold uppercase text-secondary hover:underline transition-all">Clear Filters</button>
+</div>
+<!-- High Density Grid -->
+<div class="bg-white border border-grid-border overflow-x-auto custom-scrollbar">
+<table class="w-full text-left border-collapse min-w-[1200px]">
+<thead class="bg-surface-container-low sticky top-0 z-20">
+<tr class="h-10">
+<th class="px-4 text-label-caps uppercase border-b border-grid-border font-bold text-on-surface-variant grid-sticky-col">PO Number</th>
+<th class="px-4 text-label-caps uppercase border-b border-grid-border font-bold text-on-surface-variant">Vendor Name</th>
+<th class="px-4 text-label-caps uppercase border-b border-grid-border font-bold text-on-surface-variant">Material Description</th>
+<th class="px-4 text-label-caps uppercase border-b border-grid-border font-bold text-on-surface-variant">Category</th>
+<th class="px-4 text-label-caps uppercase border-b border-grid-border font-bold text-on-surface-variant text-right">Order Qty</th>
+<th class="px-4 text-label-caps uppercase border-b border-grid-border font-bold text-on-surface-variant">Promised ETA</th>
+<th class="px-4 text-label-caps uppercase border-b border-grid-border font-bold text-on-surface-variant">Current ETA</th>
+<th class="px-4 text-label-caps uppercase border-b border-grid-border font-bold text-on-surface-variant text-center">Delay</th>
+<th class="px-4 text-label-caps uppercase border-b border-grid-border font-bold text-on-surface-variant">PCD Impact</th>
+<th class="px-4 text-label-caps uppercase border-b border-grid-border font-bold text-on-surface-variant">Transit Status</th>
+<th class="px-4 text-label-caps uppercase border-b border-grid-border font-bold text-on-surface-variant text-center">Actions</th>
+</tr>
+</thead>
+<tbody class="text-data-tabular">
+<!-- Row 1: Black Badge / Critical -->
+<tr class="h-grid-row-height border-b border-grid-border hover:bg-surface-container-low transition-colors group cursor-pointer" onclick="toggleDrawer()">
+<td class="px-4 font-mono-data font-bold grid-sticky-col">PO-88219</td>
+<td class="px-4">Cone Denim (USA)</td>
+<td class="px-4">12oz Indigo Selvedge Fabric</td>
+<td class="px-4">
+<span class="bg-secondary-container/20 text-on-secondary-container px-2 py-0.5 rounded-full text-[10px] font-bold">FABRIC</span>
+</td>
+<td class="px-4 text-right">5,200 YDS</td>
+<td class="px-4 text-on-surface-variant">Oct 12</td>
+<td class="px-4 font-bold text-risk-action">Oct 24</td>
+<td class="px-4 text-center text-risk-action font-bold">12d</td>
+<td class="px-4">
+<span class="bg-risk-critical text-white px-2 py-0.5 rounded text-[10px] font-bold tracking-tight">PCD MISSED</span>
+</td>
+<td class="px-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-risk-action">local_shipping</span>
+<span>In Customs</span>
+</div>
+</td>
+<td class="px-4 text-center">
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</td>
+</tr>
+<!-- Row 2: Watch / Trims -->
+<tr class="h-grid-row-height border-b border-grid-border hover:bg-surface-container-low transition-colors group cursor-pointer">
+<td class="px-4 font-mono-data font-bold grid-sticky-col">PO-88224</td>
+<td class="px-4">YKK Zippers</td>
+<td class="px-4">Y-Zip Metal #5 Antique Brass</td>
+<td class="px-4">
+<span class="bg-tertiary-fixed/20 text-on-tertiary-fixed-variant px-2 py-0.5 rounded-full text-[10px] font-bold">TRIMS</span>
+</td>
+<td class="px-4 text-right">12,500 PCS</td>
+<td class="px-4 text-on-surface-variant">Oct 18</td>
+<td class="px-4 font-bold text-risk-watch">Oct 21</td>
+<td class="px-4 text-center text-risk-watch font-bold">3d</td>
+<td class="px-4">
+<span class="bg-risk-watch/20 text-risk-watch px-2 py-0.5 rounded text-[10px] font-bold tracking-tight">AT RISK (PCD-2d)</span>
+</td>
+<td class="px-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-risk-watch">factory</span>
+<span>Production Finish</span>
+</div>
+</td>
+<td class="px-4 text-center">
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</td>
+</tr>
+<!-- Row 3: On Track -->
+<tr class="h-grid-row-height border-b border-grid-border hover:bg-surface-container-low transition-colors group cursor-pointer">
+<td class="px-4 font-mono-data font-bold grid-sticky-col">PO-88301</td>
+<td class="px-4">Coats Thread</td>
+<td class="px-4">Epic Poly-Core T-40 Navy</td>
+<td class="px-4">
+<span class="bg-tertiary-fixed/20 text-on-tertiary-fixed-variant px-2 py-0.5 rounded-full text-[10px] font-bold">TRIMS</span>
+</td>
+<td class="px-4 text-right">250 CONES</td>
+<td class="px-4 text-on-surface-variant">Oct 25</td>
+<td class="px-4 font-bold text-risk-on-track">Oct 25</td>
+<td class="px-4 text-center text-risk-on-track font-bold">0d</td>
+<td class="px-4">
+<span class="bg-risk-on-track/20 text-risk-on-track px-2 py-0.5 rounded text-[10px] font-bold tracking-tight">ON TRACK</span>
+</td>
+<td class="px-4">
+<div class="flex items-center gap-2 text-risk-on-track">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>Arrived at Whse</span>
+</div>
+</td>
+<td class="px-4 text-center">
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</td>
+</tr>
+<!-- Repeat Rows for Density -->
+<tr class="h-grid-row-height border-b border-grid-border hover:bg-surface-container-low transition-colors group cursor-pointer">
+<td class="px-4 font-mono-data font-bold grid-sticky-col">PO-88310</td>
+<td class="px-4">Huntsman Chemicals</td>
+<td class="px-4">Indigo Vat Blue #4 Liquid</td>
+<td class="px-4">
+<span class="bg-on-tertiary-container/20 text-on-tertiary-container px-2 py-0.5 rounded-full text-[10px] font-bold">CHEMICALS</span>
+</td>
+<td class="px-4 text-right">1,200 KG</td>
+<td class="px-4 text-on-surface-variant">Oct 30</td>
+<td class="px-4 font-bold text-on-surface">Oct 30</td>
+<td class="px-4 text-center text-on-surface-variant">0d</td>
+<td class="px-4">
+<span class="bg-surface-container-high text-on-surface-variant px-2 py-0.5 rounded text-[10px] font-bold tracking-tight">FUTURE</span>
+</td>
+<td class="px-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">pending_actions</span>
+<span>Issued</span>
+</div>
+</td>
+<td class="px-4 text-center">
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</td>
+</tr>
+<!-- Row 5: Critical/Late -->
+<tr class="h-grid-row-height border-b border-grid-border hover:bg-surface-container-low transition-colors group cursor-pointer">
+<td class="px-4 font-mono-data font-bold grid-sticky-col">PO-88155</td>
+<td class="px-4">YKK Zippers</td>
+<td class="px-4">Nickel Shank Buttons 17mm</td>
+<td class="px-4">
+<span class="bg-tertiary-fixed/20 text-on-tertiary-fixed-variant px-2 py-0.5 rounded-full text-[10px] font-bold">TRIMS</span>
+</td>
+<td class="px-4 text-right">45,000 PCS</td>
+<td class="px-4 text-on-surface-variant">Oct 05</td>
+<td class="px-4 font-bold text-risk-action">Oct 22</td>
+<td class="px-4 text-center text-risk-action font-bold">17d</td>
+<td class="px-4">
+<span class="bg-risk-critical text-white px-2 py-0.5 rounded text-[10px] font-bold tracking-tight">PCD MISSED</span>
+</td>
+<td class="px-4">
+<div class="flex items-center gap-2 text-risk-action">
+<span class="material-symbols-outlined text-[16px]">error</span>
+<span>Delayed in Transit</span>
+</div>
+</td>
+<td class="px-4 text-center">
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</td>
+</tr>
+<!-- Fill remaining grid -->
+<script>
+                            const tbody = document.querySelector('tbody');
+                            for(let i=0; i<10; i++) {
+                                const tr = document.createElement('tr');
+                                tr.className = "h-grid-row-height border-b border-grid-border hover:bg-surface-container-low transition-colors group cursor-pointer";
+                                tr.innerHTML = `
+                                    <td class="px-4 font-mono-data grid-sticky-col">PO-88${320+i}</td>
+                                    <td class="px-4">Avery Dennison</td>
+                                    <td class="px-4">FSC Leather Back Patch - Style X</td>
+                                    <td class="px-4"><span class="bg-tertiary-fixed/20 text-on-tertiary-fixed-variant px-2 py-0.5 rounded-full text-[10px] font-bold">TRIMS</span></td>
+                                    <td class="px-4 text-right">${1000 + (i*100)} PCS</td>
+                                    <td class="px-4 text-on-surface-variant">Nov 0${i+1}</td>
+                                    <td class="px-4">Nov 0${i+1}</td>
+                                    <td class="px-4 text-center">0d</td>
+                                    <td class="px-4"><span class="bg-risk-on-track/20 text-risk-on-track px-2 py-0.5 rounded text-[10px] font-bold uppercase">On Track</span></td>
+                                    <td class="px-4">Acknowledged</td>
+                                    <td class="px-4 text-center"><span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span></td>
+                                `;
+                                tbody.appendChild(tr);
+                            }
+                        </script>
+</tbody>
+</table>
+</div>
+</main>
+<!-- NavigationDrawer (Right Side Action Drawer) -->
+<aside class="fixed right-0 top-12 h-[calc(100vh-48px)] z-40 flex flex-col bg-surface border-l border-grid-border w-drawer-width shadow-sm drawer-transition translate-x-full" id="detailDrawer">
+<div class="p-4 border-b border-grid-border flex justify-between items-start">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">PO-88219</h2>
+<p class="text-body-sm text-on-surface-variant">Cone Denim (USA) • nominated</p>
+</div>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-low rounded" onclick="toggleDrawer()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-4 custom-scrollbar flex flex-col gap-6">
+<!-- PO Status Timeline -->
+<section>
+<p class="text-label-caps uppercase font-bold text-on-surface-variant mb-4">PO Status Timeline</p>
+<div class="relative pl-6 flex flex-col gap-6">
+<div class="absolute left-2 top-1 bottom-1 w-px bg-grid-border"></div>
+<!-- Step 1 Done -->
+<div class="relative">
+<div class="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-risk-on-track border-2 border-white"></div>
+<p class="text-body-sm font-bold leading-none">Issued</p>
+<p class="text-[11px] text-on-surface-variant">Sep 24, 2023 • System Auto</p>
+</div>
+<!-- Step 2 Done -->
+<div class="relative">
+<div class="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-risk-on-track border-2 border-white"></div>
+<p class="text-body-sm font-bold leading-none">Acknowledged</p>
+<p class="text-[11px] text-on-surface-variant">Sep 25, 2023 • Vendor Portal</p>
+</div>
+<!-- Step 3 Current (Issue) -->
+<div class="relative">
+<div class="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-risk-action border-2 border-white animate-pulse"></div>
+<p class="text-body-sm font-bold text-risk-action leading-none">Shipped (Delayed)</p>
+<p class="text-[11px] text-risk-action">Current Status • Expected Arrival Oct 24</p>
+</div>
+<!-- Step 4 Pending -->
+<div class="relative opacity-40">
+<div class="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-surface-container-highest border-2 border-white"></div>
+<p class="text-body-sm font-bold leading-none">Expected Arrival</p>
+<p class="text-[11px]">TBD</p>
+</div>
+</div>
+</section>
+<div class="h-px bg-grid-border"></div>
+<!-- Shipment Tracking -->
+<section>
+<p class="text-label-caps uppercase font-bold text-on-surface-variant mb-3">Shipment Tracking</p>
+<div class="bg-surface-container-low p-3 rounded">
+<div class="flex justify-between mb-2">
+<span class="text-[11px] text-on-surface-variant">CARRIER</span>
+<span class="text-[11px] font-bold">Maersk Logistics</span>
+</div>
+<div class="flex justify-between mb-2">
+<span class="text-[11px] text-on-surface-variant">TRACKING ID</span>
+<span class="text-[11px] font-bold font-mono-data text-primary underline">MAE-77291104</span>
+</div>
+<div class="flex justify-between">
+<span class="text-[11px] text-on-surface-variant">LOCATION</span>
+<span class="text-[11px] font-bold flex items-center gap-1">
+                                Port of Los Angeles <span class="material-symbols-outlined text-[12px]">location_on</span>
+</span>
+</div>
+</div>
+</section>
+<!-- Affected Orders -->
+<section>
+<p class="text-label-caps uppercase font-bold text-on-surface-variant mb-3">Affected Production Orders (3)</p>
+<div class="flex flex-col gap-2">
+<div class="p-2 border border-grid-border rounded flex justify-between items-center bg-white">
+<div>
+<p class="text-body-sm font-bold">SO-9920 (Style: 501 Classic)</p>
+<p class="text-[11px] text-risk-critical font-bold">PCD: Oct 18 (MISSED)</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">open_in_new</span>
+</div>
+<div class="p-2 border border-grid-border rounded flex justify-between items-center bg-white">
+<div>
+<p class="text-body-sm font-bold">SO-9925 (Style: Slim Taper)</p>
+<p class="text-[11px] text-risk-action font-bold">PCD: Oct 25 (CRITICAL)</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">open_in_new</span>
+</div>
+</div>
+</section>
+<!-- Communication Log -->
+<section>
+<div class="flex justify-between items-center mb-3">
+<p class="text-label-caps uppercase font-bold text-on-surface-variant">Communication Log</p>
+<button class="text-[10px] font-bold text-primary flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">add</span> LOG CALL</button>
+</div>
+<div class="space-y-4">
+<div class="text-body-sm bg-surface-muted p-2 border-l-2 border-primary">
+<div class="flex justify-between text-[10px] font-bold text-on-surface-variant mb-1">
+<span>Follow-Up Call (Me)</span>
+<span>2h ago</span>
+</div>
+<p class="text-[12px]">Vendor claims port congestion in LA. Escalated to regional manager. Expecting clearance by Thursday.</p>
+</div>
+<div class="text-body-sm bg-surface-muted p-2 border-l-2 border-outline">
+<div class="flex justify-between text-[10px] font-bold text-on-surface-variant mb-1">
+<span>Email Update (Vendor)</span>
+<span>Oct 14</span>
+</div>
+<p class="text-[12px]">Fabric inspection completed. BOL issued but shipment delayed at loading dock.</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Action Footer -->
+<div class="p-4 border-t border-grid-border bg-surface-container-low grid grid-cols-2 gap-2">
+<button class="h-9 px-3 border border-grid-border bg-white text-on-surface text-[12px] font-bold rounded hover:bg-surface-container-low flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]">priority_high</span> Escalate
+                </button>
+<button class="h-9 px-3 border border-grid-border bg-white text-on-surface text-[12px] font-bold rounded hover:bg-surface-container-low flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]">bolt</span> Expeditie
+                </button>
+<button class="col-span-2 h-9 bg-primary text-white text-[12px] font-bold rounded hover:opacity-90 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">save</span> Save Updates
+                </button>
+</div>
+</aside>
+</div>
+<!-- Micro-interaction Script -->
+<script>
+        function toggleDrawer() {
+            const drawer = document.getElementById('detailDrawer');
+            if (drawer.classList.contains('translate-x-full')) {
+                drawer.classList.remove('translate-x-full');
+                drawer.classList.add('translate-x-0');
+            } else {
+                drawer.classList.add('translate-x-full');
+                drawer.classList.remove('translate-x-0');
+            }
+        }
+
+        // Close drawer on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const drawer = document.getElementById('detailDrawer');
+                drawer.classList.add('translate-x-full');
+                drawer.classList.remove('translate-x-0');
+            }
+        });
+    </script>
+</body></html>

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ERATEX OPS CONTROL - Wash Planning</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#d5e3fd",
+                        "risk-action": "#EF4444",
+                        "risk-watch": "#F59E0B",
+                        "on-secondary-container": "#57657b",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#111c2d",
+                        "on-tertiary-fixed-variant": "#564427",
+                        "surface-container-highest": "#e4e2e3",
+                        "surface-container-high": "#eae7e9",
+                        "primary-fixed-dim": "#bcc7de",
+                        "error-container": "#ffdad6",
+                        "background": "#fbf8fa",
+                        "inverse-surface": "#303032",
+                        "surface-variant": "#e4e2e3",
+                        "on-error-container": "#93000a",
+                        "secondary-container": "#d5e3fd",
+                        "surface": "#fbf8fa",
+                        "surface-muted": "#F8FAFC",
+                        "grid-border": "#E2E8F0",
+                        "error": "#ba1a1a",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "tertiary-fixed-dim": "#ddc39d",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#f0edef",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "inverse-on-surface": "#f3f0f2",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#fadfb8",
+                        "surface-dim": "#dcd9db",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "primary": "#091426",
+                        "on-surface": "#1b1b1d",
+                        "tertiary-container": "#35260c",
+                        "tertiary": "#1e1200",
+                        "risk-on-track": "#10B981",
+                        "surface-bright": "#fbf8fa",
+                        "risk-critical": "#111827",
+                        "on-tertiary-container": "#a38c6a",
+                        "inverse-primary": "#bcc7de",
+                        "outline-variant": "#c5c6cd",
+                        "surface-container-low": "#f5f3f4",
+                        "outline": "#75777d",
+                        "on-background": "#1b1b1d",
+                        "primary-fixed": "#d8e3fb",
+                        "on-tertiary-fixed": "#271902",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#1e293b",
+                        "surface-tint": "#545f73",
+                        "secondary": "#515f74",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#45474c",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "on-primary-container": "#8590a6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "nav-expanded-width": "240px",
+                        "margin-md": "16px",
+                        "margin-sm": "8px",
+                        "drawer-width": "400px",
+                        "grid-row-height": "32px",
+                        "nav-collapsed-width": "64px",
+                        "gutter": "12px"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 2px; }
+        .drawer-shadow { box-shadow: -8px 0 24px rgba(0, 0, 0, 0.04); }
+        .card-interaction:hover { background-color: #F1F5F9; cursor: pointer; }
+    </style>
+</head>
+<body class="bg-surface-muted text-on-surface overflow-hidden">
+<!-- TOP NAV BAR (Shared Component JSON Mapping) -->
+<header class="fixed top-0 left-0 w-full h-12 bg-surface flex justify-between items-center px-gutter z-50 border-b border-grid-border">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold tracking-tight text-primary">ERATEX OPS CONTROL</span>
+<div class="h-6 w-px bg-grid-border hidden md:block"></div>
+<nav class="hidden md:flex gap-6">
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary" href="#">DASHBOARD</a>
+<a class="font-label-caps text-label-caps text-primary font-bold" href="#">WASH PLANNING</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary" href="#">REPORTS</a>
+</nav>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative flex items-center bg-surface-container-low px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm w-48" placeholder="Search Batches..." type="text"/>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer" data-icon="sync">sync</span>
+<div class="relative">
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer" data-icon="notifications">notifications</span>
+<span class="absolute -top-1 -right-1 w-2 h-2 bg-risk-action rounded-full"></span>
+</div>
+<div class="h-6 w-px bg-grid-border mx-2"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">This Week</span>
+</div>
+</header>
+<!-- SIDE NAV BAR (Shared Component JSON Mapping) -->
+<aside class="fixed left-0 top-12 h-[calc(100vh-48px)] w-nav-collapsed-width bg-surface-muted border-r border-grid-border z-40 flex flex-col items-center py-4 transition-all duration-300">
+<div class="flex flex-col gap-6 w-full items-center">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" title="Orders">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+</button>
+<!-- ACTIVE: Planning (Semantic Match for Wash Planning) -->
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary-container text-on-primary-container border-r-4 border-primary" title="Planning">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-high" title="Workcenters">
+<span class="material-symbols-outlined" data-icon="factory">factory</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-high" title="Analytics">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-high" title="Settings">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+<div class="mt-auto flex flex-col gap-4 items-center">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-high" title="Support">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-primary font-bold text-xs overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a mature male operations manager in a industrial setting, soft office lighting, modern corporate portrait style, focused expression, neutral colors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOMMH9vO3kD4T62iMWMNkpdI9g0aO4_kkvHxkR7HUSOGiAEOXDs_3iEnFrKs-EpfwQwV-bR0lGddOzlfWS45543yGF_z6wPu3540jOLL7dxpxapbJ8TzLssA5y7Cghw1-mMskwB_LgwUTz2N7BYgTvOeSEhfBR_awWmGi6DMG5sdK-NytKu6k4_IOyc6Ygn7LGFZfSi4HOwdhRUNw9mDte-1UwToPFYcRXQSAMupTqV6bd5ck84wz_fvfcomPIzBKg59oeclDhTAE"/>
+</div>
+</div>
+</aside>
+<!-- MAIN CONTENT AREA -->
+<main class="ml-nav-collapsed-width mt-12 h-[calc(100vh-48px)] overflow-hidden flex flex-col">
+<!-- SURFACE HEADER / KPI TILES -->
+<div class="p-4 flex gap-4 items-start border-b border-grid-border bg-white shrink-0">
+<div class="flex-1">
+<h1 class="text-headline-lg font-headline-lg text-primary tracking-tight">Wash Flow Control <span class="text-on-surface-variant font-normal text-body-md ml-2">— Unit 04 Denim</span></h1>
+<div class="flex gap-4 mt-2">
+<div class="bg-surface-container-low px-3 py-2 rounded-lg border border-grid-border flex flex-col min-w-[140px]">
+<span class="font-label-caps text-label-caps text-on-surface-variant">TOTAL BATCHES</span>
+<span class="text-headline-md font-bold text-primary">142</span>
+</div>
+<div class="bg-surface-container-low px-3 py-2 rounded-lg border border-grid-border flex flex-col min-w-[140px]">
+<span class="font-label-caps text-label-caps text-on-surface-variant">AT RISK</span>
+<span class="text-headline-md font-bold text-risk-action">14</span>
+</div>
+<div class="bg-surface-container-low px-3 py-2 rounded-lg border border-grid-border flex flex-col min-w-[140px]">
+<span class="font-label-caps text-label-caps text-on-surface-variant">AVG LEAD TIME</span>
+<span class="text-headline-md font-bold text-primary">4.2h</span>
+</div>
+<div class="bg-surface-container-low px-3 py-2 rounded-lg border border-grid-border flex flex-col min-w-[140px]">
+<span class="font-label-caps text-label-caps text-on-surface-variant">CRITICAL REWASH</span>
+<span class="text-headline-md font-bold text-risk-watch">3.8%</span>
+</div>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="bg-surface border border-grid-border text-on-surface px-3 py-1.5 rounded flex items-center gap-2 font-label-caps text-label-caps hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[16px]">filter_list</span> FILTER
+                </button>
+<button class="bg-primary text-white px-3 py-1.5 rounded flex items-center gap-2 font-label-caps text-label-caps hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[16px]">add</span> NEW BATCH
+                </button>
+</div>
+</div>
+<!-- KANBAN BOARD -->
+<div class="flex-1 overflow-x-auto custom-scrollbar flex p-4 gap-4 bg-surface-muted">
+<!-- COLUMN: Wash Queue -->
+<div class="flex flex-col w-[300px] shrink-0">
+<div class="mb-3 px-1">
+<div class="flex justify-between items-center">
+<h3 class="font-label-caps text-label-caps text-primary uppercase">Wash Queue</h3>
+<span class="font-mono-data text-mono-data text-on-surface-variant">42</span>
+</div>
+<div class="w-full bg-grid-border h-1 mt-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[40%]"></div>
+</div>
+<span class="text-[10px] text-on-surface-variant mt-1 block">Queue Depth: 4h 20m</span>
+</div>
+<div class="flex flex-col gap-3 overflow-y-auto custom-scrollbar pb-10">
+<!-- BATCH CARD -->
+<div class="bg-white border border-grid-border rounded p-3 card-interaction shadow-sm" onclick="toggleDrawer()">
+<div class="flex justify-between items-start mb-2">
+<span class="font-mono-data text-mono-data text-primary font-bold">#BT-9904</span>
+<span class="px-1.5 py-0.5 bg-risk-action/10 text-risk-action font-label-caps text-[10px] rounded">CRITICAL</span>
+</div>
+<div class="text-body-sm font-bold text-primary truncate">DNM-SLIM-501 (W21)</div>
+<div class="flex justify-between text-[11px] text-on-surface-variant mt-1">
+<span>PO: 88231</span>
+<span>QTY: 1,200</span>
+</div>
+<div class="mt-3 flex flex-wrap gap-1">
+<span class="px-1.5 py-0.5 bg-secondary-fixed/30 text-on-secondary-fixed-variant text-[10px] rounded font-label-caps">STONE WASH</span>
+<span class="px-1.5 py-0.5 bg-secondary-fixed/30 text-on-secondary-fixed-variant text-[10px] rounded font-label-caps">LOT: A4</span>
+</div>
+</div>
+<!-- BATCH CARD -->
+<div class="bg-white border border-grid-border rounded p-3 card-interaction shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<span class="font-mono-data text-mono-data text-primary font-bold">#BT-9912</span>
+<span class="px-1.5 py-0.5 bg-risk-on-track/10 text-risk-on-track font-label-caps text-[10px] rounded">ON TRACK</span>
+</div>
+<div class="text-body-sm font-bold text-primary truncate">ORG-DENIM-RGD</div>
+<div class="flex justify-between text-[11px] text-on-surface-variant mt-1">
+<span>PO: 88245</span>
+<span>QTY: 450</span>
+</div>
+<div class="mt-3 flex flex-wrap gap-1">
+<span class="px-1.5 py-0.5 bg-secondary-fixed/30 text-on-secondary-fixed-variant text-[10px] rounded font-label-caps">ENZYME</span>
+</div>
+</div>
+</div>
+</div>
+<!-- COLUMN: Wet Wash -->
+<div class="flex flex-col w-[300px] shrink-0">
+<div class="mb-3 px-1">
+<div class="flex justify-between items-center">
+<h3 class="font-label-caps text-label-caps text-primary uppercase">Wet Wash</h3>
+<span class="font-mono-data text-mono-data text-risk-action font-bold">128% LOAD</span>
+</div>
+<div class="w-full bg-grid-border h-1 mt-2 rounded-full overflow-hidden">
+<div class="bg-risk-action h-full w-[90%]"></div>
+</div>
+<span class="text-[10px] text-on-surface-variant mt-1 block">Machines 01, 04, 05 Active</span>
+</div>
+<div class="flex flex-col gap-3 overflow-y-auto custom-scrollbar pb-10">
+<div class="bg-white border-l-4 border-l-risk-watch border border-grid-border rounded p-3 card-interaction shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<span class="font-mono-data text-mono-data text-primary font-bold">#BT-9882</span>
+<span class="material-symbols-outlined text-risk-watch text-[18px]">priority_high</span>
+</div>
+<div class="text-body-sm font-bold text-primary truncate">SKINNY-VINTAGE-04</div>
+<div class="text-[11px] text-on-surface-variant mt-1">Cycle Step: <span class="text-primary font-medium">Enzyme Bath (12m left)</span></div>
+<div class="w-full bg-surface-container h-1 mt-2 rounded-full overflow-hidden">
+<div class="bg-risk-on-track h-full w-[75%]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- COLUMN: Drying -->
+<div class="flex flex-col w-[300px] shrink-0">
+<div class="mb-3 px-1">
+<div class="flex justify-between items-center">
+<h3 class="font-label-caps text-label-caps text-primary uppercase">Drying</h3>
+<span class="font-mono-data text-mono-data text-on-surface-variant">85% LOAD</span>
+</div>
+<div class="w-full bg-grid-border h-1 mt-2 rounded-full overflow-hidden">
+<div class="bg-risk-on-track h-full w-[85%]"></div>
+</div>
+</div>
+<div class="flex flex-col gap-3 overflow-y-auto custom-scrollbar pb-10">
+<div class="bg-white border border-grid-border rounded p-3 card-interaction shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<span class="font-mono-data text-mono-data text-primary font-bold">#BT-9875</span>
+<span class="px-1.5 py-0.5 bg-risk-on-track/10 text-risk-on-track font-label-caps text-[10px] rounded">78°C ACTIVE</span>
+</div>
+<div class="text-body-sm font-bold text-primary truncate">STRAIGHT-INDIGO</div>
+<div class="text-[11px] text-on-surface-variant mt-1">Temp reached. Cool down phase.</div>
+</div>
+</div>
+</div>
+<!-- COLUMN: Post-Wash QC -->
+<div class="flex flex-col w-[300px] shrink-0">
+<div class="mb-3 px-1">
+<div class="flex justify-between items-center">
+<h3 class="font-label-caps text-label-caps text-primary uppercase">Post-Wash QC</h3>
+<span class="font-mono-data text-mono-data text-on-surface-variant">12 BATCHES</span>
+</div>
+<div class="w-full bg-grid-border h-1 mt-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[30%]"></div>
+</div>
+</div>
+<div class="flex flex-col gap-3 overflow-y-auto custom-scrollbar pb-10">
+<div class="bg-white border border-grid-border border-dashed rounded p-3 card-interaction">
+<div class="flex justify-between items-start mb-2">
+<span class="font-mono-data text-mono-data text-primary font-bold">#BT-9860</span>
+<span class="px-1.5 py-0.5 bg-surface-container-highest text-on-surface-variant font-label-caps text-[10px] rounded">PENDING</span>
+</div>
+<div class="text-body-sm font-bold text-primary truncate">TAPERED-BLACK-RESIN</div>
+<div class="mt-3 flex items-center gap-2 text-[11px] text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">science</span> Shade Check Required
+                        </div>
+</div>
+</div>
+</div>
+<!-- COLUMN: Rewash / Touch-up -->
+<div class="flex flex-col w-[300px] shrink-0">
+<div class="mb-3 px-1">
+<div class="flex justify-between items-center">
+<h3 class="font-label-caps text-label-caps text-risk-action uppercase">Rewash / Touch-up</h3>
+<span class="font-mono-data text-mono-data text-risk-action font-bold">4</span>
+</div>
+<div class="w-full bg-risk-action/10 h-1 mt-2 rounded-full overflow-hidden">
+<div class="bg-risk-action h-full w-[25%]"></div>
+</div>
+</div>
+<div class="flex flex-col gap-3 overflow-y-auto custom-scrollbar pb-10">
+<div class="bg-error-container/20 border border-risk-action rounded p-3 card-interaction shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<span class="font-mono-data text-mono-data text-risk-action font-bold">#BT-9844</span>
+<span class="material-symbols-outlined text-risk-action text-[18px]" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<div class="text-body-sm font-bold text-primary truncate">RELAXED-DISTRESSED</div>
+<div class="text-[11px] text-risk-action mt-1 font-bold">ISSUE: UNDER-BLEACHED (OFF SHADE)</div>
+<div class="mt-3 flex items-center gap-2">
+<span class="px-1.5 py-0.5 bg-risk-action text-white text-[9px] rounded font-black uppercase">URGENT</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- RIGHT ACTION DRAWER -->
+<div class="fixed top-12 right-0 w-drawer-width h-[calc(100vh-48px)] bg-white border-l border-grid-border z-50 transform translate-x-full transition-transform duration-300 ease-in-out drawer-shadow flex flex-col" id="actionDrawer">
+<div class="flex items-center justify-between p-4 border-b border-grid-border">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Batch Details</span>
+<h2 class="text-headline-md font-bold text-primary">#BT-9904 <span class="font-normal text-on-surface-variant">/ PO 88231</span></h2>
+</div>
+<button class="p-1 hover:bg-surface-container rounded-full text-on-surface-variant" onclick="toggleDrawer()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-4 flex flex-col gap-6">
+<!-- SECTION 1: Summary & Progress -->
+<section>
+<div class="flex justify-between items-center mb-3">
+<h3 class="font-label-caps text-label-caps text-primary border-l-2 border-primary pl-2 uppercase">Progress Timeline</h3>
+<span class="px-2 py-0.5 bg-risk-action/10 text-risk-action font-mono-data text-[11px] rounded">CRITICAL DELAY (2.4h)</span>
+</div>
+<div class="relative pl-6 space-y-4 before:content-[''] before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-px before:bg-grid-border">
+<div class="relative">
+<span class="absolute -left-[23px] top-1 w-3 h-3 rounded-full bg-risk-on-track border-2 border-white shadow-sm"></span>
+<div class="text-body-sm font-bold text-primary">Pre-Wash Check <span class="font-normal text-on-surface-variant ml-2">Completed 08:30</span></div>
+</div>
+<div class="relative">
+<span class="absolute -left-[23px] top-1 w-3 h-3 rounded-full bg-primary border-2 border-white shadow-sm animate-pulse"></span>
+<div class="text-body-sm font-bold text-primary">Wash Queue <span class="font-normal text-on-surface-variant ml-2">Wait Time: 3h 15m</span></div>
+</div>
+<div class="relative">
+<span class="absolute -left-[23px] top-1 w-3 h-3 rounded-full bg-surface-container border-2 border-grid-border"></span>
+<div class="text-body-sm font-normal text-on-surface-variant italic">Wet Wash - Est: 14:15 Start</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: Wash Recipe -->
+<section class="bg-surface-muted p-3 rounded-lg border border-grid-border">
+<div class="flex justify-between items-center mb-3">
+<h3 class="font-label-caps text-label-caps text-primary uppercase">Recipe: Stone Wash v2.1</h3>
+<span class="material-symbols-outlined text-primary text-[18px]">assignment</span>
+</div>
+<div class="space-y-1">
+<div class="grid grid-cols-12 text-mono-data text-[11px] py-1 border-b border-grid-border/50 text-on-surface-variant">
+<div class="col-span-1">1</div>
+<div class="col-span-8">Desizing - 40°C - 10 min</div>
+<div class="col-span-3 text-right text-risk-on-track">✓</div>
+</div>
+<div class="grid grid-cols-12 text-mono-data text-[11px] py-1 border-b border-grid-border/50 text-on-surface-variant">
+<div class="col-span-1">2</div>
+<div class="col-span-8">Enzyme Wash - 55°C - 45 min</div>
+<div class="col-span-3 text-right">00:45:00</div>
+</div>
+<div class="grid grid-cols-12 text-mono-data text-[11px] py-1 border-b border-grid-border/50 text-on-surface-variant">
+<div class="col-span-1">3</div>
+<div class="col-span-8">Stone Abrasion - Pumice - 20 min</div>
+<div class="col-span-3 text-right">--:--:--</div>
+</div>
+<div class="grid grid-cols-12 text-mono-data text-[11px] py-1 border-b border-grid-border/50 text-on-surface-variant">
+<div class="col-span-1">4</div>
+<div class="col-span-8">Softening - Amino - 10 min</div>
+<div class="col-span-3 text-right">--:--:--</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3: Capacity Impact -->
+<section>
+<h3 class="font-label-caps text-label-caps text-primary border-l-2 border-primary pl-2 uppercase mb-3">Capacity Impact</h3>
+<div class="p-3 border border-grid-border rounded-lg space-y-3">
+<div class="flex justify-between items-center">
+<span class="text-body-sm text-on-surface-variant">Assigned Machine:</span>
+<span class="font-mono-data text-body-sm font-bold">WASH-04 (DENIM)</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-body-sm text-on-surface-variant">Utility Delta:</span>
+<span class="text-body-sm text-risk-action font-bold">+18.5% over peak</span>
+</div>
+<div class="h-1 w-full bg-grid-border rounded-full overflow-hidden">
+<div class="h-full bg-risk-action w-[85%]"></div>
+</div>
+</div>
+</section>
+<!-- SECTION 4: Shade & QC -->
+<section>
+<h3 class="font-label-caps text-label-caps text-primary border-l-2 border-primary pl-2 uppercase mb-3">Shade Reference</h3>
+<div class="flex gap-2">
+<div class="w-16 h-16 rounded bg-[#2D3E50] border border-grid-border flex flex-col items-center justify-center">
+<span class="text-[8px] text-white/50 font-bold uppercase">Target</span>
+</div>
+<div class="w-16 h-16 rounded bg-[#35465C] border border-grid-border flex flex-col items-center justify-center relative">
+<span class="text-[8px] text-white/50 font-bold uppercase">Current</span>
+<span class="absolute -top-1 -right-1 w-3 h-3 bg-risk-watch rounded-full border border-white"></span>
+</div>
+<div class="flex-1 flex flex-col justify-center text-[11px] text-on-surface-variant px-2">
+<p>Delta-E: 1.4 (Watch)</p>
+<p>Luminance: -0.2 (Within spec)</p>
+</div>
+</div>
+</section>
+</div>
+<div class="p-4 bg-surface-container-low border-t border-grid-border grid grid-cols-2 gap-2">
+<button class="bg-primary text-white py-2 rounded font-label-caps text-label-caps hover:opacity-90 col-span-2">START NEXT STEP</button>
+<button class="bg-white border border-risk-action text-risk-action py-2 rounded font-label-caps text-label-caps hover:bg-error-container/10">MARK REWASH</button>
+<button class="bg-white border border-grid-border text-on-surface py-2 rounded font-label-caps text-label-caps hover:bg-surface-container-high">HOLD BATCH</button>
+<button class="bg-secondary-fixed text-on-secondary-fixed py-2 rounded font-label-caps text-label-caps hover:opacity-90 col-span-2 opacity-50 cursor-not-allowed">RELEASE TO FINISHING</button>
+</div>
+</div>
+<!-- STALE DATA INDICATOR -->
+<footer class="fixed bottom-0 right-0 p-2 z-[60]">
+<div class="bg-primary-container px-2 py-0.5 rounded text-on-primary-container text-[10px] font-mono-data shadow-lg flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-risk-on-track rounded-full animate-pulse"></span>
+            SYNC: 42s ago
+        </div>
+</footer>
+<script>
+        function toggleDrawer() {
+            const drawer = document.getElementById('actionDrawer');
+            if (drawer.classList.contains('translate-x-full')) {
+                drawer.classList.remove('translate-x-full');
+            } else {
+                drawer.classList.add('translate-x-full');
+            }
+        }
+
+        // Auto-scroll simulation or light micro-interactions
+        document.querySelectorAll('.card-interaction').forEach(card => {
+            card.addEventListener('mousedown', () => {
+                card.style.transform = 'scale(0.98)';
+            });
+            card.addEventListener('mouseup', () => {
+                card.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

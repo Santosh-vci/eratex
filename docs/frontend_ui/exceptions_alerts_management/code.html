@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Exceptions &amp; Alerts | ERATEX OPS CONTROL</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-primary": "#bcc7de",
+                        "outline": "#75777d",
+                        "on-surface": "#1b1b1d",
+                        "on-background": "#1b1b1d",
+                        "secondary": "#515f74",
+                        "tertiary-fixed-dim": "#ddc39d",
+                        "secondary-fixed": "#d5e3fd",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#d5e3fd",
+                        "tertiary-fixed": "#fadfb8",
+                        "tertiary": "#1e1200",
+                        "risk-critical": "#111827",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed": "#271902",
+                        "surface-tint": "#545f73",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "on-error": "#ffffff",
+                        "tertiary-container": "#35260c",
+                        "primary-container": "#1e293b",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "background": "#fbf8fa",
+                        "risk-on-track": "#10B981",
+                        "primary-fixed-dim": "#bcc7de",
+                        "surface-dim": "#dcd9db",
+                        "risk-action": "#EF4444",
+                        "surface": "#fbf8fa",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "outline-variant": "#c5c6cd",
+                        "surface-container-highest": "#e4e2e3",
+                        "on-primary-container": "#8590a6",
+                        "primary": "#091426",
+                        "surface-container-high": "#eae7e9",
+                        "on-tertiary-fixed-variant": "#564427",
+                        "surface-muted": "#F8FAFC",
+                        "risk-watch": "#F59E0B",
+                        "primary-fixed": "#d8e3fb",
+                        "inverse-on-surface": "#f3f0f2",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#a38c6a",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "grid-border": "#E2E8F0",
+                        "surface-bright": "#fbf8fa",
+                        "inverse-surface": "#303032",
+                        "surface-container-low": "#f5f3f4",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed": "#111c2d",
+                        "surface-variant": "#e4e2e3",
+                        "surface-container": "#f0edef",
+                        "on-secondary-container": "#57657b",
+                        "on-surface-variant": "#45474c",
+                        "on-secondary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "nav-expanded-width": "240px",
+                        "margin-sm": "8px",
+                        "margin-md": "16px",
+                        "nav-collapsed-width": "64px",
+                        "gutter": "12px",
+                        "grid-row-height": "32px",
+                        "drawer-width": "400px"
+                    },
+                    "fontFamily": {
+                        "data-tabular": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "mono-data": ["JetBrains Mono"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        .drawer-transition { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="bg-surface-muted text-on-surface overflow-hidden">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full h-12 flex justify-between items-center px-gutter z-50 bg-surface dark:bg-primary border-b border-grid-border dark:border-outline-variant">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold tracking-tight text-primary dark:text-inverse-primary">ERATEX OPS CONTROL</span>
+<nav class="hidden md:flex gap-4 ml-6">
+<a class="font-label-caps text-label-caps text-primary dark:text-primary-fixed font-bold" href="#">EXCEPTIONS</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant dark:text-on-primary-container hover:bg-surface-container-low transition-colors" href="#">DASHBOARD</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center bg-surface-container-low px-3 py-1 rounded border border-outline-variant">
+<span class="material-symbols-outlined text-[18px] text-outline">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm w-48" placeholder="Search orders, exceptions..." type="text"/>
+</div>
+<div class="flex gap-2">
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-low transition-colors rounded">
+<span class="material-symbols-outlined text-[20px]" data-icon="sync">sync</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-low transition-colors rounded relative">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-risk-action rounded-full border border-surface"></span>
+</button>
+</div>
+<div class="h-6 w-[1px] bg-outline-variant mx-2"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">This Week</span>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-12 h-[calc(100vh-48px)] z-40 flex flex-col items-center py-4 bg-surface-muted dark:bg-inverse-surface border-r border-grid-border dark:border-outline w-nav-collapsed-width">
+<div class="flex flex-col gap-2 flex-grow">
+<!-- Orders -->
+<button class="w-10 h-10 flex flex-col items-center justify-center rounded transition-all duration-300 ease-in-out text-on-surface-variant hover:bg-surface-container-high" title="Orders">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+</button>
+<!-- Planning -->
+<button class="w-10 h-10 flex flex-col items-center justify-center rounded transition-all duration-300 ease-in-out text-on-surface-variant hover:bg-surface-container-high" title="Planning">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+</button>
+<!-- Workcenters -->
+<button class="w-10 h-10 flex flex-col items-center justify-center rounded transition-all duration-300 ease-in-out text-on-surface-variant hover:bg-surface-container-high" title="Workcenters">
+<span class="material-symbols-outlined" data-icon="factory">factory</span>
+</button>
+<!-- Analytics -->
+<button class="w-10 h-10 flex flex-col items-center justify-center rounded transition-all duration-300 ease-in-out text-on-surface-variant hover:bg-surface-container-high" title="Analytics">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+</button>
+<!-- Exceptions Active -->
+<button class="w-10 h-10 flex flex-col items-center justify-center rounded transition-all duration-300 ease-in-out bg-primary-container text-on-primary-container border-r-4 border-primary" title="Exceptions">
+<span class="material-symbols-outlined" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
+</button>
+</div>
+<div class="flex flex-col gap-2 mt-auto">
+<button class="w-10 h-10 flex flex-col items-center justify-center rounded transition-all duration-300 ease-in-out text-on-surface-variant hover:bg-surface-container-high" title="Support">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<button class="w-10 h-10 flex flex-col items-center justify-center rounded transition-all duration-300 ease-in-out text-on-surface-variant hover:bg-surface-container-high" title="Settings">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-nav-collapsed-width mt-12 h-[calc(100vh-48px)] overflow-hidden flex flex-col">
+<!-- Header / KPI Section -->
+<section class="p-margin-md flex-shrink-0">
+<div class="flex justify-between items-center mb-4">
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">Exceptions &amp; Alerts</h1>
+<div class="flex gap-2">
+<button class="px-3 py-1 bg-primary text-on-primary font-label-caps text-label-caps rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">add</span> LOG NEW EXCEPTION
+                    </button>
+</div>
+</div>
+<!-- Dashboard Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-margin-md">
+<div class="bg-surface border border-grid-border p-4 rounded shadow-sm">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-1">Total Open Exceptions</p>
+<p class="text-[28px] font-bold text-primary">42</p>
+<div class="flex items-center gap-1 mt-2">
+<span class="material-symbols-outlined text-risk-action text-[16px]">trending_up</span>
+<span class="text-[11px] font-medium text-risk-action">+4 since yesterday</span>
+</div>
+</div>
+<div class="bg-surface border-l-4 border-l-risk-critical border-y border-r border-grid-border p-4 rounded shadow-sm">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-1">Critical Exceptions</p>
+<div class="flex items-end gap-2">
+<p class="text-[28px] font-bold text-risk-critical">09</p>
+<span class="bg-error-container text-on-error-container text-[10px] font-bold px-1 mb-2">URGENT</span>
+</div>
+<p class="text-[11px] text-on-surface-variant mt-2 font-data-tabular">Requires Immediate Intervention</p>
+</div>
+<div class="bg-surface border border-grid-border p-4 rounded shadow-sm">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-1">Past Due Resolution</p>
+<p class="text-[28px] font-bold text-risk-watch">14</p>
+<div class="flex items-center gap-1 mt-2">
+<span class="material-symbols-outlined text-risk-watch text-[16px]">schedule</span>
+<span class="text-[11px] font-medium text-risk-watch">Avg delay: 2.4 days</span>
+</div>
+</div>
+<div class="bg-surface border border-grid-border p-4 rounded shadow-sm relative overflow-hidden">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-1">Shipment Risk Exposure</p>
+<p class="text-[28px] font-bold text-primary">1,240 <span class="text-body-sm font-normal text-on-surface-variant">Units</span></p>
+<p class="text-[11px] text-on-surface-variant mt-2 font-data-tabular">Across 12 unique orders</p>
+<div class="absolute right-[-10px] bottom-[-10px] opacity-5">
+<span class="material-symbols-outlined text-[80px]">local_shipping</span>
+</div>
+</div>
+</div>
+</section>
+<!-- View Toggles & Filters -->
+<section class="px-margin-md py-2 border-y border-grid-border bg-white flex justify-between items-center flex-shrink-0">
+<div class="flex gap-1">
+<button class="bg-primary-container text-on-primary-container px-3 py-1 font-label-caps text-label-caps">By Severity</button>
+<button class="hover:bg-surface-container-low text-on-surface-variant px-3 py-1 font-label-caps text-label-caps">By Department</button>
+<button class="hover:bg-surface-container-low text-on-surface-variant px-3 py-1 font-label-caps text-label-caps">By Due Date</button>
+<button class="hover:bg-surface-container-low text-on-surface-variant px-3 py-1 font-label-caps text-label-caps">By Owner</button>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-2 text-body-sm">
+<span class="text-on-surface-variant">Filter Stage:</span>
+<select class="border-none bg-transparent font-bold py-0 focus:ring-0 cursor-pointer">
+<option>All Stages</option>
+<option>Knitting</option>
+<option>Dyeing</option>
+<option>Finishing</option>
+<option>Quality</option>
+</select>
+</div>
+<button class="text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+</button>
+</div>
+</section>
+<!-- Grid: High-density list of exceptions -->
+<section class="flex-grow overflow-auto custom-scrollbar bg-white">
+<table class="w-full text-left border-collapse min-w-[1200px]">
+<thead class="sticky top-0 bg-surface-container-low z-10 border-b border-grid-border">
+<tr class="h-8">
+<th class="px-3 border-r border-grid-border font-label-caps text-label-caps text-on-surface-variant">ID</th>
+<th class="px-3 border-r border-grid-border font-label-caps text-label-caps text-on-surface-variant">Type</th>
+<th class="px-3 border-r border-grid-border font-label-caps text-label-caps text-on-surface-variant">Severity</th>
+<th class="px-3 border-r border-grid-border font-label-caps text-label-caps text-on-surface-variant">Affected Order</th>
+<th class="px-3 border-r border-grid-border font-label-caps text-label-caps text-on-surface-variant">Dept/Stage</th>
+<th class="px-3 border-r border-grid-border font-label-caps text-label-caps text-on-surface-variant">Description</th>
+<th class="px-3 border-r border-grid-border font-label-caps text-label-caps text-on-surface-variant">Owner</th>
+<th class="px-3 border-r border-grid-border font-label-caps text-label-caps text-on-surface-variant">Due Date</th>
+<th class="px-3 border-r border-grid-border font-label-caps text-label-caps text-on-surface-variant">Ageing</th>
+<th class="px-3 font-label-caps text-label-caps text-on-surface-variant">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-grid-border">
+<!-- Row 1: CRITICAL -->
+<tr class="h-grid-row-height hover:bg-surface-container-low cursor-pointer transition-colors group" onclick="toggleDrawer(true)">
+<td class="px-3 font-mono-data text-mono-data text-primary">EXC-4092</td>
+<td class="px-3 font-body-sm text-body-sm">Quality</td>
+<td class="px-3">
+<span class="bg-risk-critical text-white text-[10px] px-1.5 py-0.5 font-bold rounded-sm">CRITICAL</span>
+</td>
+<td class="px-3 font-data-tabular text-data-tabular">ORD-7712 (Nike)</td>
+<td class="px-3 font-body-sm text-body-sm">Finishing</td>
+<td class="px-3 font-body-sm text-body-sm truncate max-w-[200px]">Fabric shade variance beyond tolerance limit.</td>
+<td class="px-3 flex items-center gap-1 h-grid-row-height">
+<div class="w-4 h-4 rounded-full bg-primary-fixed flex items-center justify-center text-[10px] font-bold">AS</div>
+<span class="text-data-tabular font-data-tabular">A. Singh</span>
+</td>
+<td class="px-3 font-data-tabular text-data-tabular">14 Oct, 2023</td>
+<td class="px-3 font-data-tabular text-data-tabular text-risk-action">3d overdue</td>
+<td class="px-3">
+<span class="text-[10px] font-bold border border-risk-action text-risk-action px-1">OPEN</span>
+</td>
+</tr>
+<!-- Row 2: RED -->
+<tr class="h-grid-row-height hover:bg-surface-container-low cursor-pointer group">
+<td class="px-3 font-mono-data text-mono-data text-primary">EXC-4105</td>
+<td class="px-3 font-body-sm text-body-sm">Material</td>
+<td class="px-3">
+<span class="bg-risk-action/10 text-risk-action text-[10px] px-1.5 py-0.5 font-bold rounded-sm">HIGH</span>
+</td>
+<td class="px-3 font-data-tabular text-data-tabular">ORD-8921 (Adidas)</td>
+<td class="px-3 font-body-sm text-body-sm">Knitting</td>
+<td class="px-3 font-body-sm text-body-sm truncate max-w-[200px]">Yarn shortage for high-GSM batch.</td>
+<td class="px-3 flex items-center gap-1 h-grid-row-height">
+<div class="w-4 h-4 rounded-full bg-secondary-fixed flex items-center justify-center text-[10px] font-bold">JW</div>
+<span class="text-data-tabular font-data-tabular">J. Wu</span>
+</td>
+<td class="px-3 font-data-tabular text-data-tabular">16 Oct, 2023</td>
+<td class="px-3 font-data-tabular text-data-tabular">1d</td>
+<td class="px-3">
+<span class="text-[10px] font-bold border border-primary text-primary px-1">IN PROGRESS</span>
+</td>
+</tr>
+<!-- Row 3: YELLOW -->
+<tr class="h-grid-row-height hover:bg-surface-container-low cursor-pointer group">
+<td class="px-3 font-mono-data text-mono-data text-primary">EXC-4112</td>
+<td class="px-3 font-body-sm text-body-sm">Capacity</td>
+<td class="px-3">
+<span class="bg-risk-watch/10 text-risk-watch text-[10px] px-1.5 py-0.5 font-bold rounded-sm">MODERATE</span>
+</td>
+<td class="px-3 font-data-tabular text-data-tabular">ORD-9020 (Uniqlo)</td>
+<td class="px-3 font-body-sm text-body-sm">Dyeing</td>
+<td class="px-3 font-body-sm text-body-sm truncate max-w-[200px]">Vat #4 maintenance delay.</td>
+<td class="px-3 flex items-center gap-1 h-grid-row-height">
+<div class="w-4 h-4 rounded-full bg-tertiary-fixed flex items-center justify-center text-[10px] font-bold">ML</div>
+<span class="text-data-tabular font-data-tabular">M. Lee</span>
+</td>
+<td class="px-3 font-data-tabular text-data-tabular">17 Oct, 2023</td>
+<td class="px-3 font-data-tabular text-data-tabular">&lt; 1d</td>
+<td class="px-3">
+<span class="text-[10px] font-bold border border-risk-watch text-risk-watch px-1">ESCALATE</span>
+</td>
+</tr>
+<!-- Row 4: GREEN -->
+<tr class="h-grid-row-height hover:bg-surface-container-low cursor-pointer group">
+<td class="px-3 font-mono-data text-mono-data text-primary">EXC-4122</td>
+<td class="px-3 font-body-sm text-body-sm">Quality</td>
+<td class="px-3">
+<span class="bg-risk-on-track/10 text-risk-on-track text-[10px] px-1.5 py-0.5 font-bold rounded-sm">LOW</span>
+</td>
+<td class="px-3 font-data-tabular text-data-tabular">ORD-7715 (Nike)</td>
+<td class="px-3 font-body-sm text-body-sm">Packing</td>
+<td class="px-3 font-body-sm text-body-sm truncate max-w-[200px]">Label misalignment on 5 units.</td>
+<td class="px-3 flex items-center gap-1 h-grid-row-height">
+<div class="w-4 h-4 rounded-full bg-primary-fixed flex items-center justify-center text-[10px] font-bold">AS</div>
+<span class="text-data-tabular font-data-tabular">A. Singh</span>
+</td>
+<td class="px-3 font-data-tabular text-data-tabular">18 Oct, 2023</td>
+<td class="px-3 font-data-tabular text-data-tabular">Just now</td>
+<td class="px-3">
+<span class="text-[10px] font-bold border border-risk-action text-risk-action px-1">OPEN</span>
+</td>
+</tr>
+<!-- Duplicate rows for density -->
+<tr class="h-grid-row-height hover:bg-surface-container-low cursor-pointer group">
+<td class="px-3 font-mono-data text-mono-data text-primary">EXC-4123</td>
+<td class="px-3 font-body-sm text-body-sm">Technical</td>
+<td class="px-3">
+<span class="bg-risk-critical text-white text-[10px] px-1.5 py-0.5 font-bold rounded-sm">CRITICAL</span>
+</td>
+<td class="px-3 font-data-tabular text-data-tabular">GLOBAL</td>
+<td class="px-3 font-body-sm text-body-sm">IT/ERP</td>
+<td class="px-3 font-body-sm text-body-sm truncate max-w-[200px]">ERP sync failure for Unit 04.</td>
+<td class="px-3 flex items-center gap-1 h-grid-row-height">
+<div class="w-4 h-4 rounded-full bg-surface-container-highest flex items-center justify-center text-[10px] font-bold">SYS</div>
+<span class="text-data-tabular font-data-tabular">System Admin</span>
+</td>
+<td class="px-3 font-data-tabular text-data-tabular">14 Oct, 2023</td>
+<td class="px-3 font-data-tabular text-data-tabular text-risk-action">4h</td>
+<td class="px-3">
+<span class="text-[10px] font-bold border border-risk-action text-risk-action px-1">OPEN</span>
+</td>
+</tr>
+<tr class="h-grid-row-height hover:bg-surface-container-low cursor-pointer group">
+<td class="px-3 font-mono-data text-mono-data text-primary">EXC-4124</td>
+<td class="px-3 font-body-sm text-body-sm">Quality</td>
+<td class="px-3">
+<span class="bg-risk-action/10 text-risk-action text-[10px] px-1.5 py-0.5 font-bold rounded-sm">HIGH</span>
+</td>
+<td class="px-3 font-data-tabular text-data-tabular">ORD-9100 (GAP)</td>
+<td class="px-3 font-body-sm text-body-sm">Dyeing</td>
+<td class="px-3 font-body-sm text-body-sm truncate max-w-[200px]">Shrinkage test failure on 100% Cotton.</td>
+<td class="px-3 flex items-center gap-1 h-grid-row-height">
+<div class="w-4 h-4 rounded-full bg-secondary-fixed flex items-center justify-center text-[10px] font-bold">JW</div>
+<span class="text-data-tabular font-data-tabular">J. Wu</span>
+</td>
+<td class="px-3 font-data-tabular text-data-tabular">15 Oct, 2023</td>
+<td class="px-3 font-data-tabular text-data-tabular text-risk-action">2d</td>
+<td class="px-3">
+<span class="text-[10px] font-bold border border-primary text-primary px-1">IN PROGRESS</span>
+</td>
+</tr>
+<!-- Add more filler rows to demonstrate density -->
+<script>
+                        for(let i=0; i<15; i++) {
+                            document.write(`
+                            <tr class="h-grid-row-height hover:bg-surface-container-low cursor-pointer group">
+                                <td class="px-3 font-mono-data text-mono-data text-on-surface-variant">EXC-412${i+5}</td>
+                                <td class="px-3 font-body-sm text-body-sm">General</td>
+                                <td class="px-3"><span class="bg-surface-container-highest text-on-surface-variant text-[10px] px-1.5 py-0.5 font-bold rounded-sm">NORMAL</span></td>
+                                <td class="px-3 font-data-tabular text-data-tabular">ORD-000${i}</td>
+                                <td class="px-3 font-body-sm text-body-sm">Logistics</td>
+                                <td class="px-3 font-body-sm text-body-sm truncate max-w-[200px]">Documentation pending for customs.</td>
+                                <td class="px-3 flex items-center gap-1 h-grid-row-height">
+                                    <div class="w-4 h-4 rounded-full bg-surface-container-highest flex items-center justify-center text-[10px] font-bold text-on-surface-variant">?</div>
+                                    <span class="text-data-tabular font-data-tabular">Unassigned</span>
+                                </td>
+                                <td class="px-3 font-data-tabular text-data-tabular">20 Oct, 2023</td>
+                                <td class="px-3 font-data-tabular text-data-tabular">--</td>
+                                <td class="px-3"><span class="text-[10px] font-bold border border-on-surface-variant text-on-surface-variant px-1">QUEUED</span></td>
+                            </tr>
+                            `);
+                        }
+                    </script>
+</tbody>
+</table>
+</section>
+<!-- Footer -->
+<footer class="h-8 border-t border-grid-border px-margin-md flex items-center justify-between bg-surface flex-shrink-0">
+<div class="flex items-center gap-4">
+<span class="text-[11px] font-mono-data text-outline">SYNC: 2m ago</span>
+<div class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-risk-on-track"></span>
+<span class="text-[11px] font-bold text-on-surface-variant">SERVER CONNECTED</span>
+</div>
+</div>
+<div class="flex items-center gap-4 text-[11px] text-on-surface-variant">
+<span>Total 42 Exceptions</span>
+<span>|</span>
+<span>Page 1 of 3</span>
+</div>
+</footer>
+</main>
+<!-- Right Drawer: Exception Resolution View -->
+<div class="fixed top-12 right-0 w-drawer-width h-[calc(100vh-48px)] bg-surface border-l border-grid-border z-50 transform translate-x-full drawer-transition shadow-2xl flex flex-col" id="actionDrawer">
+<!-- Drawer Header -->
+<div class="p-4 border-b border-grid-border flex justify-between items-start flex-shrink-0">
+<div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">EXCEPTION DETAILS</span>
+<h2 class="font-headline-md text-headline-md text-primary mt-1">EXC-4092: Fabric QC Failure</h2>
+<div class="mt-2 flex gap-2">
+<span class="bg-risk-critical text-white text-[10px] px-2 py-0.5 font-bold rounded">CRITICAL SEVERITY</span>
+<span class="bg-surface-container-highest text-on-surface-variant text-[10px] px-2 py-0.5 font-bold rounded">QUALITY</span>
+</div>
+</div>
+<button class="p-1 hover:bg-surface-container-low rounded" onclick="toggleDrawer(false)">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Drawer Content -->
+<div class="flex-grow overflow-y-auto custom-scrollbar p-4 space-y-6">
+<!-- Section 1: Root Cause -->
+<section>
+<h3 class="font-label-caps text-label-caps text-primary border-b border-grid-border pb-1 mb-2">DESCRIPTION &amp; ROOT CAUSE</h3>
+<p class="text-body-sm text-on-surface leading-relaxed">
+                    Fabric batch #B-992 (Deep Navy) exhibits a Delta-E variance of 1.8 against the Master Standard. Maximum allowed tolerance is 0.5. 
+                </p>
+<div class="mt-3 p-3 bg-error-container/20 border border-error/20 rounded">
+<p class="text-[11px] font-bold text-on-error-container">ROOT CAUSE ANALYSIS</p>
+<p class="text-body-sm mt-1">Vat pH stabilization failure during late-night shift. Controller sensor calibration was overdue by 48 hours.</p>
+</div>
+</section>
+<!-- Section 2: Affected Orders -->
+<section>
+<h3 class="font-label-caps text-label-caps text-primary border-b border-grid-border pb-1 mb-2">AFFECTED ORDERS &amp; SHIPMENT RISK</h3>
+<div class="space-y-2">
+<div class="flex justify-between items-center p-2 border border-grid-border rounded hover:bg-surface-container-low transition-colors">
+<div>
+<p class="font-data-tabular text-data-tabular">ORD-7712 (Nike Elite)</p>
+<p class="text-[11px] text-on-surface-variant">Qty: 800 Units | Delivery: 22 Oct</p>
+</div>
+<span class="text-risk-action font-bold text-[10px]">RISK: HIGH</span>
+</div>
+<div class="flex justify-between items-center p-2 border border-grid-border rounded hover:bg-surface-container-low transition-colors">
+<div>
+<p class="font-data-tabular text-data-tabular">ORD-7715 (Nike Core)</p>
+<p class="text-[11px] text-on-surface-variant">Qty: 440 Units | Delivery: 28 Oct</p>
+</div>
+<span class="text-risk-watch font-bold text-[10px]">RISK: MED</span>
+</div>
+</div>
+</section>
+<!-- Section 3: Recovery Action Plan -->
+<section>
+<h3 class="font-label-caps text-label-caps text-primary border-b border-grid-border pb-1 mb-2">RECOVERY ACTION PLAN</h3>
+<div class="space-y-4 mt-3">
+<div>
+<label class="block text-[11px] font-bold text-on-surface-variant mb-1">ASSIGNED OWNER</label>
+<select class="w-full text-body-sm border border-grid-border p-2 focus:ring-1 focus:ring-primary outline-none">
+<option>Aman Singh (Finishing Lead)</option>
+<option>John Wu (Quality Manager)</option>
+<option>Mark Lee (Production Head)</option>
+</select>
+</div>
+<div>
+<label class="block text-[11px] font-bold text-on-surface-variant mb-1">RESOLUTION DUE DATE</label>
+<input class="w-full text-body-sm border border-grid-border p-2 outline-none" type="date" value="2023-10-14"/>
+</div>
+<div>
+<label class="block text-[11px] font-bold text-on-surface-variant mb-1">SUGGESTED ACTIONS</label>
+<textarea class="w-full text-body-sm border border-grid-border p-2 outline-none h-20 resize-none" placeholder="Enter mitigation steps..."></textarea>
+</div>
+</div>
+</section>
+<!-- Section 4: History -->
+<section>
+<h3 class="font-label-caps text-label-caps text-primary border-b border-grid-border pb-1 mb-2">ESCALATION HISTORY</h3>
+<div class="space-y-4 mt-3 relative before:absolute before:left-[11px] before:top-2 before:bottom-0 before:w-[1px] before:bg-grid-border">
+<div class="relative pl-7">
+<div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-risk-action flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[14px]">warning</span>
+</div>
+<p class="text-[11px] font-bold">Exception Logged as CRITICAL</p>
+<p class="text-[10px] text-on-surface-variant">Oct 11, 09:12 AM | System Monitor</p>
+</div>
+<div class="relative pl-7">
+<div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[14px]">person</span>
+</div>
+<p class="text-[11px] font-bold">Owner Assigned: Aman Singh</p>
+<p class="text-[10px] text-on-surface-variant">Oct 11, 10:45 AM | System</p>
+</div>
+<div class="relative pl-7">
+<div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-[14px]">chat_bubble</span>
+</div>
+<p class="text-[11px] font-bold">Comment: Investigating vat pH levels.</p>
+<p class="text-[10px] text-on-surface-variant">Oct 12, 02:30 PM | A. Singh</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Drawer Footer -->
+<div class="p-4 border-t border-grid-border bg-surface-muted grid grid-cols-2 gap-2 flex-shrink-0">
+<button class="col-span-2 py-2 bg-primary text-on-primary font-label-caps text-label-caps rounded">UPDATE STATUS</button>
+<button class="py-2 border border-risk-watch text-risk-watch font-label-caps text-label-caps rounded flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[16px]">trending_up</span> ESCALATE
+            </button>
+<button class="py-2 border border-grid-border text-on-surface-variant font-label-caps text-label-caps rounded">CLOSE EXC</button>
+</div>
+</div>
+<!-- Background overlay when drawer open -->
+<div class="fixed inset-0 bg-primary/20 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity" id="overlay" onclick="toggleDrawer(false)"></div>
+<script>
+        function toggleDrawer(isOpen) {
+            const drawer = document.getElementById('actionDrawer');
+            const overlay = document.getElementById('overlay');
+            if (isOpen) {
+                drawer.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.add('opacity-100'), 10);
+            } else {
+                drawer.classList.add('translate-x-full');
+                overlay.classList.remove('opacity-100');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+    </script>
+</body></html>

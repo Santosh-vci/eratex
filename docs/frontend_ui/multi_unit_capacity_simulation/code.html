@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OpsCockpit | Multi-Unit Capacity Simulation Workbench</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "grid-border": "#E2E8F0",
+                        "on-background": "#1b1b1d",
+                        "primary-fixed-dim": "#bcc7de",
+                        "secondary-container": "#d5e3fd",
+                        "on-tertiary-fixed": "#271902",
+                        "on-primary-fixed": "#111c2d",
+                        "tertiary-container": "#35260c",
+                        "inverse-on-surface": "#f3f0f2",
+                        "on-surface": "#1b1b1d",
+                        "risk-action": "#EF4444",
+                        "outline": "#75777d",
+                        "tertiary-fixed-dim": "#ddc39d",
+                        "primary": "#091426",
+                        "tertiary-fixed": "#fadfb8",
+                        "secondary-fixed": "#d5e3fd",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "error-container": "#ffdad6",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#d8e3fb",
+                        "surface-container-highest": "#e4e2e3",
+                        "primary-container": "#1e293b",
+                        "tertiary": "#1e1200",
+                        "on-primary": "#ffffff",
+                        "risk-critical": "#111827",
+                        "inverse-primary": "#bcc7de",
+                        "on-tertiary": "#ffffff",
+                        "surface-bright": "#fbf8fa",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "secondary": "#515f74",
+                        "on-secondary-container": "#57657b",
+                        "background": "#fbf8fa",
+                        "inverse-surface": "#303032",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "risk-watch": "#F59E0B",
+                        "surface-dim": "#dcd9db",
+                        "surface-container-high": "#eae7e9",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "surface-container": "#f0edef",
+                        "on-surface-variant": "#45474c",
+                        "outline-variant": "#c5c6cd",
+                        "risk-on-track": "#10B981",
+                        "on-primary-container": "#8590a6",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e4e2e3",
+                        "surface-tint": "#545f73",
+                        "on-error-container": "#93000a",
+                        "surface": "#fbf8fa",
+                        "on-tertiary-container": "#a38c6a",
+                        "surface-container-low": "#f5f3f4",
+                        "surface-muted": "#F8FAFC",
+                        "on-tertiary-fixed-variant": "#564427",
+                        "error": "#ba1a1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "12px",
+                        "nav-collapsed-width": "64px",
+                        "margin-sm": "8px",
+                        "margin-md": "16px",
+                        "nav-expanded-width": "240px",
+                        "grid-row-height": "32px",
+                        "drawer-width": "400px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "mono-data": ["JetBrains Mono"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "data-tabular": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 2px; }
+        .drawer-shadow { box-shadow: -8px 0 24px -12px rgba(0,0,0,0.15); }
+    </style>
+</head>
+<body class="bg-surface-muted font-body-md text-on-surface overflow-hidden">
+<!-- Global Header (TopNavBar) -->
+<header class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center w-full px-margin-md h-[48px] bg-primary text-on-primary border-b border-outline-variant">
+<div class="flex items-center gap-margin-md">
+<span class="font-headline-lg text-headline-lg font-bold text-on-primary">OpsCockpit</span>
+<div class="hidden md:flex items-center gap-margin-md ml-8">
+<button class="text-on-primary border-b-2 border-on-primary pb-1 font-label-caps text-label-caps">PLANNING</button>
+<button class="text-on-primary-fixed-variant hover:bg-primary-container transition-colors px-2 py-1 font-label-caps text-label-caps">EXECUTION</button>
+<button class="text-on-primary-fixed-variant hover:bg-primary-container transition-colors px-2 py-1 font-label-caps text-label-caps">LOGISTICS</button>
+</div>
+</div>
+<div class="flex items-center gap-margin-md">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-on-primary-fixed-variant text-[18px]">search</span>
+<input class="bg-primary-container border-none text-white text-body-sm h-8 pl-8 pr-4 w-64 focus:ring-1 focus:ring-on-primary" placeholder="Search orders, units..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-1 hover:bg-primary-container rounded transition-colors"><span class="material-symbols-outlined">notifications</span></button>
+<button class="p-1 hover:bg-primary-container rounded transition-colors"><span class="material-symbols-outlined">settings</span></button>
+<button class="p-1 hover:bg-primary-container rounded transition-colors"><span class="material-symbols-outlined">help</span></button>
+<div class="h-6 w-[1px] bg-primary-container mx-1"></div>
+<img alt="User profile" class="h-7 w-7 rounded-full border border-outline-variant object-cover" data-alt="Professional headshot of a senior industrial manufacturing planner in a clean, high-key office environment. The subject is a middle-aged man with a focused and authoritative expression. The lighting is soft and professional, emphasizing a modern corporate aesthetic with cool tones and sharp focus. The overall atmosphere is disciplined and corporate." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDATGhpV1I2x3csob5GDMiyF3bo1fO3Xe9PpLiF3OyojMHR_ZRL1jdIJYdjgOi4XNiR8OJlib--AeGFfF9jzUcjFoUxWd1crQvxmiE50mrd9ilWyPqoteRMqEXSlg4avvMIij2I0waM_KhSzdNjByD2A9Ied-_3W-IuqLuI7UjXyilgRUgBVa_MeOriIHhWOpY3e5fbVoY-u9UdXpMNpxdvlBaIJ17sb2DzniKG8i1prkGPqOBVb3Xq8-7mac6eXwLqfuGARrVZvRI"/>
+</div>
+</div>
+</header>
+<!-- Sidebar Navigation (SideNavBar) -->
+<aside class="fixed left-0 top-[48px] h-[calc(100vh-48px)] z-40 flex flex-col py-margin-md bg-surface-container-low border-r border-grid-border w-nav-collapsed-width hover:w-nav-expanded-width transition-all duration-300 group">
+<div class="flex flex-col gap-1 px-2">
+<!-- Dashboard (Inactive) -->
+<button class="flex items-center w-full h-10 px-2 rounded hover:bg-surface-container-high transition-colors text-on-surface-variant group-hover:px-3">
+<span class="material-symbols-outlined">analytics</span>
+<span class="ml-4 font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">Dashboard</span>
+</button>
+<!-- Capacity (Active) -->
+<button class="flex items-center w-full h-10 px-2 rounded bg-secondary-container text-on-secondary-container border-l-4 border-primary group-hover:px-3">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">factory</span>
+<span class="ml-4 font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">Capacity</span>
+</button>
+<!-- Scenarios -->
+<button class="flex items-center w-full h-10 px-2 rounded hover:bg-surface-container-high transition-colors text-on-surface-variant group-hover:px-3">
+<span class="material-symbols-outlined">compare_arrows</span>
+<span class="ml-4 font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">Scenarios</span>
+</button>
+<!-- Units -->
+<button class="flex items-center w-full h-10 px-2 rounded hover:bg-surface-container-high transition-colors text-on-surface-variant group-hover:px-3">
+<span class="material-symbols-outlined">lan</span>
+<span class="ml-4 font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">Units</span>
+</button>
+<!-- Reports -->
+<button class="flex items-center w-full h-10 px-2 rounded hover:bg-surface-container-high transition-colors text-on-surface-variant group-hover:px-3">
+<span class="material-symbols-outlined">assessment</span>
+<span class="ml-4 font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">Reports</span>
+</button>
+</div>
+<div class="mt-auto border-t border-grid-border pt-4 px-2 flex flex-col gap-1">
+<div class="px-2 mb-2 hidden group-hover:block transition-all">
+<p class="text-[10px] font-bold text-primary uppercase tracking-widest">Industrial Logic</p>
+<p class="text-[9px] text-on-surface-variant">v4.2.0-STABLE</p>
+</div>
+<button class="flex items-center w-full h-10 px-2 rounded hover:bg-surface-container-high text-on-surface-variant group-hover:px-3">
+<span class="material-symbols-outlined">sync</span>
+<span class="ml-4 font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">Sync Status</span>
+</button>
+<button class="flex items-center w-full h-10 px-2 rounded hover:bg-surface-container-high text-on-surface-variant group-hover:px-3">
+<span class="material-symbols-outlined">contact_support</span>
+<span class="ml-4 font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">Support</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-nav-collapsed-width mr-0 h-[calc(100vh-48px)] mt-[48px] overflow-hidden flex">
+<!-- Workbench Area -->
+<div class="flex-1 overflow-y-auto custom-scrollbar p-margin-md flex flex-col gap-margin-md">
+<!-- Simulation Header -->
+<section class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white p-4 rounded-lg border border-grid-border">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-3">
+<h1 class="font-headline-lg text-headline-lg text-primary">Scenario: Peak Season Load Balance (Q3)</h1>
+<span class="bg-surface-container-highest text-on-surface-variant text-label-caps px-2 py-0.5 rounded border border-outline-variant">Draft Simulation</span>
+</div>
+<p class="text-body-sm text-on-surface-variant">Modeling multi-unit reallocation for high-priority global orders. Base data: <span class="font-mono-data">2023-10-24 08:00</span></p>
+</div>
+<div class="flex items-center gap-2">
+<button class="bg-white border border-outline px-3 h-8 text-label-caps text-primary hover:bg-surface-container-low transition-colors">Compare with Baseline</button>
+<button class="bg-primary text-on-primary px-3 h-8 text-label-caps hover:bg-primary-container transition-colors">Commit to Master Plan</button>
+<div class="w-[1px] h-6 bg-grid-border mx-1"></div>
+<button class="p-1 hover:bg-surface-container-high rounded transition-colors text-on-surface-variant"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</section>
+<!-- Multi-Unit Capacity Board -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-margin-md">
+<!-- Unit Card: Plant A -->
+<div class="bg-white border border-grid-border rounded-lg overflow-hidden flex flex-col">
+<div class="bg-surface-container-low px-4 py-2 flex justify-between items-center border-b border-grid-border">
+<span class="font-headline-md text-headline-md text-primary">Plant A (Central)</span>
+<span class="text-risk-action font-label-caps text-label-caps">Overloaded</span>
+</div>
+<div class="p-4 flex flex-col gap-4">
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">Avail. Minutes</p>
+<p class="font-mono-data text-headline-md">14,400</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">Current Load</p>
+<p class="font-mono-data text-headline-md text-risk-action">112%</p>
+</div>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-risk-action h-full w-[100%]"></div>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<span class="flex items-center gap-1 text-on-surface-variant"><span class="material-symbols-outlined text-[16px]">warning</span> Top Constraint</span>
+<span class="font-medium text-primary">Wet Wash @ 112%</span>
+</div>
+</div>
+<div class="mt-auto bg-surface-container-lowest border-t border-grid-border p-2 flex justify-center">
+<button class="flex items-center gap-2 text-primary font-label-caps text-label-caps hover:underline">
+<span class="material-symbols-outlined text-[18px]">trending_up</span> Transfer Out 
+                        </button>
+</div>
+</div>
+<!-- Unit Card: Plant B -->
+<div class="bg-white border border-grid-border rounded-lg overflow-hidden flex flex-col">
+<div class="bg-surface-container-low px-4 py-2 flex justify-between items-center border-b border-grid-border">
+<span class="font-headline-md text-headline-md text-primary">Plant B (Regional)</span>
+<span class="text-risk-on-track font-label-caps text-label-caps">Optimal</span>
+</div>
+<div class="p-4 flex flex-col gap-4">
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">Avail. Minutes</p>
+<p class="font-mono-data text-headline-md">12,200</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">Current Load</p>
+<p class="font-mono-data text-headline-md text-risk-on-track">84%</p>
+</div>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-risk-on-track h-full w-[84%]"></div>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<span class="flex items-center gap-1 text-on-surface-variant"><span class="material-symbols-outlined text-[16px]">check_circle</span> Top Constraint</span>
+<span class="font-medium text-primary">Packing @ 92%</span>
+</div>
+</div>
+<div class="mt-auto bg-surface-container-lowest border-t border-grid-border p-2 flex justify-center gap-4">
+<button class="flex items-center gap-2 text-primary font-label-caps text-label-caps hover:underline">
+<span class="material-symbols-outlined text-[18px]">south</span> Pull From A
+                        </button>
+<div class="w-[1px] h-4 bg-grid-border"></div>
+<button class="flex items-center gap-2 text-primary font-label-caps text-label-caps hover:underline">
+<span class="material-symbols-outlined text-[18px]">trending_up</span> Efficiency +2%
+                        </button>
+</div>
+</div>
+<!-- Unit Card: Unit 04 -->
+<div class="bg-white border border-grid-border rounded-lg overflow-hidden flex flex-col opacity-90 border-dashed">
+<div class="bg-surface-container-low px-4 py-2 flex justify-between items-center border-b border-grid-border">
+<span class="font-headline-md text-headline-md text-primary">Unit 04 (Specialist)</span>
+<span class="text-risk-watch font-label-caps text-label-caps">Underloaded</span>
+</div>
+<div class="p-4 flex flex-col gap-4">
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">Avail. Minutes</p>
+<p class="font-mono-data text-headline-md">8,000</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">Current Load</p>
+<p class="font-mono-data text-headline-md text-risk-watch">45%</p>
+</div>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-risk-watch h-full w-[45%]"></div>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<span class="flex items-center gap-1 text-on-surface-variant"><span class="material-symbols-outlined text-[16px]">info</span> Top Constraint</span>
+<span class="font-medium text-primary">Sewing @ 38%</span>
+</div>
+</div>
+<div class="mt-auto bg-surface-container-lowest border-t border-grid-border p-2 flex justify-center">
+<button class="bg-primary-container text-white px-3 h-7 text-label-caps flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">bolt</span> Run Balancer
+                        </button>
+</div>
+</div>
+</section>
+<!-- Inter-Unit Load Balancing List -->
+<section class="flex-1 min-h-[400px] flex flex-col bg-white border border-grid-border rounded-lg overflow-hidden">
+<div class="p-4 border-b border-grid-border flex justify-between items-center">
+<h2 class="font-headline-md text-headline-md text-primary">Transferable Order Backlog</h2>
+<div class="flex items-center gap-2">
+<button class="text-label-caps text-on-surface-variant hover:text-primary flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">filter_list</span> Filter</button>
+<button class="bg-primary h-8 px-4 text-white text-label-caps">Run Optimization Engine</button>
+</div>
+</div>
+<div class="flex-1 overflow-auto custom-scrollbar">
+<table class="w-full text-left border-collapse">
+<thead class="sticky top-0 bg-surface-container-low border-b border-grid-border z-10">
+<tr class="h-grid-row-height">
+<th class="px-4 text-label-caps text-on-surface-variant w-10"><input class="rounded-sm" type="checkbox"/></th>
+<th class="px-4 text-label-caps text-on-surface-variant">Order ID</th>
+<th class="px-4 text-label-caps text-on-surface-variant">Source Unit</th>
+<th class="px-4 text-label-caps text-on-surface-variant">Target Unit</th>
+<th class="px-4 text-label-caps text-on-surface-variant">Minutes</th>
+<th class="px-4 text-label-caps text-on-surface-variant">LT Impact</th>
+<th class="px-4 text-label-caps text-on-surface-variant">Logistics Cost</th>
+<th class="px-4 text-label-caps text-on-surface-variant text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-grid-border">
+<tr class="h-grid-row-height hover:bg-surface-container-high transition-colors group">
+<td class="px-4"><input class="rounded-sm" type="checkbox"/></td>
+<td class="px-4 font-mono-data text-data-tabular">#ORD-8829</td>
+<td class="px-4 text-body-sm">Plant A</td>
+<td class="px-4 text-body-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">arrow_forward</span>
+<select class="bg-transparent border-none text-body-sm p-0 focus:ring-0">
+<option>Plant B</option>
+<option>Unit 04</option>
+</select>
+</td>
+<td class="px-4 font-mono-data text-data-tabular">2,450</td>
+<td class="px-4 text-risk-on-track text-body-sm">-2 Days</td>
+<td class="px-4 text-body-sm">+$450.00</td>
+<td class="px-4 text-right">
+<button class="text-primary hover:underline text-label-caps">Apply</button>
+</td>
+</tr>
+<tr class="h-grid-row-height hover:bg-surface-container-high transition-colors">
+<td class="px-4"><input class="rounded-sm" type="checkbox"/></td>
+<td class="px-4 font-mono-data text-data-tabular">#ORD-9011</td>
+<td class="px-4 text-body-sm">Plant A</td>
+<td class="px-4 text-body-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">arrow_forward</span>
+<select class="bg-transparent border-none text-body-sm p-0 focus:ring-0">
+<option>Unit 04</option>
+<option>Plant B</option>
+</select>
+</td>
+<td class="px-4 font-mono-data text-data-tabular">5,100</td>
+<td class="px-4 text-risk-watch text-body-sm">+1 Day</td>
+<td class="px-4 text-body-sm">+$1,200.00</td>
+<td class="px-4 text-right">
+<button class="text-primary hover:underline text-label-caps">Apply</button>
+</td>
+</tr>
+<tr class="h-grid-row-height bg-surface-container hover:bg-surface-container-high transition-colors">
+<td class="px-4"><input checked="" class="rounded-sm" type="checkbox"/></td>
+<td class="px-4 font-mono-data text-data-tabular">#ORD-7762</td>
+<td class="px-4 text-body-sm">Plant A</td>
+<td class="px-4 text-body-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-primary">arrow_forward</span>
+<span class="text-body-sm font-medium">Plant B</span>
+</td>
+<td class="px-4 font-mono-data text-data-tabular">1,800</td>
+<td class="px-4 text-risk-on-track text-body-sm">-4 Days</td>
+<td class="px-4 text-body-sm">+$220.00</td>
+<td class="px-4 text-right">
+<button class="text-risk-action hover:underline text-label-caps">Revert</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<!-- Right Action Drawer (Impact Analysis) -->
+<aside class="w-drawer-width h-full bg-white border-l border-grid-border drawer-shadow flex flex-col z-30">
+<div class="p-margin-md border-b border-grid-border flex justify-between items-center">
+<h2 class="font-headline-md text-headline-md text-primary">Impact Analysis</h2>
+<button class="p-1 hover:bg-surface-container-low rounded-full transition-colors"><span class="material-symbols-outlined">close</span></button>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-margin-md space-y-6">
+<!-- Baseline vs Sim Metrics -->
+<div class="space-y-3">
+<p class="text-label-caps text-on-surface-variant uppercase tracking-widest">Global KPIs</p>
+<div class="grid grid-cols-2 gap-3">
+<div class="p-3 bg-surface-container-low rounded border border-grid-border">
+<p class="text-[10px] text-on-surface-variant font-bold">TOTAL OTIF RISK</p>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-mono-data text-headline-md text-risk-on-track">12%</span>
+<span class="text-[10px] text-risk-on-track">↓ 4%</span>
+</div>
+</div>
+<div class="p-3 bg-surface-container-low rounded border border-grid-border">
+<p class="text-[10px] text-on-surface-variant font-bold">AVG LEAD TIME</p>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-mono-data text-headline-md text-primary">18.4d</span>
+<span class="text-[10px] text-risk-on-track">↓ 0.2d</span>
+</div>
+</div>
+<div class="p-3 bg-surface-container-low rounded border border-grid-border">
+<p class="text-[10px] text-on-surface-variant font-bold">OVERTIME COST</p>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-mono-data text-headline-md text-risk-on-track">$4.2k</span>
+<span class="text-[10px] text-risk-on-track">↓ $8k</span>
+</div>
+</div>
+<div class="p-3 bg-surface-container-low rounded border border-grid-border">
+<p class="text-[10px] text-on-surface-variant font-bold">LOGISTICS COST</p>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-mono-data text-headline-md text-risk-action">+$2.8k</span>
+<span class="text-[10px] text-risk-action">↑ New</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottleneck Shift Visualization -->
+<div class="space-y-3">
+<p class="text-label-caps text-on-surface-variant uppercase tracking-widest">Constraint Migration</p>
+<div class="p-4 border border-grid-border rounded bg-surface-muted space-y-4">
+<div class="flex items-center justify-between text-body-sm">
+<div class="flex flex-col items-center">
+<div class="w-8 h-8 rounded-full bg-risk-action flex items-center justify-center text-white"><span class="material-symbols-outlined text-[18px]">wash</span></div>
+<span class="mt-1 font-bold">Plant A</span>
+<span class="text-[10px] text-on-surface-variant">Wet Wash</span>
+</div>
+<div class="flex-1 flex items-center px-4 relative">
+<div class="h-[1px] w-full bg-outline-variant border-dashed"></div>
+<span class="material-symbols-outlined absolute right-4 text-primary">arrow_forward</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-8 h-8 rounded-full bg-risk-watch flex items-center justify-center text-white"><span class="material-symbols-outlined text-[18px]">styler</span></div>
+<span class="mt-1 font-bold">Plant B</span>
+<span class="text-[10px] text-on-surface-variant">Finishing</span>
+</div>
+</div>
+<p class="text-[11px] text-on-surface-variant leading-relaxed">Simulation shifts bottleneck from **Wet Wash (Plant A)** to **Finishing (Plant B)**. Plant B utilization increases from 84% to 91%.</p>
+</div>
+</div>
+<!-- Logistics Impact Detail -->
+<div class="space-y-3">
+<p class="text-label-caps text-on-surface-variant uppercase tracking-widest">Transport Routes</p>
+<div class="space-y-2">
+<div class="flex justify-between items-center text-body-sm p-2 bg-surface-container-low border-l-2 border-primary">
+<div>
+<p class="font-medium">Route 01: Plant A → Plant B</p>
+<p class="text-[11px] text-on-surface-variant">3 Trucks, Est. 4h transit</p>
+</div>
+<span class="font-mono-data">$1,850</span>
+</div>
+<div class="flex justify-between items-center text-body-sm p-2 bg-surface-container-low border-l-2 border-primary">
+<div>
+<p class="font-medium">Route 04: Plant A → Unit 04</p>
+<p class="text-[11px] text-on-surface-variant">1 Sprinter, Est. 2h transit</p>
+</div>
+<span class="font-mono-data">$950</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Drawer Actions -->
+<div class="p-margin-md border-t border-grid-border bg-surface-container-lowest grid grid-cols-2 gap-2">
+<button class="bg-white border border-outline px-4 h-10 text-label-caps text-primary hover:bg-surface-container-low transition-colors">Export Impact Report</button>
+<button class="bg-primary text-on-primary px-4 h-10 text-label-caps hover:bg-primary-container transition-colors">Notify Unit Managers</button>
+</div>
+</aside>
+</main>
+<!-- Stale Data Indicator -->
+<footer class="fixed bottom-0 left-nav-collapsed-width right-0 bg-surface-container h-[24px] px-margin-md flex justify-between items-center border-t border-grid-border text-[10px] text-on-surface-variant z-20">
+<div class="flex gap-4">
+<span>UNITS MONITORED: 3/12</span>
+<span>SIMULATION ID: <span class="font-mono-data">SIM-2023-X-99</span></span>
+</div>
+<div class="flex gap-4">
+<span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-risk-on-track"></span> CLOUD SYNC: ACTIVE</span>
+<span class="font-mono-data uppercase">SYNC: 2m ago</span>
+</div>
+</footer>
+<!-- Floating Action Button (FAB) suppression check: FAB rendered only on main contextual dashboards -->
+<button class="fixed bottom-8 right-drawer-width mr-8 w-12 h-12 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center hover:scale-105 transition-transform z-50">
+<span class="material-symbols-outlined">add</span>
+</button>
+<script>
+        // Simple micro-interaction for drawer toggle or other UI elements could go here
+        console.log("OpsCockpit Workbench Initialized");
+    </script>
+</body></html>

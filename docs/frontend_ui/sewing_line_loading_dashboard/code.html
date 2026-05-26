@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ERATEX OPS CONTROL - Sewing Line Loading</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#fbf8fa",
+                        "primary-container": "#1e293b",
+                        "grid-border": "#E2E8F0",
+                        "inverse-surface": "#303032",
+                        "secondary": "#515f74",
+                        "risk-on-track": "#10B981",
+                        "tertiary-fixed-dim": "#ddc39d",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "on-surface": "#1b1b1d",
+                        "surface-dim": "#dcd9db",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-container": "#8590a6",
+                        "surface-tint": "#545f73",
+                        "inverse-on-surface": "#f3f0f2",
+                        "tertiary-fixed": "#fadfb8",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#c5c6cd",
+                        "outline": "#75777d",
+                        "surface-container-high": "#eae7e9",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#564427",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-container": "#57657b",
+                        "background": "#fbf8fa",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed": "#271902",
+                        "error": "#ba1a1a",
+                        "on-background": "#1b1b1d",
+                        "inverse-primary": "#bcc7de",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "on-tertiary": "#ffffff",
+                        "risk-watch": "#F59E0B",
+                        "tertiary": "#1e1200",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "on-primary-fixed": "#111c2d",
+                        "surface-container": "#f0edef",
+                        "surface": "#fbf8fa",
+                        "surface-container-low": "#f5f3f4",
+                        "on-tertiary-container": "#a38c6a",
+                        "surface-muted": "#F8FAFC",
+                        "secondary-fixed": "#d5e3fd",
+                        "primary": "#091426",
+                        "secondary-container": "#d5e3fd",
+                        "surface-container-highest": "#e4e2e3",
+                        "risk-critical": "#111827",
+                        "tertiary-container": "#35260c",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#d8e3fb",
+                        "on-surface-variant": "#45474c",
+                        "risk-action": "#EF4444",
+                        "primary-fixed-dim": "#bcc7de",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "surface-variant": "#e4e2e3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-md": "16px",
+                        "nav-collapsed-width": "64px",
+                        "nav-expanded-width": "240px",
+                        "gutter": "12px",
+                        "margin-sm": "8px",
+                        "grid-row-height": "32px",
+                        "drawer-width": "400px"
+                    },
+                    "fontFamily": {
+                        "mono-data": ["JetBrains Mono"],
+                        "label-caps": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            font-size: 18px;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .sticky-col-1 { position: sticky; left: 0; z-index: 20; background: inherit; }
+        .grid-compact-row { height: 32px; border-bottom: 1px solid #E2E8F0; transition: background 0.2s; }
+        .grid-compact-row:hover { background-color: #F1F5F9; }
+    </style>
+</head>
+<body class="bg-surface-muted text-on-surface font-body-md overflow-hidden">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full h-12 flex justify-between items-center px-gutter z-50 bg-surface dark:bg-primary border-b border-grid-border dark:border-outline-variant">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold tracking-tight text-primary dark:text-inverse-primary">ERATEX OPS CONTROL</span>
+<div class="h-6 w-px bg-grid-border mx-2"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Sewing Line Loading</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 px-3 py-1 bg-surface-container-low dark:bg-primary-container rounded border border-grid-border">
+<span class="material-symbols-outlined text-primary" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm w-48" placeholder="Search PO#, Style..." type="text"/>
+</div>
+<button class="flex items-center gap-1 font-label-caps text-label-caps text-primary">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+                This Week
+            </button>
+<div class="flex gap-2">
+<span class="material-symbols-outlined p-1 hover:bg-surface-container-low transition-colors cursor-pointer" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined p-1 hover:bg-surface-container-low transition-colors cursor-pointer" data-icon="sync">sync</span>
+</div>
+<div class="font-mono-data text-on-surface-variant text-[10px] uppercase">Sync: 2m ago</div>
+</div>
+</header>
+<!-- SideNavBar (Collapsed Rail) -->
+<aside class="fixed left-0 top-12 h-[calc(100vh-48px)] z-40 flex flex-col items-center py-4 bg-surface-muted dark:bg-inverse-surface border-r border-grid-border dark:border-outline w-nav-collapsed-width transition-all duration-300 ease-in-out">
+<div class="flex flex-col gap-6 w-full items-center">
+<div class="group relative flex flex-col items-center w-full">
+<div class="p-2 transition-all duration-300 ease-in-out cursor-pointer text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-secondary-container rounded">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+</div>
+</div>
+<div class="group relative flex flex-col items-center w-full">
+<div class="p-2 transition-all duration-300 ease-in-out cursor-pointer bg-primary-container dark:bg-primary-fixed-dim text-on-primary-container dark:text-on-primary-fixed border-r-4 border-primary">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+</div>
+</div>
+<div class="group relative flex flex-col items-center w-full">
+<div class="p-2 transition-all duration-300 ease-in-out cursor-pointer text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-secondary-container rounded">
+<span class="material-symbols-outlined" data-icon="factory">factory</span>
+</div>
+</div>
+<div class="group relative flex flex-col items-center w-full">
+<div class="p-2 transition-all duration-300 ease-in-out cursor-pointer text-on-surface-variant dark:text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-secondary-container rounded">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+</div>
+</div>
+</div>
+<div class="mt-auto w-full flex flex-col items-center gap-4">
+<div class="p-2 cursor-pointer text-on-surface-variant hover:bg-surface-container-high rounded">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</div>
+<div class="p-2 cursor-pointer text-on-surface-variant hover:bg-surface-container-high rounded mb-4">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-nav-collapsed-width mt-12 mr-[0px] md:mr-[400px] p-margin-md h-[calc(100vh-48px)] overflow-y-auto">
+<!-- Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-6">
+<div class="bg-white p-3 border border-grid-border shadow-sm flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-1">Active Lines</span>
+<span class="text-headline-lg font-headline-lg text-primary">24</span>
+</div>
+<div class="bg-white p-3 border-l-4 border-l-risk-action border border-grid-border shadow-sm flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-1">Overloaded Lines</span>
+<span class="text-headline-lg font-headline-lg text-risk-action">04</span>
+</div>
+<div class="bg-white p-3 border-l-4 border-l-risk-watch border border-grid-border shadow-sm flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-1">Underloaded</span>
+<span class="text-headline-lg font-headline-lg text-risk-watch">02</span>
+</div>
+<div class="bg-white p-3 border border-grid-border shadow-sm flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-1">Avg. Net-Good Eff.</span>
+<span class="text-headline-lg font-headline-lg text-risk-on-track">72%</span>
+</div>
+<div class="bg-primary text-white p-3 border border-grid-border shadow-sm flex flex-col">
+<span class="font-label-caps text-label-caps text-on-primary-container mb-1">Highest Risk</span>
+<span class="text-headline-md font-headline-md">Line 08</span>
+<span class="text-[10px] opacity-70">Efficiency: 48% | Defect: 4.2%</span>
+</div>
+</div>
+<!-- Data Grid Section -->
+<div class="bg-white border border-grid-border flex flex-col">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse min-w-[1200px]">
+<thead class="bg-surface-container font-label-caps text-label-caps text-on-surface-variant sticky top-0 z-30">
+<tr>
+<th class="px-3 h-8 border-r border-grid-border sticky-col-1 bg-surface-container">LINE ID</th>
+<th class="px-3 h-8 border-r border-grid-border">PO#</th>
+<th class="px-3 h-8 border-r border-grid-border">STYLE</th>
+<th class="px-3 h-8 border-r border-grid-border">SMV</th>
+<th class="px-3 h-8 border-r border-grid-border text-right">TARGET</th>
+<th class="px-3 h-8 border-r border-grid-border text-right">ACTUAL</th>
+<th class="px-3 h-8 border-r border-grid-border text-center">EFF %</th>
+<th class="px-3 h-8 border-r border-grid-border text-center">DEFECT %</th>
+<th class="px-3 h-8 border-r border-grid-border text-right">NET GOOD</th>
+<th class="px-3 h-8 border-r border-grid-border text-center">MANPOWER (P/A)</th>
+<th class="px-3 h-8 border-r border-grid-border text-center">STATUS</th>
+<th class="px-3 h-8 text-center">RISK</th>
+</tr>
+</thead>
+<tbody class="font-data-tabular text-data-tabular">
+<!-- Red Exception Row -->
+<tr class="grid-compact-row bg-error-container/10">
+<td class="px-3 font-bold sticky-col-1 border-r border-grid-border">LINE 08</td>
+<td class="px-3 border-r border-grid-border">PO-88291</td>
+<td class="px-3 border-r border-grid-border">DENIM-S24</td>
+<td class="px-3 border-r border-grid-border">22.4</td>
+<td class="px-3 border-r border-grid-border text-right">1,200</td>
+<td class="px-3 border-r border-grid-border text-right text-risk-action font-bold">580</td>
+<td class="px-3 border-r border-grid-border text-center">
+<div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden flex">
+<div class="bg-risk-action h-full" style="width: 48%"></div>
+</div>
+<span class="text-[10px] text-risk-action">48%</span>
+</td>
+<td class="px-3 border-r border-grid-border text-center text-risk-action font-bold">4.2%</td>
+<td class="px-3 border-r border-grid-border text-right">555</td>
+<td class="px-3 border-r border-grid-border text-center">32 / <span class="text-risk-action">29</span></td>
+<td class="px-3 border-r border-grid-border text-center">
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-risk-action/10 text-risk-action font-bold uppercase">Down</span>
+</td>
+<td class="px-3 text-center">
+<span class="material-symbols-outlined text-risk-action" data-icon="report" data-weight="fill">report</span>
+</td>
+</tr>
+<!-- Normal Row -->
+<tr class="grid-compact-row">
+<td class="px-3 font-bold sticky-col-1 border-r border-grid-border">LINE 01</td>
+<td class="px-3 border-r border-grid-border">PO-91023</td>
+<td class="px-3 border-r border-grid-border">SHIRT-A1</td>
+<td class="px-3 border-r border-grid-border">14.8</td>
+<td class="px-3 border-r border-grid-border text-right">2,000</td>
+<td class="px-3 border-r border-grid-border text-right">1,540</td>
+<td class="px-3 border-r border-grid-border text-center">
+<div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden flex">
+<div class="bg-risk-on-track h-full" style="width: 77%"></div>
+</div>
+<span class="text-[10px] text-risk-on-track">77%</span>
+</td>
+<td class="px-3 border-r border-grid-border text-center">1.2%</td>
+<td class="px-3 border-r border-grid-border text-right">1,521</td>
+<td class="px-3 border-r border-grid-border text-center">24 / 24</td>
+<td class="px-3 border-r border-grid-border text-center">
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-risk-on-track/10 text-risk-on-track font-bold uppercase">Running</span>
+</td>
+<td class="px-3 text-center">
+<span class="material-symbols-outlined text-risk-on-track" data-icon="check_circle">check_circle</span>
+</td>
+</tr>
+<!-- Warning Row -->
+<tr class="grid-compact-row bg-orange-50">
+<td class="px-3 font-bold sticky-col-1 border-r border-grid-border">LINE 14</td>
+<td class="px-3 border-r border-grid-border">PO-77312</td>
+<td class="px-3 border-r border-grid-border">JEAN-SLIM</td>
+<td class="px-3 border-r border-grid-border">26.1</td>
+<td class="px-3 border-r border-grid-border text-right">900</td>
+<td class="px-3 border-r border-grid-border text-right">580</td>
+<td class="px-3 border-r border-grid-border text-center">
+<div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden flex">
+<div class="bg-risk-watch h-full" style="width: 64%"></div>
+</div>
+<span class="text-[10px] text-risk-watch">64%</span>
+</td>
+<td class="px-3 border-r border-grid-border text-center">2.8%</td>
+<td class="px-3 border-r border-grid-border text-right">563</td>
+<td class="px-3 border-r border-grid-border text-center">38 / 38</td>
+<td class="px-3 border-r border-grid-border text-center">
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-risk-watch/10 text-risk-watch font-bold uppercase">Changeover</span>
+</td>
+<td class="px-3 text-center">
+<span class="material-symbols-outlined text-risk-watch" data-icon="warning">warning</span>
+</td>
+</tr>
+<!-- Repeat rows for density -->
+<script>
+                            const tbody = document.querySelector('tbody');
+                            const lines = ["02", "03", "04", "05", "06", "07", "09", "10", "11", "12", "13", "15", "16", "17"];
+                            lines.forEach(l => {
+                                const row = `
+                                    <tr class="grid-compact-row">
+                                        <td class="px-3 font-bold sticky-col-1 border-r border-grid-border">LINE ${l}</td>
+                                        <td class="px-3 border-r border-grid-border">PO-9200${l}</td>
+                                        <td class="px-3 border-r border-grid-border">SKU-MODERN</td>
+                                        <td class="px-3 border-r border-grid-border">18.5</td>
+                                        <td class="px-3 border-r border-grid-border text-right">1,500</td>
+                                        <td class="px-3 border-r border-grid-border text-right">1,120</td>
+                                        <td class="px-3 border-r border-grid-border text-center">
+                                            <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden flex">
+                                                <div class="bg-risk-on-track h-full" style="width: 74%"></div>
+                                            </div>
+                                            <span class="text-[10px]">74%</span>
+                                        </td>
+                                        <td class="px-3 border-r border-grid-border text-center">0.8%</td>
+                                        <td class="px-3 border-r border-grid-border text-right">1,111</td>
+                                        <td class="px-3 border-r border-grid-border text-center">28 / 28</td>
+                                        <td class="px-3 border-r border-grid-border text-center">
+                                            <span class="px-1.5 py-0.5 rounded text-[10px] bg-risk-on-track/10 text-risk-on-track font-bold uppercase">Running</span>
+                                        </td>
+                                        <td class="px-3 text-center">
+                                            <span class="material-symbols-outlined text-risk-on-track" data-icon="check_circle">check_circle</span>
+                                        </td>
+                                    </tr>
+                                `;
+                                tbody.insertAdjacentHTML('beforeend', row);
+                            });
+                        </script>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+<!-- Right-side Detail Drawer -->
+<aside class="fixed right-0 top-12 w-[400px] h-[calc(100vh-48px)] bg-white border-l border-grid-border shadow-xl z-50 overflow-y-auto transform transition-transform duration-300 translate-x-0" id="detailDrawer">
+<div class="p-margin-md flex flex-col h-full">
+<div class="flex justify-between items-center mb-6 border-b border-grid-border pb-4">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary">Line 08 - Analysis</h2>
+<p class="text-body-sm text-on-surface-variant">Unit 04 - Denim Production</p>
+</div>
+<button class="p-1 hover:bg-surface-container-low rounded-full" onclick="document.getElementById('detailDrawer').classList.toggle('translate-x-full')">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<!-- Hourly Output Chart (Simulated) -->
+<div class="mb-6">
+<span class="font-label-caps text-label-caps text-on-surface-variant block mb-3 uppercase">Today's Hourly Output</span>
+<div class="h-32 flex items-end gap-1.5 border-b border-grid-border pb-1">
+<div class="flex-1 bg-surface-container relative group">
+<div class="absolute bottom-0 w-full bg-risk-on-track opacity-30 h-[80%] rounded-t-sm" title="Plan: 150"></div>
+<div class="absolute bottom-0 w-full bg-risk-action h-[40%] rounded-t-sm" title="Actual: 60"></div>
+<span class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[9px] font-mono-data">08:00</span>
+</div>
+<div class="flex-1 bg-surface-container relative group">
+<div class="absolute bottom-0 w-full bg-risk-on-track opacity-30 h-[80%] rounded-t-sm"></div>
+<div class="absolute bottom-0 w-full bg-risk-action h-[35%] rounded-t-sm"></div>
+<span class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[9px] font-mono-data">09:00</span>
+</div>
+<div class="flex-1 bg-surface-container relative group">
+<div class="absolute bottom-0 w-full bg-risk-on-track opacity-30 h-[80%] rounded-t-sm"></div>
+<div class="absolute bottom-0 w-full bg-risk-action h-[50%] rounded-t-sm"></div>
+<span class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[9px] font-mono-data">10:00</span>
+</div>
+<div class="flex-1 bg-surface-container relative group">
+<div class="absolute bottom-0 w-full bg-risk-on-track opacity-30 h-[80%] rounded-t-sm"></div>
+<div class="absolute bottom-0 w-full bg-risk-action h-[42%] rounded-t-sm"></div>
+<span class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[9px] font-mono-data">11:00</span>
+</div>
+<div class="flex-1 bg-surface-container relative group">
+<div class="absolute bottom-0 w-full bg-risk-on-track opacity-30 h-[80%] rounded-t-sm"></div>
+<div class="absolute bottom-0 w-full bg-risk-action h-[10%] rounded-t-sm animate-pulse"></div>
+<span class="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[9px] font-mono-data">12:00</span>
+</div>
+</div>
+<div class="mt-6 flex justify-between text-[10px] text-on-surface-variant font-medium">
+<div class="flex items-center gap-1"><span class="w-2 h-2 bg-risk-on-track/30"></span> Target</div>
+<div class="flex items-center gap-1"><span class="w-2 h-2 bg-risk-action"></span> Actual</div>
+</div>
+</div>
+<!-- Bottleneck Section -->
+<div class="bg-surface-container-low p-3 rounded-lg border border-grid-border mb-6">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-risk-action" data-icon="alt_route">alt_route</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Bottleneck Operation</span>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<p class="font-bold text-body-md text-primary">Front Pocket Attachment</p>
+<p class="text-[11px] text-on-surface-variant">SMV: 1.4 | Station: #14</p>
+</div>
+<div class="text-right">
+<p class="font-mono-data text-risk-action font-bold">450 pcs</p>
+<p class="text-[10px] uppercase text-on-surface-variant">WIP Accumulation</p>
+</div>
+</div>
+</div>
+<!-- Operator Status -->
+<div class="mb-6">
+<span class="font-label-caps text-label-caps text-on-surface-variant block mb-3 uppercase">Operator Allocation</span>
+<div class="space-y-2">
+<div class="flex justify-between items-center p-2 border border-grid-border rounded">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center font-bold text-xs">A1</div>
+<div>
+<p class="text-body-sm font-bold">M. Rahim</p>
+<p class="text-[10px] text-on-surface-variant">Lead Sewer</p>
+</div>
+</div>
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-risk-on-track/10 text-risk-on-track font-bold uppercase">Present</span>
+</div>
+<div class="flex justify-between items-center p-2 border border-grid-border rounded bg-error-container/5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-error-container flex items-center justify-center font-bold text-xs text-on-error-container">S2</div>
+<div>
+<p class="text-body-sm font-bold">S. Khatun</p>
+<p class="text-[10px] text-on-surface-variant">Overlock Op</p>
+</div>
+</div>
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-error-container text-on-error-container font-bold uppercase">Absent</span>
+</div>
+<p class="text-[11px] text-risk-action italic">+ 2 more absences today. Total Capacity Impact: -18%</p>
+</div>
+</div>
+<!-- Recovery Action -->
+<div class="mt-auto border-t border-grid-border pt-4">
+<div class="bg-primary p-4 rounded-xl shadow-lg text-white">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-risk-watch" data-icon="rocket_launch" data-weight="fill">rocket_launch</span>
+<span class="font-label-caps text-label-caps text-on-primary-container">Recovery Action</span>
+</div>
+<p class="text-body-sm mb-4 leading-snug">Reassign <span class="font-bold underline decoration-risk-watch">2 floaters</span> from Line 22 (High Inventory) to Line 08 Station #14 and #15.</p>
+<button class="w-full bg-white text-primary font-bold py-2 px-4 rounded hover:bg-slate-100 transition-colors flex items-center justify-center gap-2">
+<span>Approve Reassignment</span>
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</aside>
+<script>
+        // Micro-interaction for row selection
+        document.querySelectorAll('.grid-compact-row').forEach(row => {
+            row.addEventListener('click', () => {
+                const drawer = document.getElementById('detailDrawer');
+                drawer.classList.remove('translate-x-full');
+                // Could update drawer content dynamically here
+            });
+        });
+
+        // Simulating high-stakes real-time updates
+        setInterval(() => {
+            const syncIcon = document.querySelector('[data-icon="sync"]');
+            syncIcon.classList.add('animate-spin');
+            setTimeout(() => {
+                syncIcon.classList.remove('animate-spin');
+            }, 1000);
+        }, 120000);
+    </script>
+</body></html>

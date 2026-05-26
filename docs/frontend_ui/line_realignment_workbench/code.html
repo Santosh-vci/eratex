@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OpsControl Cockpit - Line Realignment</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#303032",
+                        "surface": "#fbf8fa",
+                        "on-background": "#1b1b1d",
+                        "on-tertiary-fixed": "#271902",
+                        "on-surface-variant": "#45474c",
+                        "tertiary": "#1e1200",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#e4e2e3",
+                        "on-secondary-container": "#57657b",
+                        "inverse-primary": "#bcc7de",
+                        "risk-on-track": "#10B981",
+                        "surface-bright": "#fbf8fa",
+                        "inverse-on-surface": "#f3f0f2",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#ddc39d",
+                        "surface-muted": "#F8FAFC",
+                        "outline": "#75777d",
+                        "tertiary-container": "#35260c",
+                        "risk-critical": "#111827",
+                        "on-tertiary-container": "#a38c6a",
+                        "tertiary-fixed": "#fadfb8",
+                        "on-tertiary": "#ffffff",
+                        "background": "#fbf8fa",
+                        "outline-variant": "#c5c6cd",
+                        "surface-container-low": "#f5f3f4",
+                        "surface-container-high": "#eae7e9",
+                        "secondary": "#515f74",
+                        "primary-fixed": "#d8e3fb",
+                        "secondary-fixed": "#d5e3fd",
+                        "risk-action": "#EF4444",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#545f73",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "on-primary-fixed": "#111c2d",
+                        "primary": "#091426",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "on-tertiary-fixed-variant": "#564427",
+                        "surface-dim": "#dcd9db",
+                        "on-primary-container": "#8590a6",
+                        "grid-border": "#E2E8F0",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "primary-container": "#1e293b",
+                        "risk-watch": "#F59E0B",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "secondary-container": "#d5e3fd",
+                        "surface-container": "#f0edef",
+                        "on-surface": "#1b1b1d",
+                        "surface-variant": "#e4e2e3",
+                        "primary-fixed-dim": "#bcc7de"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "grid-row-height": "32px",
+                        "drawer-width": "400px",
+                        "margin-sm": "8px",
+                        "margin-md": "16px",
+                        "gutter": "12px",
+                        "nav-expanded-width": "240px",
+                        "nav-collapsed-width": "64px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "mono-data": ["JetBrains Mono"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "data-tabular": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            font-size: 20px;
+        }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+        .data-grid-row:hover { background-color: #F1F5F9; }
+        .sticky-col { position: sticky; left: 0; background-color: white; z-index: 10; border-right: 1px solid #E2E8F0; }
+    </style>
+</head>
+<body class="bg-surface-muted text-on-surface font-body-md overflow-hidden">
+<!-- Global Top Bar (Shared Component Strategy) -->
+<header class="fixed top-0 w-full h-12 bg-surface border-b border-grid-border flex justify-between items-center px-margin-md z-50">
+<div class="flex items-center gap-margin-md">
+<h1 class="font-headline-lg text-headline-lg font-bold text-primary">OpsControl Cockpit</h1>
+<nav class="hidden md:flex gap-4 items-center h-full ml-4">
+<a class="text-primary font-bold border-b-2 border-primary h-12 flex items-center px-2" href="#">Planning</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high px-2 h-12 flex items-center transition-colors" href="#">Shopfloor</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high px-2 h-12 flex items-center transition-colors" href="#">Inventory</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined text-on-surface-variant">search</span>
+<input class="bg-surface-container-low border-none h-8 text-body-sm px-8 rounded-lg w-64 focus:ring-2 focus:ring-primary" placeholder="Search orders..." type="text"/>
+</div>
+<div class="flex gap-2">
+<span class="material-symbols-outlined cursor-pointer text-on-surface-variant hover:text-primary">notifications</span>
+<span class="material-symbols-outlined cursor-pointer text-on-surface-variant hover:text-primary">sync</span>
+<span class="material-symbols-outlined cursor-pointer text-on-surface-variant hover:text-primary">account_circle</span>
+</div>
+</div>
+</header>
+<!-- Side Navigation (Shared Component Strategy) -->
+<aside class="fixed left-0 top-12 bottom-0 w-nav-collapsed-width bg-primary flex flex-col items-center py-4 z-40">
+<div class="flex flex-col gap-4">
+<div class="w-10 h-10 flex items-center justify-center rounded-lg text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant/20 cursor-pointer">
+<span class="material-symbols-outlined">assignment</span>
+</div>
+<div class="w-10 h-10 flex items-center justify-center rounded-lg bg-on-primary-container text-on-primary shadow-sm cursor-pointer">
+<span class="material-symbols-outlined">event_note</span>
+</div>
+<div class="w-10 h-10 flex items-center justify-center rounded-lg text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant/20 cursor-pointer">
+<span class="material-symbols-outlined">factory</span>
+</div>
+<div class="w-10 h-10 flex items-center justify-center rounded-lg text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant/20 cursor-pointer">
+<span class="material-symbols-outlined">inventory_2</span>
+</div>
+<div class="w-10 h-10 flex items-center justify-center rounded-lg text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant/20 cursor-pointer">
+<span class="material-symbols-outlined">analytics</span>
+</div>
+</div>
+<div class="mt-auto flex flex-col gap-4">
+<div class="w-10 h-10 flex items-center justify-center rounded-lg text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant/20 cursor-pointer">
+<span class="material-symbols-outlined">settings</span>
+</div>
+<div class="w-10 h-10 flex items-center justify-center rounded-lg text-on-primary-fixed-variant hover:bg-on-primary-fixed-variant/20 cursor-pointer">
+<span class="material-symbols-outlined">help_outline</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-nav-collapsed-width mt-12 p-gutter overflow-y-auto h-[calc(100vh-48px)]">
+<!-- Header Selector Section -->
+<div class="bg-white p-4 rounded-lg border border-grid-border flex flex-wrap gap-margin-md items-end mb-gutter">
+<div class="flex-1 min-w-[240px]">
+<label class="font-label-caps text-label-caps text-on-surface-variant block mb-1">CURRENT LINE</label>
+<div class="flex items-center gap-2 border border-outline-variant rounded p-1 h-10">
+<span class="material-symbols-outlined px-2 text-primary">factory</span>
+<select class="border-none focus:ring-0 w-full font-headline-md text-headline-md bg-transparent">
+<option>Line 05 - West Wing</option>
+<option>Line 02 - East Wing</option>
+<option>Line 11 - South Hub</option>
+</select>
+</div>
+</div>
+<div class="flex-1 min-w-[240px]">
+<label class="font-label-caps text-label-caps text-on-surface-variant block mb-1">TARGET STYLE (FROM OB)</label>
+<div class="flex items-center gap-2 border border-outline-variant rounded p-1 h-10">
+<span class="material-symbols-outlined px-2 text-risk-watch">checkroom</span>
+<select class="border-none focus:ring-0 w-full font-headline-md text-headline-md bg-transparent">
+<option>Slim-Fit Denim (ST-4429)</option>
+<option>Cargo Utility (ST-1102)</option>
+<option>Regular Chino (ST-0092)</option>
+</select>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="bg-primary text-on-primary px-4 h-10 rounded font-bold hover:bg-primary-container transition-all">
+                    Load Setup
+                </button>
+</div>
+</div>
+<!-- Metrics Dashboard -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-gutter">
+<div class="bg-white p-3 rounded-lg border border-grid-border">
+<div class="font-label-caps text-label-caps text-on-surface-variant">LINE BALANCE LOSS</div>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-headline-lg font-bold text-risk-action">12.4%</span>
+<span class="text-body-sm text-on-surface-variant">↑ 4.1%</span>
+</div>
+<div class="mt-2 h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="bg-risk-action h-full w-[80%]"></div>
+</div>
+</div>
+<div class="bg-white p-3 rounded-lg border border-grid-border">
+<div class="font-label-caps text-label-caps text-on-surface-variant">TARGET OUTPUT</div>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-headline-lg font-bold">142</span>
+<span class="text-body-sm text-on-surface-variant">Pcs/Hr</span>
+</div>
+<div class="text-mono-data text-risk-on-track flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> Optimized for skill
+                </div>
+</div>
+<div class="bg-white p-3 rounded-lg border border-grid-border">
+<div class="font-label-caps text-label-caps text-on-surface-variant">GAP: MACHINES</div>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-headline-lg font-bold text-risk-watch">-3</span>
+<span class="text-body-sm text-on-surface-variant">Required</span>
+</div>
+<div class="text-body-sm text-on-surface-variant mt-1">SNLS: -2, OVL: -1</div>
+</div>
+<div class="bg-white p-3 rounded-lg border border-grid-border">
+<div class="font-label-caps text-label-caps text-on-surface-variant">TRANSITION STATUS</div>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="px-2 py-0.5 rounded-full bg-risk-watch/10 text-risk-watch font-label-caps text-[10px]">IN-PROGRESS</span>
+</div>
+<div class="text-body-sm text-on-surface-variant mt-1">Est. Completion: 14:30</div>
+</div>
+</div>
+<!-- Comparison Workbench -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left: Current vs Required Grid -->
+<div class="lg:col-span-8 bg-white border border-grid-border rounded-lg flex flex-col">
+<div class="p-3 border-b border-grid-border flex justify-between items-center">
+<h3 class="font-headline-md text-headline-md">Realignment Workbench</h3>
+<div class="flex gap-2">
+<button class="px-3 h-8 border border-outline-variant text-body-sm rounded hover:bg-surface-container-low flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">filter_list</span> Filter
+                        </button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-muted border-b border-grid-border">
+<th class="p-2 font-label-caps text-label-caps text-on-surface-variant whitespace-nowrap">OP ID</th>
+<th class="p-2 font-label-caps text-label-caps text-on-surface-variant sticky-col">OPERATION NAME</th>
+<th class="p-2 font-label-caps text-label-caps text-on-surface-variant text-center">CURRENT MC</th>
+<th class="p-2 font-label-caps text-label-caps text-on-surface-variant text-center">REQUIRED MC</th>
+<th class="p-2 font-label-caps text-label-caps text-on-surface-variant text-center">GAP</th>
+<th class="p-2 font-label-caps text-label-caps text-on-surface-variant text-center">SKILL RANK</th>
+<th class="p-2 font-label-caps text-label-caps text-on-surface-variant">ACTION</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-grid-border">
+<tr class="data-grid-row h-grid-row-height">
+<td class="p-2 font-mono-data text-on-surface-variant">010</td>
+<td class="p-2 font-body-sm sticky-col">Front Pocket Attach</td>
+<td class="p-2 text-center text-body-sm">SNLS-M</td>
+<td class="p-2 text-center text-body-sm font-bold">SNLS-M</td>
+<td class="p-2 text-center"><span class="material-symbols-outlined text-risk-on-track">check_circle</span></td>
+<td class="p-2 text-center"><span class="px-2 py-0.5 rounded-full bg-green-50 text-risk-on-track font-label-caps text-[10px]">A+</span></td>
+<td class="p-2"><button class="text-primary hover:underline text-body-sm">Manage</button></td>
+</tr>
+<tr class="data-grid-row h-grid-row-height">
+<td class="p-2 font-mono-data text-on-surface-variant">025</td>
+<td class="p-2 font-body-sm sticky-col">Side Seam Close</td>
+<td class="p-2 text-center text-body-sm">OVL-5T</td>
+<td class="p-2 text-center text-body-sm font-bold">FOA-3T</td>
+<td class="p-2 text-center"><span class="material-symbols-outlined text-risk-action">error</span></td>
+<td class="p-2 text-center"><span class="px-2 py-0.5 rounded-full bg-yellow-50 text-risk-watch font-label-caps text-[10px]">B</span></td>
+<td class="p-2"><button class="text-risk-action hover:underline text-body-sm">Swap Machine</button></td>
+</tr>
+<tr class="data-grid-row h-grid-row-height">
+<td class="p-2 font-mono-data text-on-surface-variant">042</td>
+<td class="p-2 font-body-sm sticky-col">Waistband Join</td>
+<td class="p-2 text-center text-body-sm">—</td>
+<td class="p-2 text-center text-body-sm font-bold">WB-AUTO</td>
+<td class="p-2 text-center"><span class="material-symbols-outlined text-risk-action">add_circle</span></td>
+<td class="p-2 text-center"><span class="px-2 py-0.5 rounded-full bg-red-50 text-risk-action font-label-caps text-[10px]">CRITICAL</span></td>
+<td class="p-2"><button class="text-primary hover:underline text-body-sm">Add New</button></td>
+</tr>
+<tr class="data-grid-row h-grid-row-height">
+<td class="p-2 font-mono-data text-on-surface-variant">055</td>
+<td class="p-2 font-body-sm sticky-col">Back Yoke Join</td>
+<td class="p-2 text-center text-body-sm">SNLS-M</td>
+<td class="p-2 text-center text-body-sm font-bold">SNLS-M</td>
+<td class="p-2 text-center"><span class="material-symbols-outlined text-risk-on-track">check_circle</span></td>
+<td class="p-2 text-center"><span class="px-2 py-0.5 rounded-full bg-green-50 text-risk-on-track font-label-caps text-[10px]">A</span></td>
+<td class="p-2"><button class="text-primary hover:underline text-body-sm">Manage</button></td>
+</tr>
+<tr class="data-grid-row h-grid-row-height">
+<td class="p-2 font-mono-data text-on-surface-variant">068</td>
+<td class="p-2 font-body-sm sticky-col">Inseam Join</td>
+<td class="p-2 text-center text-body-sm">FOA-3T</td>
+<td class="p-2 text-center text-body-sm font-bold">FOA-3T</td>
+<td class="p-2 text-center"><span class="material-symbols-outlined text-risk-on-track">check_circle</span></td>
+<td class="p-2 text-center"><span class="px-2 py-0.5 rounded-full bg-yellow-50 text-risk-watch font-label-caps text-[10px]">B</span></td>
+<td class="p-2"><button class="text-primary hover:underline text-body-sm">Manage</button></td>
+</tr>
+<tr class="data-grid-row h-grid-row-height">
+<td class="p-2 font-mono-data text-on-surface-variant">082</td>
+<td class="p-2 font-body-sm sticky-col">Bartack Belt Loop</td>
+<td class="p-2 text-center text-body-sm">—</td>
+<td class="p-2 text-center text-body-sm font-bold">BT-AUTO</td>
+<td class="p-2 text-center"><span class="material-symbols-outlined text-risk-action">add_circle</span></td>
+<td class="p-2 text-center"><span class="px-2 py-0.5 rounded-full bg-green-50 text-risk-on-track font-label-caps text-[10px]">A</span></td>
+<td class="p-2"><button class="text-primary hover:underline text-body-sm">Add New</button></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="mt-auto p-4 border-t border-grid-border bg-surface-container-low flex justify-between">
+<span class="text-body-sm text-on-surface-variant">Showing 6 of 32 Operations</span>
+<div class="flex gap-2">
+<button class="bg-white border border-outline-variant px-3 py-1 text-body-sm rounded hover:bg-surface-muted">Previous</button>
+<button class="bg-white border border-outline-variant px-3 py-1 text-body-sm rounded hover:bg-surface-muted">Next</button>
+</div>
+</div>
+</div>
+<!-- Right: Action Drawer (Contextual Details) -->
+<div class="lg:col-span-4 flex flex-col gap-gutter">
+<!-- Action Cards -->
+<div class="bg-white p-4 rounded-lg border border-grid-border shadow-sm">
+<h3 class="font-headline-md text-headline-md mb-4">Immediate Actions</h3>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex flex-col items-center justify-center p-4 border border-outline-variant rounded hover:bg-surface-container-high transition-colors group">
+<span class="material-symbols-outlined text-primary mb-1 group-hover:scale-110 transition-transform">add_box</span>
+<span class="text-body-sm font-bold text-on-surface">Add Machine</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 border border-outline-variant rounded hover:bg-surface-container-high transition-colors group">
+<span class="material-symbols-outlined text-primary mb-1 group-hover:scale-110 transition-transform">person_add</span>
+<span class="text-body-sm font-bold text-on-surface">Move Operator</span>
+</button>
+</div>
+<button class="w-full mt-4 bg-primary text-on-primary font-bold py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-primary-container active:scale-[0.98] transition-all shadow-md">
+<span class="material-symbols-outlined">verified</span>
+                        APPROVE REALIGNMENT
+                    </button>
+</div>
+<!-- Skill & Readiness Checklist -->
+<div class="bg-white p-4 rounded-lg border border-grid-border">
+<h3 class="font-headline-md text-headline-md mb-3">Readiness Checklist</h3>
+<div class="space-y-3">
+<div class="flex items-start gap-3 p-2 bg-surface-muted rounded">
+<div class="mt-1">
+<input checked="" class="rounded text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+</div>
+<div class="flex-1">
+<div class="text-body-sm font-bold">Machine Setup: SNLS Group</div>
+<div class="text-mono-data text-on-surface-variant">Validated by J. Carter</div>
+</div>
+<span class="material-symbols-outlined text-risk-on-track">check_circle</span>
+</div>
+<div class="flex items-start gap-3 p-2 border border-grid-border rounded">
+<div class="mt-1">
+<input class="rounded text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+</div>
+<div class="flex-1">
+<div class="text-body-sm font-bold">Operator Re-Skilling</div>
+<div class="text-mono-data text-on-surface-variant">Req: Op-042, Op-082</div>
+<div class="mt-1 flex -space-x-2">
+<img class="w-6 h-6 rounded-full border-2 border-white" data-alt="Close-up professional headshot of a female manufacturing engineer with dark hair wearing a neutral colored workspace uniform, shot against a soft-focus industrial interior background with natural high-key lighting, maintaining a serious yet approachable corporate expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-fV_KdQu0ptGNJgwWEM1f8uYd9ShsW8i-jrLOpcCcQbpxdC-dLP2DmeEiORgXuslxEOCeq_kq1Jq-40QsQV-3tz5w-INfCX90NudrHWpRiXoPafUSCLSTPzksWSxoiHkImJj0ONqc8O3-RlD8uw-QkwwNOXQLCZJblKzJEqWS2oGqDWUfpHH7C_uPGEs7L4QbFHLFqneORKJ96SgvD6QR4-z7PMoxOGmC6q27T_ZTLPS_hjOhdNAsBqs0QjZ9QlYfQbYZmubwIYY"/>
+<img class="w-6 h-6 rounded-full border-2 border-white" data-alt="A professional male production supervisor in his late 40s wearing a crisp button-down shirt, captured in a modern office setting with bright, even lighting and a shallow depth of field, conveying a sense of authoritative expertise and corporate reliability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-fV_KdQu0ptGNJgwWEM1f8uYd9ShsW8i-jrLOpcCcQbpxdC-dLP2DmeEiORgXuslxEOCeq_kq1Jq-40QsQV-3tz5w-INfCX90NudrHWpRiXoPafUSCLSTPzksWSxoiHkImJj0ONqc8O3-RlD8uw-QkwwNOXQLCZJblKzJEqWS2oGqDWUfpHH7C_uPGEs7L4QbFHLFqneORKJ96SgvD6QR4-z7PMoxOGmC6q27T_ZTLPS_hjOhdNAsBqs0QjZ9QlYfQbYZmubwIYY"/>
+</div>
+</div>
+<span class="material-symbols-outlined text-risk-watch">pending</span>
+</div>
+<div class="flex items-start gap-3 p-2 border border-grid-border rounded">
+<div class="mt-1">
+<input class="rounded text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+</div>
+<div class="flex-1">
+<div class="text-body-sm font-bold">Material Availability</div>
+<div class="text-mono-data text-on-surface-variant text-risk-action">Shortage: Denim Thread v2</div>
+</div>
+<span class="material-symbols-outlined text-risk-action">error</span>
+</div>
+</div>
+</div>
+<!-- Impact Preview (Visual Simulation) -->
+<div class="bg-primary-container text-on-primary-fixed p-4 rounded-lg border border-primary relative overflow-hidden">
+<div class="absolute top-0 right-0 p-2 opacity-10">
+<span class="material-symbols-outlined !text-[80px]">trending_up</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-2">Simulated Impact</h3>
+<div class="flex items-end gap-4 mt-4 h-24">
+<div class="flex-1 flex flex-col items-center">
+<div class="w-8 bg-on-primary-container/30 h-16 rounded-t"></div>
+<span class="text-mono-data mt-1">CURR</span>
+</div>
+<div class="flex-1 flex flex-col items-center">
+<div class="w-8 bg-risk-on-track h-24 rounded-t"></div>
+<span class="text-mono-data mt-1">OB</span>
+</div>
+<div class="flex-1 flex flex-col items-center">
+<div class="w-8 bg-risk-watch h-20 rounded-t"></div>
+<span class="text-mono-data mt-1">PLAN</span>
+</div>
+</div>
+<p class="text-body-sm mt-3 opacity-80 italic">Realignment projected to reach 92% of theoretical OB efficiency within 4 shifts.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Meta-Data -->
+<footer class="fixed bottom-0 left-nav-collapsed-width right-0 h-8 bg-surface border-t border-grid-border px-margin-md flex items-center justify-between z-30">
+<div class="flex items-center gap-4">
+<span class="text-mono-data text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">update</span> SYNC: 2m ago
+            </span>
+<span class="text-mono-data text-on-surface-variant">ENFORCING GATE 4: REALIGNMENT</span>
+</div>
+<div class="text-mono-data text-on-surface-variant">
+            OP_VER: 3.2.1-RELEASE
+        </div>
+</footer>
+<script>
+        // Micro-interaction for Select styling
+        document.querySelectorAll('select').forEach(select => {
+            select.addEventListener('change', function() {
+                this.classList.add('bg-primary-fixed/20');
+                setTimeout(() => this.classList.remove('bg-primary-fixed/20'), 500);
+            });
+        });
+
+        // Simple row highlight toggle simulation
+        document.querySelectorAll('.data-grid-row').forEach(row => {
+            row.addEventListener('click', function() {
+                document.querySelectorAll('.data-grid-row').forEach(r => r.classList.remove('bg-surface-container-high'));
+                this.classList.add('bg-surface-container-high');
+            });
+        });
+    </script>
+</body></html>

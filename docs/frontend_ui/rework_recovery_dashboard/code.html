@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ERATEX REWORK &amp; RECOVERY DASHBOARD</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary": "#ffffff",
+                    "secondary-container": "#d5e3fd",
+                    "on-error-container": "#93000a",
+                    "risk-critical": "#111827",
+                    "grid-border": "#E2E8F0",
+                    "risk-watch": "#F59E0B",
+                    "risk-on-track": "#10B981",
+                    "primary-fixed-dim": "#bcc7de",
+                    "on-primary-container": "#8590a6",
+                    "on-error": "#ffffff",
+                    "on-background": "#1b1b1d",
+                    "surface-container-low": "#f5f3f4",
+                    "secondary-fixed-dim": "#b9c7e0",
+                    "surface-tint": "#545f73",
+                    "secondary-fixed": "#d5e3fd",
+                    "on-secondary-container": "#57657b",
+                    "surface-container": "#f0edef",
+                    "tertiary-fixed": "#fadfb8",
+                    "outline": "#75777d",
+                    "primary-fixed": "#d8e3fb",
+                    "surface-variant": "#e4e2e3",
+                    "on-secondary-fixed": "#0d1c2f",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-container": "#a38c6a",
+                    "on-primary": "#ffffff",
+                    "secondary": "#515f74",
+                    "error-container": "#ffdad6",
+                    "on-surface": "#1b1b1d",
+                    "tertiary": "#1e1200",
+                    "surface-dim": "#dcd9db",
+                    "on-tertiary-fixed": "#271902",
+                    "surface-bright": "#fbf8fa",
+                    "on-surface-variant": "#45474c",
+                    "background": "#fbf8fa",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed-variant": "#564427",
+                    "surface": "#fbf8fa",
+                    "surface-container-high": "#eae7e9",
+                    "primary-container": "#1e293b",
+                    "tertiary-container": "#35260c",
+                    "inverse-surface": "#303032",
+                    "on-primary-fixed": "#111c2d",
+                    "primary": "#091426",
+                    "tertiary-fixed-dim": "#ddc39d",
+                    "inverse-primary": "#bcc7de",
+                    "surface-muted": "#F8FAFC",
+                    "outline-variant": "#c5c6cd",
+                    "inverse-on-surface": "#f3f0f2",
+                    "surface-container-highest": "#e4e2e3",
+                    "risk-action": "#EF4444",
+                    "on-secondary-fixed-variant": "#3a485c",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-fixed-variant": "#3c475a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-sm": "8px",
+                    "gutter": "12px",
+                    "nav-collapsed-width": "64px",
+                    "nav-expanded-width": "240px",
+                    "drawer-width": "400px",
+                    "margin-md": "16px",
+                    "grid-row-height": "32px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "mono-data": ["JetBrains Mono"],
+                    "body-sm": ["Inter"],
+                    "data-tabular": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-caps": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            font-size: 20px;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        .grid-row-h { height: 32px; }
+        .drawer-transition { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="bg-surface-muted text-on-background font-body-md overflow-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 z-50 w-full h-12 bg-surface flex justify-between items-center px-margin-md border-b border-grid-border">
+<div class="flex items-center gap-6">
+<span class="text-headline-md font-headline-md font-bold tracking-tight text-primary">ERATEX REWORK &amp; RECOVERY</span>
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="bg-surface-container-low border-none h-8 pl-9 pr-4 text-body-sm w-64 focus:ring-2 focus:ring-primary-container" placeholder="Search orders..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-label-caps font-label-caps text-on-surface-variant font-mono-data">SYNC: 2m ago</span>
+<div class="flex items-center gap-2">
+<button class="p-1 hover:bg-surface-container-low transition-colors rounded">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-1 hover:bg-surface-container-low transition-colors rounded">
+<span class="material-symbols-outlined text-on-surface-variant">help</span>
+</button>
+<div class="w-8 h-8 rounded bg-primary-container flex items-center justify-center ml-2 overflow-hidden border border-outline-variant">
+<img alt="Operational Manager Profile" data-alt="A professional close-up of a high-resolution corporate profile avatar in a clean, minimalist style. The lighting is soft and industrial, consistent with a high-end manufacturing command center aesthetic. The background is a blurred industrial office space with neutral tones and blue accents from the corporate palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCm1dWFbM8rwr6Um4iSAm_W_kihKf_gA_8k4jWxnYG6GN3IM7POFCLjhb0UL0ohEQvdqqTX2eh0EI-rmgErTloBDLS105c3UkOV1eh7ZU6fe7RK-Cs4mc5pS7Pqhz3KSv0cujU-veJSRudnRvCBcHGHjNDTtlooopPDFslNmgrG0XfGF_mpSzcEJjf4IplSz7YB4hoLTzKbUStPhE6fJU7rbovT1oLde0fy3XiXKaa3tXBNQkltGWlHx-ALGBe7wIIqo_OLNbj_Pcc"/>
+</div>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-nav-collapsed-width hover:w-nav-expanded-width transition-all z-40 bg-surface-container border-r border-grid-border group overflow-hidden">
+<div class="flex flex-col h-full pt-16">
+<div class="px-4 mb-8 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+<p class="text-label-caps font-label-caps text-on-primary-container">OPERATIONS</p>
+<p class="text-body-sm font-body-sm font-bold text-primary">Rework Control</p>
+</div>
+<nav class="flex-1">
+<!-- Dashboard -->
+<a class="flex items-center h-12 w-full text-secondary hover:bg-surface-variant transition-colors" href="#">
+<div class="w-nav-collapsed-width flex-shrink-0 flex justify-center items-center">
+<span class="material-symbols-outlined">dashboard</span>
+</div>
+<span class="text-label-caps font-label-caps opacity-0 group-hover:opacity-100 transition-opacity">Dashboard</span>
+</a>
+<!-- Rework Loops (Active) -->
+<a class="flex items-center h-12 w-full bg-secondary-container text-primary font-bold border-l-4 border-primary" href="#">
+<div class="w-nav-collapsed-width flex-shrink-0 flex justify-center items-center">
+<span class="material-symbols-outlined">rebase</span>
+</div>
+<span class="text-label-caps font-label-caps opacity-0 group-hover:opacity-100 transition-opacity">Rework Loops</span>
+</a>
+<!-- Recovery Bench -->
+<a class="flex items-center h-12 w-full text-secondary hover:bg-surface-variant transition-colors" href="#">
+<div class="w-nav-collapsed-width flex-shrink-0 flex justify-center items-center">
+<span class="material-symbols-outlined">build_circle</span>
+</div>
+<span class="text-label-caps font-label-caps opacity-0 group-hover:opacity-100 transition-opacity">Recovery Bench</span>
+</a>
+<!-- OTIF Impact -->
+<a class="flex items-center h-12 w-full text-secondary hover:bg-surface-variant transition-colors" href="#">
+<div class="w-nav-collapsed-width flex-shrink-0 flex justify-center items-center">
+<span class="material-symbols-outlined">assignment_late</span>
+</div>
+<span class="text-label-caps font-label-caps opacity-0 group-hover:opacity-100 transition-opacity">OTIF Impact</span>
+</a>
+<!-- Configuration -->
+<a class="flex items-center h-12 w-full text-secondary hover:bg-surface-variant transition-colors" href="#">
+<div class="w-nav-collapsed-width flex-shrink-0 flex justify-center items-center">
+<span class="material-symbols-outlined">settings</span>
+</div>
+<span class="text-label-caps font-label-caps opacity-0 group-hover:opacity-100 transition-opacity">Configuration</span>
+</a>
+</nav>
+<div class="p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="w-full bg-primary-container text-white py-2 flex items-center justify-center gap-2 rounded">
+<span class="material-symbols-outlined text-sm">add</span>
+<span class="text-label-caps font-label-caps">Add Exception</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="pl-nav-collapsed-width pt-12 h-screen overflow-y-auto">
+<div class="max-w-[1600px] mx-auto p-margin-md">
+<!-- Header Section -->
+<div class="flex justify-between items-end mb-6">
+<div>
+<h1 class="text-headline-lg font-headline-lg text-primary">Rework &amp; Recovery Control</h1>
+<p class="text-body-md text-on-surface-variant">Manage quality loops and capacity recovery across all industrial workcenters.</p>
+</div>
+<div class="flex gap-2">
+<button class="h-8 px-4 flex items-center gap-2 border border-outline-variant bg-white text-body-sm font-medium hover:bg-surface-muted transition-colors rounded">
+<span class="material-symbols-outlined text-[18px]">file_download</span>
+                        Export Report
+                    </button>
+<button class="h-8 px-4 flex items-center gap-2 bg-primary text-white text-body-sm font-medium hover:bg-primary-container transition-colors rounded">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+                        Refresh Data
+                    </button>
+</div>
+</div>
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+<div class="bg-white p-4 border border-grid-border rounded shadow-sm">
+<p class="text-label-caps font-label-caps text-on-surface-variant mb-1 uppercase">Total Rework WIP</p>
+<div class="flex items-end justify-between">
+<span class="text-headline-lg font-mono-data">4,250 <span class="text-body-sm font-body-sm font-normal text-on-surface-variant">Pcs</span></span>
+<span class="text-error font-bold text-body-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">arrow_upward</span>
+                            12%
+                        </span>
+</div>
+</div>
+<div class="bg-white p-4 border border-grid-border rounded shadow-sm">
+<p class="text-label-caps font-label-caps text-on-surface-variant mb-1 uppercase">Avg. Recovery Lead Time</p>
+<div class="flex items-end justify-between">
+<span class="text-headline-lg font-mono-data">3.2 <span class="text-body-sm font-body-sm font-normal text-on-surface-variant">Days</span></span>
+<span class="text-risk-on-track font-bold text-body-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">arrow_downward</span>
+                            0.4d
+                        </span>
+</div>
+</div>
+<div class="bg-white p-4 border border-grid-border rounded shadow-sm">
+<p class="text-label-caps font-label-caps text-on-surface-variant mb-1 uppercase">Capacity Consumed</p>
+<div class="flex items-end justify-between gap-4">
+<div class="flex-1">
+<span class="text-headline-lg font-mono-data">18%</span>
+<div class="w-full bg-surface-container-low h-1 mt-2 rounded-full overflow-hidden">
+<div class="bg-risk-watch h-full" style="width: 18%"></div>
+</div>
+</div>
+<span class="text-body-sm text-on-surface-variant">Rewash/Sew</span>
+</div>
+</div>
+<div class="bg-white p-4 border border-grid-border rounded shadow-sm">
+<p class="text-label-caps font-label-caps text-on-surface-variant mb-1 uppercase">Critical Shipment Risk</p>
+<div class="flex items-end justify-between">
+<span class="text-headline-lg font-mono-data text-error">12 <span class="text-body-sm font-body-sm font-normal text-on-surface-variant">Orders</span></span>
+<button class="text-primary hover:underline text-label-caps">View All</button>
+</div>
+</div>
+</div>
+<!-- Filter Bar -->
+<div class="bg-white p-2 border border-grid-border rounded mb-4 flex flex-wrap items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="text-label-caps font-label-caps text-on-surface-variant">DEPARTMENT</span>
+<select class="h-8 bg-surface-muted border-none text-body-sm rounded focus:ring-1 focus:ring-primary">
+<option>All Departments</option>
+<option>Wash</option>
+<option>Sewing</option>
+<option>Finishing</option>
+</select>
+</div>
+<div class="h-6 border-r border-grid-border"></div>
+<div class="flex items-center gap-2">
+<span class="text-label-caps font-label-caps text-on-surface-variant">SEVERITY</span>
+<select class="h-8 bg-surface-muted border-none text-body-sm rounded focus:ring-1 focus:ring-primary">
+<option>All Risk Levels</option>
+<option>High (Red)</option>
+<option>Medium (Yellow)</option>
+<option>Low (Green)</option>
+</select>
+</div>
+<div class="h-6 border-r border-grid-border"></div>
+<div class="flex items-center gap-2">
+<span class="text-label-caps font-label-caps text-on-surface-variant">OWNER</span>
+<select class="h-8 bg-surface-muted border-none text-body-sm rounded focus:ring-1 focus:ring-primary">
+<option>All Owners</option>
+<option>Wash Manager</option>
+<option>Sewing Supv</option>
+</select>
+</div>
+<div class="ml-auto flex items-center gap-2">
+<span class="text-label-caps font-label-caps text-on-surface-variant">DATE RANGE</span>
+<input class="h-8 bg-surface-muted border-none text-body-sm rounded focus:ring-1 focus:ring-primary" type="date"/>
+</div>
+</div>
+<!-- Data Grid -->
+<div class="bg-white border border-grid-border rounded overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full border-collapse">
+<thead>
+<tr class="bg-surface-muted grid-row-h text-left">
+<th class="px-3 border-b border-r border-grid-border text-label-caps font-label-caps whitespace-nowrap">RECOVERY ID</th>
+<th class="px-3 border-b border-r border-grid-border text-label-caps font-label-caps whitespace-nowrap">ORDER ID</th>
+<th class="px-3 border-b border-r border-grid-border text-label-caps font-label-caps whitespace-nowrap">STYLE</th>
+<th class="px-3 border-b border-r border-grid-border text-label-caps font-label-caps whitespace-nowrap">REWORK TYPE</th>
+<th class="px-3 border-b border-r border-grid-border text-label-caps font-label-caps whitespace-nowrap text-right">QTY</th>
+<th class="px-3 border-b border-r border-grid-border text-label-caps font-label-caps whitespace-nowrap">STATUS</th>
+<th class="px-3 border-b border-r border-grid-border text-label-caps font-label-caps whitespace-nowrap">AGEING</th>
+<th class="px-3 border-b border-r border-grid-border text-label-caps font-label-caps whitespace-nowrap">OWNER</th>
+<th class="px-3 border-b border-grid-border text-label-caps font-label-caps whitespace-nowrap">RISK</th>
+</tr>
+</thead>
+<tbody class="text-data-tabular font-data-tabular">
+<tr class="grid-row-h hover:bg-surface-muted transition-colors cursor-pointer bg-secondary-container/10 border-l-4 border-l-primary" onclick="toggleDrawer()">
+<td class="px-3 border-b border-r border-grid-border font-mono-data">REC-102</td>
+<td class="px-3 border-b border-r border-grid-border font-mono-data">ORD-7291</td>
+<td class="px-3 border-b border-r border-grid-border">Denim Slim</td>
+<td class="px-3 border-b border-r border-grid-border">Shade Correction</td>
+<td class="px-3 border-b border-r border-grid-border text-right">800</td>
+<td class="px-3 border-b border-r border-grid-border">
+<span class="flex items-center gap-1.5 text-secondary">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                                        In-Process
+                                    </span>
+</td>
+<td class="px-3 border-b border-r border-grid-border">4 Days</td>
+<td class="px-3 border-b border-r border-grid-border">Wash Manager</td>
+<td class="px-3 border-b border-grid-border">
+<span class="bg-error/10 text-error px-2 py-0.5 text-label-caps rounded font-bold">CRITICAL</span>
+</td>
+</tr>
+<tr class="grid-row-h hover:bg-surface-muted transition-colors cursor-pointer">
+<td class="px-3 border-b border-r border-grid-border font-mono-data">REC-105</td>
+<td class="px-3 border-b border-r border-grid-border font-mono-data">ORD-6620</td>
+<td class="px-3 border-b border-r border-grid-border">Chino Straight</td>
+<td class="px-3 border-b border-r border-grid-border">Seam Repair</td>
+<td class="px-3 border-b border-r border-grid-border text-right">250</td>
+<td class="px-3 border-b border-r border-grid-border">
+<span class="flex items-center gap-1.5 text-outline">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                                        Pending
+                                    </span>
+</td>
+<td class="px-3 border-b border-r border-grid-border">1 Day</td>
+<td class="px-3 border-b border-r border-grid-border">Sewing Supv</td>
+<td class="px-3 border-b border-grid-border">
+<span class="bg-risk-on-track/10 text-risk-on-track px-2 py-0.5 text-label-caps rounded font-bold">LOW</span>
+</td>
+</tr>
+<tr class="grid-row-h hover:bg-surface-muted transition-colors cursor-pointer">
+<td class="px-3 border-b border-r border-grid-border font-mono-data">REC-108</td>
+<td class="px-3 border-b border-r border-grid-border font-mono-data">ORD-8812</td>
+<td class="px-3 border-b border-r border-grid-border">Knit Jogger</td>
+<td class="px-3 border-b border-r border-grid-border">Spotting</td>
+<td class="px-3 border-b border-r border-grid-border text-right">1,200</td>
+<td class="px-3 border-b border-r border-grid-border">
+<span class="flex items-center gap-1.5 text-risk-watch">
+<span class="w-1.5 h-1.5 rounded-full bg-risk-watch"></span>
+                                        QC Review
+                                    </span>
+</td>
+<td class="px-3 border-b border-r border-grid-border">2 Days</td>
+<td class="px-3 border-b border-r border-grid-border">Finishing Lead</td>
+<td class="px-3 border-b border-grid-border">
+<span class="bg-risk-watch/10 text-risk-watch px-2 py-0.5 text-label-caps rounded font-bold">WATCH</span>
+</td>
+</tr>
+<tr class="grid-row-h hover:bg-surface-muted transition-colors cursor-pointer">
+<td class="px-3 border-b border-r border-grid-border font-mono-data">REC-112</td>
+<td class="px-3 border-b border-r border-grid-border font-mono-data">ORD-9004</td>
+<td class="px-3 border-b border-r border-grid-border">Tee Essential</td>
+<td class="px-3 border-b border-r border-grid-border">Measurement</td>
+<td class="px-3 border-b border-r border-grid-border text-right">450</td>
+<td class="px-3 border-b border-r border-grid-border">
+<span class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-on-surface-variant"></span>
+                                        Closed
+                                    </span>
+</td>
+<td class="px-3 border-b border-r border-grid-border">6 Days</td>
+<td class="px-3 border-b border-r border-grid-border">QC Auditor</td>
+<td class="px-3 border-b border-grid-border">
+<span class="bg-on-surface-variant/10 text-on-surface-variant px-2 py-0.5 text-label-caps rounded font-bold">NONE</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-3 py-2 flex justify-between items-center bg-surface-muted border-t border-grid-border">
+<span class="text-body-sm text-on-surface-variant">Showing 4 of 12 active exceptions</span>
+<div class="flex gap-1">
+<button class="p-1 border border-outline-variant rounded hover:bg-white disabled:opacity-50" disabled=""><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="p-1 border border-outline-variant rounded hover:bg-white"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Right Action Drawer -->
+<div class="fixed top-12 right-0 bottom-0 w-drawer-width bg-white border-l border-grid-border shadow-xl z-50 translate-x-full drawer-transition flex flex-col" id="actionDrawer">
+<div class="p-4 border-b border-grid-border flex justify-between items-center bg-surface-muted">
+<div>
+<span class="text-label-caps font-label-caps text-on-surface-variant">SELECTED EXCEPTION</span>
+<h2 class="text-headline-md font-headline-md text-primary">REC-102 / ORD-7291</h2>
+</div>
+<button class="p-1 hover:bg-surface-variant rounded" onclick="toggleDrawer()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-6">
+<!-- Summary -->
+<section>
+<h3 class="text-label-caps font-label-caps text-on-surface-variant mb-2">EXCEPTION SUMMARY</h3>
+<div class="p-3 bg-error-container/20 border border-error/20 rounded">
+<p class="text-body-md text-on-surface leading-tight">800 Pcs of ORD-7291 failed Shade Check at Post-Wash QC. Variance exceeded 1.5 Delta-E threshold.</p>
+</div>
+</section>
+<!-- Recovery Plan -->
+<section>
+<h3 class="text-label-caps font-label-caps text-on-surface-variant mb-2">RECOVERY PLAN</h3>
+<ul class="space-y-3">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-risk-on-track mt-0.5">check_circle</span>
+<div>
+<p class="text-body-sm font-bold">Re-enzyme wash + softener adjust</p>
+<p class="text-body-sm text-on-surface-variant">Step 1: 30min enzyme stripping loop.</p>
+</div>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline mt-0.5">radio_button_unchecked</span>
+<div>
+<p class="text-body-sm font-bold">Drying &amp; Relaxation</p>
+<p class="text-body-sm text-on-surface-variant">Step 2: Low-heat tumble dry for 45min.</p>
+</div>
+</li>
+</ul>
+</section>
+<!-- Impact Preview -->
+<section>
+<h3 class="text-label-caps font-label-caps text-on-surface-variant mb-2">CAPACITY IMPACT</h3>
+<div class="p-3 border border-grid-border rounded bg-surface-muted">
+<div class="flex justify-between items-center mb-2">
+<span class="text-body-sm font-bold">Machine 04 (Wash-300kg)</span>
+<span class="text-error font-mono-data text-body-sm">4hrs reserved</span>
+</div>
+<div class="w-full bg-surface-container h-4 rounded-sm relative">
+<div class="absolute inset-y-0 left-0 bg-primary-container/20 w-[60%]"></div>
+<div class="absolute inset-y-0 left-[60%] bg-risk-action w-[15%]"></div>
+<p class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-primary">75% TOTAL LOAD</p>
+</div>
+</div>
+</section>
+<!-- Timeline -->
+<section>
+<h3 class="text-label-caps font-label-caps text-on-surface-variant mb-2">EVENT TIMELINE</h3>
+<div class="space-y-4 relative before:absolute before:left-[9px] before:top-2 before:bottom-2 before:w-[1px] before:bg-grid-border">
+<div class="relative pl-7">
+<span class="absolute left-0 top-1 w-[18px] h-[18px] bg-white border-2 border-primary rounded-full"></span>
+<p class="text-body-sm font-bold">Batch Created</p>
+<p class="text-[11px] text-on-surface-variant font-mono-data">Oct 25, 08:30 AM • Wash Manager</p>
+</div>
+<div class="relative pl-7">
+<span class="absolute left-0 top-1 w-[18px] h-[18px] bg-white border-2 border-grid-border rounded-full"></span>
+<p class="text-body-sm text-on-surface-variant">Detected / Failed QC</p>
+<p class="text-[11px] text-on-surface-variant font-mono-data">Oct 24, 04:15 PM • Post-Wash QC</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer Actions -->
+<div class="p-4 border-t border-grid-border bg-surface-muted grid grid-cols-2 gap-2">
+<button class="h-9 bg-white border border-outline-variant text-label-caps font-label-caps hover:bg-surface-variant transition-colors rounded">Update Status</button>
+<button class="h-9 bg-white border border-outline-variant text-label-caps font-label-caps hover:bg-surface-variant transition-colors rounded">Escalate</button>
+<button class="h-9 bg-risk-on-track text-white text-label-caps font-label-caps hover:bg-opacity-90 transition-colors rounded col-span-2">Mark QC Pass &amp; Close</button>
+</div>
+</div>
+<!-- Micro-interaction Scripts -->
+<script>
+        function toggleDrawer() {
+            const drawer = document.getElementById('actionDrawer');
+            drawer.classList.toggle('translate-x-full');
+        }
+
+        // Initialize with drawer open for REC-102
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(toggleDrawer, 500);
+        });
+    </script>
+</body></html>

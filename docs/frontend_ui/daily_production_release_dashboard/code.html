@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Daily Production Release - ERATEX OPS CONTROL</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-on-surface": "#f3f0f2",
+                    "error-container": "#ffdad6",
+                    "on-primary-container": "#8590a6",
+                    "on-tertiary-fixed": "#271902",
+                    "on-primary-fixed-variant": "#3c475a",
+                    "on-primary-fixed": "#111c2d",
+                    "on-tertiary-fixed-variant": "#564427",
+                    "error": "#ba1a1a",
+                    "primary-fixed-dim": "#bcc7de",
+                    "surface-container": "#f0edef",
+                    "primary-fixed": "#d8e3fb",
+                    "tertiary-container": "#35260c",
+                    "surface-container-lowest": "#ffffff",
+                    "surface": "#fbf8fa",
+                    "surface-container-highest": "#e4e2e3",
+                    "secondary-container": "#d5e3fd",
+                    "surface-container-high": "#eae7e9",
+                    "surface-bright": "#fbf8fa",
+                    "on-primary": "#ffffff",
+                    "grid-border": "#E2E8F0",
+                    "primary": "#091426",
+                    "primary-container": "#1e293b",
+                    "surface-muted": "#F8FAFC",
+                    "tertiary-fixed-dim": "#ddc39d",
+                    "secondary-fixed-dim": "#b9c7e0",
+                    "on-surface-variant": "#45474c",
+                    "on-secondary": "#ffffff",
+                    "background": "#fbf8fa",
+                    "risk-action": "#EF4444",
+                    "on-secondary-fixed": "#0d1c2f",
+                    "tertiary-fixed": "#fadfb8",
+                    "on-error": "#ffffff",
+                    "inverse-surface": "#303032",
+                    "secondary": "#515f74",
+                    "tertiary": "#1e1200",
+                    "surface-dim": "#dcd9db",
+                    "risk-critical": "#111827",
+                    "on-secondary-container": "#57657b",
+                    "risk-on-track": "#10B981",
+                    "outline": "#75777d",
+                    "risk-watch": "#F59E0B",
+                    "on-secondary-fixed-variant": "#3a485c",
+                    "on-tertiary": "#ffffff",
+                    "surface-tint": "#545f73",
+                    "surface-variant": "#e4e2e3",
+                    "secondary-fixed": "#d5e3fd",
+                    "inverse-primary": "#bcc7de",
+                    "surface-container-low": "#f5f3f4",
+                    "on-tertiary-container": "#a38c6a",
+                    "outline-variant": "#c5c6cd",
+                    "on-surface": "#1b1b1d",
+                    "on-background": "#1b1b1d",
+                    "on-error-container": "#93000a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "gutter": "12px",
+                    "nav-collapsed-width": "64px",
+                    "margin-sm": "8px",
+                    "margin-md": "16px",
+                    "drawer-width": "400px",
+                    "nav-expanded-width": "240px",
+                    "grid-row-height": "32px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Inter"],
+                    "data-tabular": ["Inter"],
+                    "body-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "mono-data": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-size: 20px;
+        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* High Density Table Styling */
+        .dense-grid th { height: 32px; }
+        .dense-grid td { height: 32px; }
+        
+        /* Drawer Transition */
+        #action-drawer {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="bg-surface-muted text-on-surface font-body-md overflow-hidden h-screen">
+<!-- Global Header (TopNavBar) -->
+<header class="fixed top-0 left-0 w-full h-12 flex justify-between items-center px-gutter z-50 bg-surface border-b border-grid-border">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold tracking-tight text-primary">ERATEX OPS CONTROL</span>
+<div class="h-6 w-px bg-outline-variant mx-2"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Daily Production Release</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-2 text-on-surface-variant">search</span>
+<input class="h-8 pl-9 pr-3 text-body-sm bg-surface-container-low border border-outline-variant rounded focus:ring-2 focus:ring-primary outline-none w-64" placeholder="Search orders, SKU, or works..." type="text"/>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-label-caps text-label-caps text-on-surface-variant">This Week</span>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-low transition-colors rounded">
+<span class="material-symbols-outlined text-primary" data-icon="sync">sync</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-low transition-colors rounded relative">
+<span class="material-symbols-outlined text-primary" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-risk-action rounded-full"></span>
+</button>
+</div>
+</div>
+</header>
+<!-- Sidebar (SideNavBar) -->
+<nav class="fixed left-0 top-12 h-[calc(100vh-48px)] z-40 flex flex-col items-center py-4 bg-surface-muted border-r border-grid-border w-nav-collapsed-width transition-all duration-300 ease-in-out group hover:w-nav-expanded-width">
+<div class="flex flex-col gap-2 w-full px-2">
+<!-- Active: Planning -->
+<a class="flex items-center gap-4 w-full h-10 px-3 rounded text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">Orders</span>
+</a>
+<a class="flex items-center gap-4 w-full h-10 px-3 rounded bg-primary-container text-on-primary-container border-r-4 border-primary" href="#">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">Planning</span>
+</a>
+<a class="flex items-center gap-4 w-full h-10 px-3 rounded text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="factory">factory</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">Workcenters</span>
+</a>
+<a class="flex items-center gap-4 w-full h-10 px-3 rounded text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">Analytics</span>
+</a>
+<a class="flex items-center gap-4 w-full h-10 px-3 rounded text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">Settings</span>
+</a>
+</div>
+<div class="mt-auto flex flex-col gap-2 w-full px-2 border-t border-grid-border pt-4">
+<div class="flex items-center gap-3 px-3 mb-4 opacity-0 group-hover:opacity-100 transition-opacity overflow-hidden whitespace-nowrap">
+<img class="w-8 h-8 rounded bg-surface-container-highest object-cover" data-alt="Close-up portrait of a professional male operations manager with a confident expression, wearing a neutral-toned industrial uniform. The lighting is crisp and cinematic, emphasizing a focused, authoritative persona in a modern corporate setting with cool blue and slate grey tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWq1ar6dqBGoQkhe9Vij_NnNk-igg0lz47j8Ko-TODYrK-WfQjUFZcNHiwVYDw05CX3uUnqsFSWtU3-b3_95oZIIhjBVFhlueqWnkMPANozjEI6BcXrRmS40v20eWEJ0Zk0uS9YGCwpOWdJUSIZqNWn4pA2QG0qrDjPNbYjH-gSsGFVnrVUhSDwlqyoUM8LHAdJIETNXbrLooi22q3WcRapNYbq1UHIrNWWNT2e0clFi3Soq-evCBd2WWDRU94L-fjfnmVN05qF0s"/>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-primary leading-none">Operations Manager</span>
+<span class="text-[10px] text-on-surface-variant">Unit 04 - Denim</span>
+</div>
+</div>
+<a class="flex items-center gap-4 w-full h-10 px-3 rounded text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-caps text-label-caps opacity-0 group-hover:opacity-100 transition-opacity">Support</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-nav-collapsed-width pt-12 p-gutter h-full flex flex-col gap-4">
+<!-- Status Cards -->
+<div class="grid grid-cols-4 gap-gutter">
+<div class="bg-surface border border-grid-border p-4 flex flex-col justify-between h-24">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Today's Planned Releases</span>
+<div class="flex items-baseline justify-between">
+<span class="font-headline-lg text-headline-lg text-primary">42</span>
+<span class="text-on-surface-variant text-[10px]">Total Orders</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[65%]"></div>
+</div>
+</div>
+<div class="bg-surface border border-grid-border p-4 flex flex-col justify-between h-24">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Ready to Release</span>
+<div class="flex items-baseline justify-between">
+<span class="font-headline-lg text-headline-lg text-risk-on-track">28</span>
+<span class="text-risk-on-track text-[10px]">Gate Approved</span>
+</div>
+<div class="w-full bg-risk-on-track/10 h-1 rounded-full overflow-hidden">
+<div class="bg-risk-on-track h-full w-[100%]"></div>
+</div>
+</div>
+<div class="bg-surface border border-grid-border p-4 flex flex-col justify-between h-24 border-l-4 border-l-risk-watch">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Blocked Releases</span>
+<div class="flex items-baseline justify-between">
+<span class="font-headline-lg text-headline-lg text-risk-watch">09</span>
+<span class="text-risk-watch text-[10px]">Exceptions</span>
+</div>
+<div class="w-full bg-risk-watch/10 h-1 rounded-full overflow-hidden">
+<div class="bg-risk-watch h-full w-[45%]"></div>
+</div>
+</div>
+<div class="bg-surface border border-grid-border p-4 flex flex-col justify-between h-24">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Released Today</span>
+<div class="flex items-baseline justify-between">
+<span class="font-headline-lg text-headline-lg text-primary">05</span>
+<span class="text-on-surface-variant text-[10px]">Active Production</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[12%]"></div>
+</div>
+</div>
+</div>
+<!-- Toolbar -->
+<div class="flex items-center justify-between">
+<div class="flex gap-2">
+<button class="bg-primary text-on-primary h-8 px-4 font-label-caps text-label-caps rounded flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">bolt</span>
+                    Bulk Release
+                </button>
+<button class="bg-surface border border-grid-border text-primary h-8 px-4 font-label-caps text-label-caps rounded flex items-center gap-2 hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[16px]">filter_list</span>
+                    Filter
+                </button>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-mono-data text-mono-data text-on-surface-variant">SYNC: 2m ago</span>
+<div class="flex gap-px bg-grid-border border border-grid-border rounded overflow-hidden">
+<button class="bg-surface-container-high p-1.5"><span class="material-symbols-outlined text-[18px]">view_list</span></button>
+<button class="bg-surface p-1.5 hover:bg-surface-container-low"><span class="material-symbols-outlined text-[18px]">calendar_view_day</span></button>
+</div>
+</div>
+</div>
+<!-- Data Grid -->
+<div class="flex-1 overflow-hidden border border-grid-border bg-surface flex flex-col">
+<div class="overflow-x-auto flex-1 scrollbar-hide">
+<table class="w-full text-left border-collapse dense-grid font-data-tabular text-data-tabular">
+<thead class="bg-surface sticky top-0 z-10">
+<tr class="border-b border-grid-border">
+<th class="px-3 border-r border-grid-border w-10 text-center"><input class="rounded-sm border-outline-variant focus:ring-primary text-primary" type="checkbox"/></th>
+<th class="px-3 border-r border-grid-border font-label-caps text-label-caps text-on-surface-variant bg-surface-container-low">Order ID</th>
+<th class="px-3 border-r border-grid-border font-label-caps text-label-caps text-on-surface-variant">Style / SKU</th>
+<th class="px-3 border-r border-grid-border font-label-caps text-label-caps text-on-surface-variant text-center">Release Type</th>
+<th class="px-3 border-r border-grid-border font-label-caps text-label-caps text-on-surface-variant text-center">Workcenter</th>
+<th class="px-3 border-r border-grid-border font-label-caps text-label-caps text-on-surface-variant text-center">Load Status</th>
+<th class="px-3 border-r border-grid-border font-label-caps text-label-caps text-on-surface-variant text-center">Gate Readiness</th>
+<th class="px-3 font-label-caps text-label-caps text-on-surface-variant text-center">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-grid-border">
+<!-- Row 1 (Critical Case) -->
+<tr class="hover:bg-surface-container-low cursor-pointer transition-colors" onclick="toggleDrawer('PO-8829-X')">
+<td class="px-3 border-r border-grid-border text-center"><input class="rounded-sm border-outline-variant text-primary" type="checkbox"/></td>
+<td class="px-3 border-r border-grid-border font-mono-data">PO-8829-X</td>
+<td class="px-3 border-r border-grid-border">Slim-Fit Indigo Denim (L-32)</td>
+<td class="px-3 border-r border-grid-border text-center">
+<span class="bg-primary/5 text-primary border border-primary/20 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase">Cutting</span>
+</td>
+<td class="px-3 border-r border-grid-border text-center">WC-404B</td>
+<td class="px-3 border-r border-grid-border">
+<div class="flex items-center gap-2">
+<div class="flex-1 bg-surface-container-highest h-2 rounded-full relative overflow-hidden">
+<div class="absolute inset-y-0 left-0 bg-risk-action w-[112%]"></div>
+</div>
+<span class="w-8 text-risk-action font-bold">112%</span>
+</div>
+</td>
+<td class="px-3 border-r border-grid-border text-center">
+<span class="bg-error-container text-error px-2 py-0.5 rounded-full text-[10px] font-bold">BLOCKED</span>
+</td>
+<td class="px-3 text-center">
+<button class="text-primary hover:underline font-bold">Review</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low cursor-pointer transition-colors" onclick="toggleDrawer('PO-8910-Y')">
+<td class="px-3 border-r border-grid-border text-center"><input class="rounded-sm border-outline-variant text-primary" type="checkbox"/></td>
+<td class="px-3 border-r border-grid-border font-mono-data">PO-8910-Y</td>
+<td class="px-3 border-r border-grid-border">Classic Trucker Jacket (Raw)</td>
+<td class="px-3 border-r border-grid-border text-center">
+<span class="bg-secondary/5 text-secondary border border-secondary/20 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase">Sewing</span>
+</td>
+<td class="px-3 border-r border-grid-border text-center">WC-211A</td>
+<td class="px-3 border-r border-grid-border">
+<div class="flex items-center gap-2">
+<div class="flex-1 bg-surface-container-highest h-2 rounded-full relative overflow-hidden">
+<div class="absolute inset-y-0 left-0 bg-risk-on-track w-[78%]"></div>
+</div>
+<span class="w-8 text-on-surface-variant">78%</span>
+</div>
+</td>
+<td class="px-3 border-r border-grid-border text-center">
+<span class="bg-risk-on-track/10 text-risk-on-track px-2 py-0.5 rounded-full text-[10px] font-bold">READY</span>
+</td>
+<td class="px-3 text-center">
+<button class="text-primary hover:underline font-bold">Release</button>
+</td>
+</tr>
+<!-- Repeat Rows... -->
+<script>
+                            const mockData = [
+                                { id: 'PO-8955-Z', style: 'High-Rise Flare (Ocean Blue)', type: 'Wash', wc: 'WSH-09', load: 85, color: 'risk-on-track', gate: 'READY' },
+                                { id: 'PO-9002-A', style: 'Premium Chino (Khaki)', type: 'Finishing', wc: 'FIN-12', load: 94, color: 'risk-watch', gate: 'PENDING' },
+                                { id: 'PO-9015-C', style: 'Modern Taper (Charcoal)', type: 'Cutting', wc: 'CUT-01', load: 102, color: 'risk-action', gate: 'BLOCKED' },
+                                { id: 'PO-9020-D', style: 'Workwear Vest (Duck)', type: 'Sewing', wc: 'WC-212B', load: 60, color: 'risk-on-track', gate: 'READY' },
+                                { id: 'PO-9031-F', style: 'Vintage Fit (Stone Wash)', type: 'Wash', wc: 'WSH-02', load: 45, color: 'risk-on-track', gate: 'READY' },
+                                { id: 'PO-9045-G', style: 'Slim Straight (Shadow)', type: 'Cutting', wc: 'CUT-04', load: 115, color: 'risk-action', gate: 'BLOCKED' },
+                                { id: 'PO-9050-H', style: 'Utility Cargo (Olive)', type: 'Finishing', wc: 'FIN-05', load: 92, color: 'risk-watch', gate: 'PENDING' },
+                                { id: 'PO-9062-J', style: 'Relaxed Taper (Mid Indigo)', type: 'Sewing', wc: 'WC-201A', load: 88, color: 'risk-on-track', gate: 'READY' }
+                            ];
+                            
+                            document.write(mockData.map(row => `
+                                <tr class="hover:bg-surface-container-low cursor-pointer transition-colors" onclick="toggleDrawer('${row.id}')">
+                                    <td class="px-3 border-r border-grid-border text-center"><input type="checkbox" class="rounded-sm border-outline-variant text-primary"></td>
+                                    <td class="px-3 border-r border-grid-border font-mono-data">${row.id}</td>
+                                    <td class="px-3 border-r border-grid-border">${row.style}</td>
+                                    <td class="px-3 border-r border-grid-border text-center">
+                                        <span class="bg-primary/5 text-primary border border-primary/20 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase">${row.type}</span>
+                                    </td>
+                                    <td class="px-3 border-r border-grid-border text-center">${row.wc}</td>
+                                    <td class="px-3 border-r border-grid-border">
+                                        <div class="flex items-center gap-2">
+                                            <div class="flex-1 bg-surface-container-highest h-2 rounded-full relative overflow-hidden">
+                                                <div class="absolute inset-y-0 left-0 bg-${row.color} w-[${row.load}%]"></div>
+                                            </div>
+                                            <span class="w-8 ${row.load > 100 ? 'text-risk-action font-bold' : 'text-on-surface-variant'}">${row.load}%</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-3 border-r border-grid-border text-center">
+                                        <span class="${row.gate === 'READY' ? 'bg-risk-on-track/10 text-risk-on-track' : row.gate === 'BLOCKED' ? 'bg-error-container text-error' : 'bg-risk-watch/10 text-risk-watch'} px-2 py-0.5 rounded-full text-[10px] font-bold">${row.gate}</span>
+                                    </td>
+                                    <td class="px-3 text-center">
+                                        <button class="text-primary hover:underline font-bold">${row.gate === 'READY' ? 'Release' : 'Review'}</button>
+                                    </td>
+                                </tr>
+                            `).join(''));
+                        </script>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+<!-- Action Drawer (Right-aligned surface) -->
+<aside class="fixed right-0 top-12 h-[calc(100vh-48px)] w-drawer-width bg-surface border-l border-grid-border z-30 translate-x-full shadow-2xl flex flex-col" id="action-drawer">
+<!-- Drawer Header -->
+<div class="p-4 border-b border-grid-border flex justify-between items-center">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary" id="drawer-title">PO-8829-X</h2>
+<p class="text-body-sm text-on-surface-variant">Slim-Fit Indigo Denim (L-32)</p>
+</div>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-low rounded" onclick="toggleDrawer()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Readiness Checklist -->
+<div class="flex-1 overflow-y-auto p-4 flex flex-col gap-6">
+<section>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">fact_check</span>
+                    Release Readiness Gate
+                </h3>
+<div class="space-y-3">
+<div class="flex items-center gap-3 p-2 bg-surface-container-low border border-grid-border rounded">
+<span class="material-symbols-outlined text-risk-on-track">check_circle</span>
+<div class="flex-1">
+<p class="text-body-sm font-semibold">Raw Material Staging</p>
+<p class="text-[11px] text-on-surface-variant">Confirmed by Warehouse A</p>
+</div>
+<img class="w-6 h-6 rounded-full border border-grid-border object-cover" data-alt="Close-up headshot of a professional warehouse supervisor wearing a high-visibility safety vest, looking focused and efficient in a modern, bright industrial logistics environment with soft, high-key lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMcaoZ-U3M3Y57rXuOmLnJyhQXUv1Tu1cqhtVRND7Zll1UqYQqTDtjImjDDDwjT3GMlZa4Era-DJPgIuJX9AImVULP1_AjA5HhOv8mH1y3hC57rCxbVzg_WsyWalH0HxfvaYtYyQDWKF-u654EkaBtMQlv0xYafF63ztNa6X81Dz19waucxo_7xd6qHKAYpGrwB1PzHfGvMXMeZvh8UQeFghK4askjMEoYC4pApFkAQ4ow8c8wupYe_TSkCL7ElT04jtfVhJ6FBps"/>
+</div>
+<div class="flex items-center gap-3 p-2 bg-error-container/20 border border-error/20 rounded">
+<span class="material-symbols-outlined text-error">error</span>
+<div class="flex-1">
+<p class="text-body-sm font-semibold">Workcenter Capacity</p>
+<p class="text-[11px] text-error">Overload: 112% at WC-404B</p>
+</div>
+<button class="text-error"><span class="material-symbols-outlined">notes</span></button>
+</div>
+<div class="flex items-center gap-3 p-2 bg-surface-container-low border border-grid-border rounded">
+<span class="material-symbols-outlined text-risk-on-track">check_circle</span>
+<div class="flex-1">
+<p class="text-body-sm font-semibold">Technical Specs (CAD)</p>
+<p class="text-[11px] text-on-surface-variant">Validated by Design Dept</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[14px]">link</span>
+</div>
+<div class="flex items-center gap-3 p-2 bg-risk-watch/5 border border-risk-watch/20 rounded">
+<span class="material-symbols-outlined text-risk-watch">warning</span>
+<div class="flex-1">
+<p class="text-body-sm font-semibold">Trims &amp; Labels</p>
+<p class="text-[11px] text-risk-watch">Awaiting PO Ref: #TR-990</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Impact Preview -->
+<section class="bg-surface-muted border border-grid-border p-3 rounded">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-3">Impact Preview: Rescheduling</h3>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-2 border-r border-grid-border">
+<p class="text-[10px] font-bold uppercase text-on-surface-variant mb-1">Current</p>
+<p class="text-body-sm font-mono-data">START: 14 OCT</p>
+<p class="text-body-sm font-mono-data">END: 18 OCT</p>
+<p class="text-error text-[10px] mt-1">Status: Bottleneck</p>
+</div>
+<div class="p-2">
+<p class="text-[10px] font-bold uppercase text-primary mb-1">Proposed</p>
+<p class="text-body-sm font-mono-data">START: 16 OCT</p>
+<p class="text-body-sm font-mono-data">END: 20 OCT</p>
+<p class="text-risk-on-track text-[10px] mt-1">Status: Optimized</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Drawer Footer -->
+<div class="p-4 border-t border-grid-border bg-surface flex flex-col gap-3">
+<div class="flex gap-2">
+<button class="flex-1 bg-primary text-on-primary h-10 font-label-caps text-label-caps rounded">Release to Floor</button>
+<button class="flex-1 border border-grid-border text-primary h-10 font-label-caps text-label-caps rounded">Add Exception</button>
+</div>
+<button class="w-full text-on-surface-variant font-label-caps text-[10px] hover:underline">View Detailed Order Lifecycle</button>
+</div>
+</aside>
+<script>
+        function toggleDrawer(id) {
+            const drawer = document.getElementById('action-drawer');
+            const title = document.getElementById('drawer-title');
+            
+            if (id) {
+                title.innerText = id;
+                drawer.classList.remove('translate-x-full');
+            } else {
+                drawer.classList.add('translate-x-full');
+            }
+        }
+
+        // Micro-interaction: Keyboard close
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') toggleDrawer();
+        });
+    </script>
+</body></html>

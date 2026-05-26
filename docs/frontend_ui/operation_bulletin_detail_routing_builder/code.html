@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OpsControl Cockpit - Sequence Workbench</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#303032",
+                        "surface": "#fbf8fa",
+                        "on-background": "#1b1b1d",
+                        "on-tertiary-fixed": "#271902",
+                        "on-surface-variant": "#45474c",
+                        "tertiary": "#1e1200",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#e4e2e3",
+                        "on-secondary-container": "#57657b",
+                        "inverse-primary": "#bcc7de",
+                        "risk-on-track": "#10B981",
+                        "surface-bright": "#fbf8fa",
+                        "inverse-on-surface": "#f3f0f2",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#ddc39d",
+                        "surface-muted": "#F8FAFC",
+                        "outline": "#75777d",
+                        "tertiary-container": "#35260c",
+                        "risk-critical": "#111827",
+                        "on-tertiary-container": "#a38c6a",
+                        "tertiary-fixed": "#fadfb8",
+                        "on-tertiary": "#ffffff",
+                        "background": "#fbf8fa",
+                        "outline-variant": "#c5c6cd",
+                        "surface-container-low": "#f5f3f4",
+                        "surface-container-high": "#eae7e9",
+                        "secondary": "#515f74",
+                        "primary-fixed": "#d8e3fb",
+                        "secondary-fixed": "#d5e3fd",
+                        "risk-action": "#EF4444",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#545f73",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "on-primary-fixed": "#111c2d",
+                        "primary": "#091426",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "on-tertiary-fixed-variant": "#564427",
+                        "surface-dim": "#dcd9db",
+                        "on-surface": "#1b1b1d",
+                        "surface-variant": "#e4e2e3",
+                        "primary-container": "#1e293b",
+                        "risk-watch": "#F59E0B",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "secondary-container": "#d5e3fd",
+                        "surface-container": "#f0edef",
+                        "on-surface": "#1b1b1d",
+                        "surface-variant": "#e4e2e3",
+                        "primary-fixed-dim": "#bcc7de",
+                        "grid-border": "#E2E8F0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "grid-row-height": "32px",
+                        "drawer-width": "400px",
+                        "margin-sm": "8px",
+                        "margin-md": "16px",
+                        "gutter": "12px",
+                        "nav-expanded-width": "240px",
+                        "nav-collapsed-width": "64px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "mono-data": ["JetBrains Mono"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "data-tabular": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "mono-data": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "data-tabular": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-size: 20px;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 2px;
+        }
+        .flow-node {
+            position: relative;
+            z-index: 10;
+        }
+        .flow-line {
+            position: absolute;
+            background: #CBD5E1;
+            z-index: 5;
+        }
+    </style>
+</head>
+<body class="bg-surface-muted text-on-surface font-body-md overflow-hidden">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full h-12 bg-surface border-b border-grid-border flex justify-between items-center px-margin-md z-50">
+<div class="flex items-center gap-margin-md">
+<span class="font-headline-lg text-headline-lg font-bold text-primary">OpsControl Cockpit</span>
+<div class="h-6 w-px bg-grid-border mx-2"></div>
+<span class="font-headline-md text-headline-md text-on-surface-variant">Routing: J-4452 Cargo Pant</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<input class="h-8 bg-surface-container-low border border-outline-variant px-3 py-1 text-body-sm w-64 focus:ring-2 focus:ring-primary focus:outline-none rounded" placeholder="Search operations..." type="text"/>
+</div>
+<div class="flex gap-2">
+<span class="material-symbols-outlined text-primary cursor-pointer hover:bg-surface-container-high p-1 rounded transition-colors" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-primary cursor-pointer hover:bg-surface-container-high p-1 rounded transition-colors" data-icon="sync">sync</span>
+<span class="material-symbols-outlined text-primary cursor-pointer hover:bg-surface-container-high p-1 rounded transition-colors" data-icon="account_circle">account_circle</span>
+</div>
+</div>
+</header>
+<!-- Side Navigation Bar (Collapsed) -->
+<nav class="fixed left-0 top-12 bottom-0 w-nav-collapsed-width bg-primary flex flex-col items-center py-4 z-40 transition-all duration-200 ease-in-out">
+<div class="flex flex-col gap-6 items-center w-full">
+<div class="p-2 hover:bg-on-primary-fixed-variant/20 rounded-lg cursor-pointer transition-colors" title="Orders">
+<span class="material-symbols-outlined text-on-primary-fixed-variant" data-icon="assignment">assignment</span>
+</div>
+<div class="p-2 bg-on-primary-container text-on-primary rounded-lg cursor-pointer" title="Planning">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+</div>
+<div class="p-2 hover:bg-on-primary-fixed-variant/20 rounded-lg cursor-pointer transition-colors" title="Shopfloor">
+<span class="material-symbols-outlined text-on-primary-fixed-variant" data-icon="factory">factory</span>
+</div>
+<div class="p-2 hover:bg-on-primary-fixed-variant/20 rounded-lg cursor-pointer transition-colors" title="Inventory">
+<span class="material-symbols-outlined text-on-primary-fixed-variant" data-icon="inventory_2">inventory_2</span>
+</div>
+<div class="p-2 hover:bg-on-primary-fixed-variant/20 rounded-lg cursor-pointer transition-colors" title="Analytics">
+<span class="material-symbols-outlined text-on-primary-fixed-variant" data-icon="analytics">analytics</span>
+</div>
+</div>
+<div class="mt-auto flex flex-col gap-4 items-center w-full">
+<div class="p-2 hover:bg-on-primary-fixed-variant/20 rounded-lg cursor-pointer transition-colors" title="Settings">
+<span class="material-symbols-outlined text-on-primary-fixed-variant" data-icon="settings">settings</span>
+</div>
+<div class="p-2 hover:bg-on-primary-fixed-variant/20 rounded-lg cursor-pointer transition-colors" title="Support">
+<span class="material-symbols-outlined text-on-primary-fixed-variant" data-icon="help_outline">help_outline</span>
+</div>
+</div>
+</nav>
+<!-- Main Workspace -->
+<main class="ml-nav-collapsed-width mt-12 pb-24 grid grid-cols-[300px_1fr] h-[calc(100vh-48px)] overflow-hidden">
+<!-- Left: Operations List -->
+<section class="bg-surface border-r border-grid-border flex flex-col h-full">
+<div class="p-3 border-b border-grid-border flex justify-between items-center bg-surface-container-low">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Sequence Operations</span>
+<span class="material-symbols-outlined text-primary cursor-pointer" data-icon="add_circle">add_circle</span>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar">
+<!-- Op Item -->
+<div class="flex flex-col gap-0">
+<div class="group px-4 py-2 border-b border-grid-border hover:bg-surface-container-high cursor-pointer transition-colors bg-surface-container-highest border-l-4 border-l-primary" data-op="Front Prep" onclick="selectOp(this)">
+<div class="flex justify-between items-start mb-1">
+<span class="font-mono-data text-mono-data text-primary">OP-1020</span>
+<span class="bg-risk-on-track/10 text-risk-on-track font-label-caps text-[9px] px-1 rounded">PREP</span>
+</div>
+<p class="font-headline-md text-headline-md mb-1">Front Prep</p>
+<div class="flex justify-between text-[11px] text-on-surface-variant">
+<span>SMV: 1.45</span>
+<span class="font-medium">SKILL: B</span>
+</div>
+</div>
+<div class="group px-4 py-2 border-b border-grid-border hover:bg-surface-container-high cursor-pointer transition-colors" data-op="Pocket Attach" onclick="selectOp(this)">
+<div class="flex justify-between items-start mb-1">
+<span class="font-mono-data text-mono-data text-primary">OP-1025</span>
+<span class="bg-risk-watch/10 text-risk-watch font-label-caps text-[9px] px-1 rounded">CRITICAL</span>
+</div>
+<p class="font-headline-md text-headline-md mb-1">Pocket Attach</p>
+<div class="flex justify-between text-[11px] text-on-surface-variant">
+<span>SMV: 2.10</span>
+<span class="font-medium">SKILL: A</span>
+</div>
+</div>
+<div class="group px-4 py-2 border-b border-grid-border hover:bg-surface-container-high cursor-pointer transition-colors" data-op="Panel Join" onclick="selectOp(this)">
+<div class="flex justify-between items-start mb-1">
+<span class="font-mono-data text-mono-data text-primary">OP-2010</span>
+<span class="bg-on-secondary-container/10 text-on-secondary-container font-label-caps text-[9px] px-1 rounded">ASSEMBLY</span>
+</div>
+<p class="font-headline-md text-headline-md mb-1">Panel Join</p>
+<div class="flex justify-between text-[11px] text-on-surface-variant">
+<span>SMV: 3.25</span>
+<span class="font-medium">SKILL: A</span>
+</div>
+</div>
+<div class="group px-4 py-2 border-b border-grid-border hover:bg-surface-container-high cursor-pointer transition-colors" data-op="Overlock Edges" onclick="selectOp(this)">
+<div class="flex justify-between items-start mb-1">
+<span class="font-mono-data text-mono-data text-primary">OP-1005</span>
+<span class="bg-risk-on-track/10 text-risk-on-track font-label-caps text-[9px] px-1 rounded">PREP</span>
+</div>
+<p class="font-headline-md text-headline-md mb-1">Overlock Edges</p>
+<div class="flex justify-between text-[11px] text-on-surface-variant">
+<span>SMV: 0.85</span>
+<span class="font-medium">SKILL: C</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Center: Visual Routing Flow -->
+<section class="relative bg-surface-muted flex flex-col overflow-hidden">
+<div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: radial-gradient(#1e293b 1px, transparent 0); background-size: 24px 24px;"></div>
+<div class="p-4 flex justify-between items-center z-10">
+<div class="flex gap-2">
+<button class="bg-surface border border-outline-variant px-3 py-1 text-body-sm font-medium hover:bg-surface-container-high transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="zoom_in">zoom_in</span> 100%
+                    </button>
+<button class="bg-surface border border-outline-variant px-3 py-1 text-body-sm font-medium hover:bg-surface-container-high transition-colors">Auto-Layout</button>
+</div>
+<div class="bg-surface-container px-3 py-1 rounded text-body-sm flex items-center gap-3">
+<div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-risk-on-track"></span> On Track</div>
+<div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-risk-watch"></span> Bottleneck</div>
+</div>
+</div>
+<!-- Flow Canvas (Simplified Representation) -->
+<div class="flex-1 relative overflow-auto p-12 custom-scrollbar">
+<div class="min-w-[1200px] min-h-[600px] relative">
+<!-- Parallel Tracks Start -->
+<div class="absolute left-0 top-1/4 w-40 h-20 border-2 border-primary bg-white flex flex-col items-center justify-center flow-node rounded shadow-sm">
+<span class="font-label-caps text-[9px] text-on-surface-variant uppercase">OP-1001</span>
+<span class="font-headline-md text-headline-md">Bundle Load</span>
+</div>
+<!-- Flow lines -->
+<div class="flow-line w-12 h-0.5 top-[calc(25%+40px)] left-40"></div>
+<!-- Split Point -->
+<div class="absolute left-[208px] top-[calc(25%+32px)] w-4 h-4 bg-primary rotate-45 z-20"></div>
+<!-- Top Track -->
+<div class="flow-line w-0.5 h-20 top-[calc(25%-64px)] left-[214px]"></div>
+<div class="flow-line w-24 h-0.5 top-[calc(25%-64px)] left-[214px]"></div>
+<div class="absolute left-[310px] top-[calc(25%-100px)] w-44 h-16 border-2 border-primary-container bg-white flex flex-col items-center justify-center flow-node rounded shadow-sm">
+<span class="font-label-caps text-[9px] text-on-surface-variant uppercase">OP-1005</span>
+<span class="font-headline-md text-headline-md">Overlock Edges</span>
+</div>
+<!-- Bottom Track -->
+<div class="flow-line w-0.5 h-20 top-[calc(25%+48px)] left-[214px]"></div>
+<div class="flow-line w-24 h-0.5 top-[calc(25%+128px)] left-[214px]"></div>
+<div class="absolute left-[310px] top-[calc(25%+96px)] w-44 h-16 border-2 border-primary-container bg-white flex flex-col items-center justify-center flow-node rounded shadow-sm outline outline-2 outline-primary shadow-lg ring-4 ring-primary/10">
+<span class="font-label-caps text-[9px] text-on-surface-variant uppercase">OP-1020</span>
+<span class="font-headline-md text-headline-md">Front Prep</span>
+<div class="absolute -top-2 -right-2 bg-primary text-white text-[10px] px-2 py-0.5 rounded-full">ACTIVE</div>
+</div>
+<!-- Merge Point -->
+<div class="flow-line w-24 h-0.5 top-[calc(25%-64px)] left-[486px]"></div>
+<div class="flow-line w-24 h-0.5 top-[calc(25%+128px)] left-[486px]"></div>
+<div class="flow-line w-0.5 h-[192px] top-[calc(25%-64px)] left-[582px]"></div>
+<div class="flow-line w-12 h-0.5 top-[calc(25%+32px)] left-[582px]"></div>
+<div class="absolute left-[630px] top-[calc(25%-8px)] w-48 h-20 border-2 border-risk-watch bg-white flex flex-col items-center justify-center flow-node rounded shadow-sm">
+<span class="font-label-caps text-[9px] text-on-surface-variant uppercase">OP-1025</span>
+<span class="font-headline-md text-headline-md">Pocket Attach</span>
+<span class="text-risk-watch text-[10px] font-bold mt-1">⚠️ BOTTLENECK</span>
+</div>
+<!-- Final Line -->
+<div class="flow-line w-16 h-0.5 top-[calc(25%+32px)] left-[822px]"></div>
+<div class="absolute left-[886px] top-[calc(25%-8px)] w-48 h-20 border-2 border-primary bg-white flex flex-col items-center justify-center flow-node rounded shadow-sm bg-surface-container-low">
+<span class="font-label-caps text-[9px] text-on-surface-variant uppercase">OP-QC</span>
+<span class="font-headline-md text-headline-md">Inline QC #1</span>
+<span class="material-symbols-outlined text-risk-on-track mt-1" data-icon="verified">verified</span>
+</div>
+</div>
+</div>
+<!-- Bottom: Real-time Summary -->
+<div class="absolute bottom-0 left-0 right-0 h-16 bg-primary text-on-primary flex items-center px-6 gap-12 z-30 shadow-[0_-4px_12px_rgba(0,0,0,0.1)]">
+<div class="flex flex-col">
+<span class="text-[10px] font-label-caps opacity-70 uppercase">Total Style SMV</span>
+<span class="font-mono-data text-xl leading-none">18.42 min</span>
+</div>
+<div class="h-8 w-px bg-on-primary/20"></div>
+<div class="flex gap-8">
+<div class="flex items-center gap-3">
+<div class="flex flex-col">
+<span class="text-[10px] font-label-caps opacity-70 uppercase">Lockstitch</span>
+<span class="font-mono-data text-lg leading-none">14</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex flex-col">
+<span class="text-[10px] font-label-caps opacity-70 uppercase">Overlock</span>
+<span class="font-mono-data text-lg leading-none">08</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex flex-col">
+<span class="text-[10px] font-label-caps opacity-70 uppercase">Bartack</span>
+<span class="font-mono-data text-lg leading-none">02</span>
+</div>
+</div>
+</div>
+<div class="ml-auto flex items-center gap-4">
+<span class="font-mono-data text-[11px] opacity-60">SYNC: 42s ago</span>
+<button class="bg-white text-primary px-4 py-2 font-headline-md text-headline-md rounded hover:bg-surface-container-high transition-all active:scale-95">Release Routing</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Right: Detail Drawer -->
+<aside class="fixed right-0 top-12 bottom-0 w-drawer-width bg-surface border-l border-grid-border z-40 flex flex-col shadow-2xl translate-x-0 transition-transform duration-300 ease-in-out">
+<div class="p-4 border-b border-grid-border flex justify-between items-center bg-surface-container-low">
+<h2 class="font-headline-lg text-headline-lg" id="detail-title">Operation Details</h2>
+<span class="material-symbols-outlined cursor-pointer hover:bg-surface-container-high p-1 rounded" data-icon="close">close</span>
+</div>
+<div class="flex-1 overflow-y-auto p-5 custom-scrollbar">
+<!-- Summary Card -->
+<div class="bg-surface-container-lowest border border-grid-border p-4 mb-6">
+<div class="flex justify-between items-center mb-4">
+<span class="font-mono-data text-sm text-primary" id="detail-code">OP-1020</span>
+<label class="flex items-center gap-2 cursor-pointer">
+<span class="text-body-sm font-medium">Critical</span>
+<input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/>
+</label>
+</div>
+<h3 class="font-headline-lg text-headline-lg mb-4" id="detail-name">Front Prep</h3>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-3 bg-surface-container-low border border-grid-border">
+<span class="block text-[10px] font-label-caps text-on-surface-variant uppercase mb-1">SMV / SAM</span>
+<span class="font-mono-data text-lg" id="detail-smv">1.450</span>
+</div>
+<div class="p-3 bg-surface-container-low border border-grid-border">
+<span class="block text-[10px] font-label-caps text-on-surface-variant uppercase mb-1">Target PPH</span>
+<span class="font-mono-data text-lg" id="detail-pph">41.4</span>
+</div>
+</div>
+</div>
+<!-- Parameters -->
+<div class="space-y-6">
+<div>
+<h4 class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-3 border-b border-grid-border pb-1">Technical Specifications</h4>
+<div class="space-y-4">
+<div>
+<label class="block text-body-sm font-medium mb-1.5">Machine Type</label>
+<select class="w-full h-9 bg-surface-container-lowest border border-outline-variant text-body-md px-2 focus:ring-2 focus:ring-primary focus:outline-none">
+<option>Single Needle Lockstitch (SNLS)</option>
+<option>4-Thread Overlock</option>
+<option>Electronic Bartack</option>
+<option>Feed-off-the-arm</option>
+</select>
+</div>
+<div>
+<label class="block text-body-sm font-medium mb-1.5">Attachment Required</label>
+<input class="w-full h-9 bg-surface-container-lowest border border-outline-variant text-body-md px-3 focus:ring-2 focus:ring-primary focus:outline-none" type="text" value="U-Folder 1/4 inch"/>
+</div>
+<div>
+<label class="block text-body-sm font-medium mb-1.5">Skill Level Requirement</label>
+<div class="flex gap-2">
+<button class="flex-1 py-1.5 border border-primary bg-primary text-white font-bold text-sm">A</button>
+<button class="flex-1 py-1.5 border border-outline-variant hover:bg-surface-container-high font-medium text-sm transition-colors">B</button>
+<button class="flex-1 py-1.5 border border-outline-variant hover:bg-surface-container-high font-medium text-sm transition-colors">C</button>
+</div>
+</div>
+</div>
+</div>
+<div>
+<h4 class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-3 border-b border-grid-border pb-1">Impact Preview</h4>
+<div class="bg-risk-watch/5 border border-risk-watch/30 p-3 rounded">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-risk-watch" data-icon="info">info</span>
+<span class="text-body-sm font-semibold">Sequence Impact</span>
+</div>
+<p class="text-body-sm text-on-surface-variant leading-relaxed">
+                            Rescheduling this operation affects <span class="font-bold">4 downstream steps</span>. Total line balancing impact: <span class="text-risk-action font-bold">+2.4% idle time</span> at Workcenter 04.
+                        </p>
+</div>
+</div>
+<div>
+<h4 class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-3 border-b border-grid-border pb-1">Operation Multimedia</h4>
+<div class="grid grid-cols-2 gap-2">
+<div class="aspect-video bg-surface-container-highest border border-grid-border flex items-center justify-center cursor-pointer group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:scale-110 transition-transform" data-icon="play_circle">play_circle</span>
+</div>
+<div class="aspect-video bg-surface-container-highest border border-grid-border flex items-center justify-center cursor-pointer group relative overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A detailed macro photograph showing industrial sewing machine precision parts, specifically the needle and presser foot assembly. The scene is lit with bright, cold studio lights, highlighting the metallic textures and mechanical complexity of high-end manufacturing equipment. The aesthetic is clean, technical, and professional, utilizing a neutral color palette of grays and sharp metallic highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-fV_KdQu0ptGNJgwWEM1f8uYd9ShsW8i-jrLOpcCcQbpxdC-dLP2DmeEiORgXuslxEOCeq_kq1Jq-40QsQV-3tz5w-INfCX90NudrHWpRiXoPafUSCLSTPzksWSxoiHkImJj0ONqc8O3-RlD8uw-QkwwNOXQLCZJblKzJEqWS2oGqDWUfpHH7C_uPGEs7L4QbFHLFqneORKJ96SgvD6QR4-z7PMoxOGmC6q27T_ZTLPS_hjOhdNAsBqs0QjZ9QlYfQbYZmubwIYY"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-white" data-icon="zoom_in">zoom_in</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-grid-border bg-surface flex gap-2">
+<button class="flex-1 bg-primary text-white py-2 font-headline-md text-headline-md rounded hover:opacity-90 transition-opacity">Save Changes</button>
+<button class="px-4 py-2 border border-outline-variant text-on-surface-variant font-headline-md text-headline-md rounded hover:bg-surface-container-high transition-colors">Clone</button>
+</div>
+</aside>
+<script>
+        function selectOp(element) {
+            // UI state for list selection
+            document.querySelectorAll('[data-op]').forEach(el => {
+                el.classList.remove('bg-surface-container-highest', 'border-l-4', 'border-l-primary');
+            });
+            element.classList.add('bg-surface-container-highest', 'border-l-4', 'border-l-primary');
+
+            // Update Drawer content (simulation)
+            const opName = element.getAttribute('data-op');
+            document.getElementById('detail-name').innerText = opName;
+            
+            // Randomize data for effect
+            const codes = {'Front Prep': 'OP-1020', 'Pocket Attach': 'OP-1025', 'Panel Join': 'OP-2010', 'Overlock Edges': 'OP-1005'};
+            const smvs = {'Front Prep': '1.450', 'Pocket Attach': '2.100', 'Panel Join': '3.250', 'Overlock Edges': '0.850'};
+            
+            document.getElementById('detail-code').innerText = codes[opName] || 'OP-XXXX';
+            document.getElementById('detail-smv').innerText = smvs[opName] || '0.000';
+            document.getElementById('detail-pph').innerText = ((60 / parseFloat(smvs[opName] || 1))).toFixed(1);
+        }
+
+        // Drawer toggle logic could go here
+    </script>
+</body></html>

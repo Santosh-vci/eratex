@@ -22,6 +22,12 @@ Start the full stack:
 docker compose up --build
 ```
 
+Seed Phase 1 platform data:
+
+```powershell
+docker compose exec backend python manage.py seed_phase1
+```
+
 Primary local endpoints:
 
 - Frontend: http://localhost:3000
@@ -54,3 +60,13 @@ npm run test:e2e
 
 This phase creates the repository foundation only. It intentionally excludes auth/RBAC, domain models, master data workflows, business dashboards, seed scenarios, and real PWA offline behavior.
 
+## Phase 1 Baseline
+
+Phase 1 adds session auth, RBAC, organization scope, audit events, shared frontend providers, role-aware navigation, and shared UI primitives.
+
+Local seeded users:
+
+| Username | Password | Role |
+|---|---|---|
+| `planner` | `planning123` | Production Planner |
+| `supervisor` | `planning123` | Line Supervisor |

@@ -49,4 +49,3 @@ def test_health_response_degraded_when_redis_is_unavailable(monkeypatch, client)
     assert payload["data"]["checks"]["database"]["status"] == "ok"
     assert payload["data"]["checks"]["redis"]["status"] == "error"
     assert payload["errors"][0]["code"] == "REDIS_UNAVAILABLE"
-

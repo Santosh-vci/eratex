@@ -22,17 +22,16 @@ export function PlaceholderPage({ eyebrow, title, description }: PlaceholderPage
             <dt className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
               Phase
             </dt>
-            <dd className="mt-1 text-sm font-semibold text-slate-900">Phase 0</dd>
+            <dd className="mt-1 text-sm font-semibold text-slate-900">Phase 1</dd>
           </div>
           <div className="border border-grid-border bg-surface-muted p-3">
             <dt className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
               Scope
             </dt>
-            <dd className="mt-1 text-sm font-semibold text-slate-900">No business module yet</dd>
+            <dd className="mt-1 text-sm font-semibold text-slate-900">Platform foundation only</dd>
           </div>
         </dl>
       </div>
     </section>
   );
 }
-

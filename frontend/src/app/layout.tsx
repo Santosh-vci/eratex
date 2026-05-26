@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 import { AppShell } from "@/components/AppShell";
+import { AppProviders } from "@/providers/AppProviders";
 
 import "./globals.css";
 
@@ -14,9 +15,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <AppShell>{children}</AppShell>
+        <AppProviders>
+          <AppShell>{children}</AppShell>
+        </AppProviders>
       </body>
     </html>
   );
 }
-

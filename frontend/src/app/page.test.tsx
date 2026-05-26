@@ -3,9 +3,9 @@ import { expect, test } from "vitest";
 
 import HomePage from "./page";
 
-test("renders the Phase 0 home route", () => {
+test("renders the Phase 1 home route", () => {
   render(<HomePage />);
 
   expect(screen.getByRole("heading", { name: "Eratex Operating Spine" })).toBeInTheDocument();
-  expect(screen.getByText("Phase 0")).toBeInTheDocument();
+  expect(screen.getByText("Phase 1")).toBeInTheDocument();
 });

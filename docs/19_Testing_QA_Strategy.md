@@ -1793,3 +1793,7 @@ The system is only ready when it can control the real manufacturing flow end-to-
 ```
 
 A strong automated and UAT-driven QA discipline is essential to ensure the platform can replace manual Excel dependency and become a trusted operating layer for Eratex.
+
+## Scheduling Behaviour Rulebook Alignment
+
+QA must prove "what happens when" behaviour: frozen-zone changes, firm-zone preview/approval, capacity loss/addition, order cancellation by stage, shipment pull-in, repeat wash beyond maximum cycles, external plan conflicts, RBAC denial, audit creation, and seed scenario validation for SCN-014 to SCN-023.

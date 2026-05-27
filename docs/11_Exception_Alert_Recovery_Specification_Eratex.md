@@ -2219,3 +2219,7 @@ analytics
 ```
 
 The success of the platform depends on making exceptions visible early, assigning clear accountability, and enabling fast recovery before shipment commitments are threatened.
+
+## Scheduling Behaviour Rulebook Alignment
+
+Boundary-case events are the upstream source for many future exceptions and recovery actions. Exception surfaces must show the linked boundary event, impact preview, owner, approval status, and applied recovery action instead of creating disconnected planner notes.

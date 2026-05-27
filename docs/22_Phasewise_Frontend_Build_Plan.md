@@ -3066,3 +3066,7 @@ The guiding implementation principle is:
 ```text
 Build every surface around operational action: status, risk, blocker, owner, and next step.
 ```
+
+## Scheduling Behaviour Rulebook Alignment
+
+Future frontend surfaces must show scheduling impact before action: WIP cancellation/reclassification impact, sewing capacity-loss impact, wash repeat-cycle impact, shipment pull-in impact, and external-plan validation conflicts. Prototype-first governance still applies; missing prototype coverage must be recorded before UI invention.

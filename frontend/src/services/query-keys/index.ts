@@ -29,4 +29,7 @@ export const queryKeys = {
   workcenterQueue: (workcenterId: string) => ["operations", "workcenter-queue", workcenterId] as const,
   currentConstraint: ["operations", "current-constraint"] as const,
   dailyReleases: ["operations", "daily-releases"] as const,
+  boundaryCases: ["rulebook", "boundary-cases"] as const,
+  boundaryImpactPreview: ["rulebook", "boundary-impact-preview"] as const,
+  externalPlans: ["rulebook", "external-plans"] as const,
 };

@@ -1,7 +1,19 @@
-from django.shortcuts import get_object_or_404
-from django.views.decorators.http import require_GET
+import json
 
+from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
+from django.views.decorators.http import require_GET, require_POST
+
+from apps.boundary_cases.api import serialize_boundary_event, serialize_impact
+from apps.boundary_cases.models import BoundaryCaseEvent, BoundaryEventType
+from apps.boundary_cases.services.preview import (
+    apply_boundary_action,
+    approve_boundary_action,
+    create_boundary_case,
+    preview_boundary_case,
+)
 from apps.common.decorators import api_permission_required
+from apps.common.errors import error_response
 from apps.common.responses import api_response
 from apps.organization.models import Workcenter
 from apps.workcenters.models import (
@@ -11,7 +23,11 @@ from apps.workcenters.models import (
     WorkcenterCapacityDay,
     WorkcenterLoadSnapshot,
 )
-from apps.workcenters.services.capacity import calculate_available_capacity
+from apps.workcenters.services.capacity import (
+    calculate_available_capacity,
+    get_capacity_definition,
+    serialize_capacity_definition,
+)
 from apps.workcenters.services.load import get_current_constraint, get_workcenter_queue
 
 
@@ -156,7 +172,77 @@ def current_constraint_view(_request):
     return api_response(serialize_workcenter_load(snapshot) if snapshot else None)
 
 
+@require_POST
+@api_permission_required("capacity.view_events")
+def capacity_event_impact_preview_view(request):
+    try:
+        payload = _payload(request)
+        impact = preview_boundary_case(
+            event_type=payload.get("eventType", BoundaryEventType.CAPACITY_LOSS),
+            payload=payload.get("payload", payload),
+            user=request.user,
+        )
+    except (json.JSONDecodeError, ValidationError) as error:
+        return api_response(
+            None,
+            errors=error_response("CAPACITY_EVENT_PREVIEW_INVALID", _error_message(error)),
+            status=400,
+        )
+    return api_response(serialize_impact(impact))
+
+
+@require_POST
+@api_permission_required("capacity.create_loss_event")
+def capacity_event_create_view(request):
+    try:
+        payload = _payload(request)
+        event_type = payload.get("eventType", BoundaryEventType.CAPACITY_LOSS)
+        event = create_boundary_case(
+            event_type=event_type,
+            payload=payload.get("payload", payload),
+            created_by=request.user,
+        )
+    except (json.JSONDecodeError, ValidationError) as error:
+        return api_response(
+            None,
+            errors=error_response("CAPACITY_EVENT_INVALID", _error_message(error)),
+            status=400,
+        )
+    return api_response(serialize_boundary_event(event), status=201)
+
+
+@require_POST
+@api_permission_required("capacity.approve_addition")
+def capacity_event_approve_view(request, event_id):
+    event = get_object_or_404(BoundaryCaseEvent, id=event_id)
+    try:
+        event = approve_boundary_action(event, approved_by=request.user)
+    except ValidationError as error:
+        return api_response(
+            None,
+            errors=error_response("CAPACITY_EVENT_APPROVAL_INVALID", _error_message(error)),
+            status=400,
+        )
+    return api_response(serialize_boundary_event(event))
+
+
+@require_POST
+@api_permission_required("capacity.apply_event")
+def capacity_event_apply_view(request, event_id):
+    event = get_object_or_404(BoundaryCaseEvent, id=event_id)
+    try:
+        event = apply_boundary_action(event, applied_by=request.user)
+    except ValidationError as error:
+        return api_response(
+            None,
+            errors=error_response("CAPACITY_EVENT_APPLY_INVALID", _error_message(error)),
+            status=400,
+        )
+    return api_response(serialize_boundary_event(event))
+
+
 def serialize_workcenter_load(snapshot: WorkcenterLoadSnapshot) -> dict[str, object]:
+    capacity_definition = get_capacity_definition(snapshot.workcenter)
     return {
         "id": str(snapshot.id),
         "workcenterId": str(snapshot.workcenter_id),
@@ -180,4 +266,15 @@ def serialize_workcenter_load(snapshot: WorkcenterLoadSnapshot) -> dict[str, obj
         if snapshot.top_affected_order
         else None,
         "suggestedAction": snapshot.suggested_action,
+        "capacityDefinition": serialize_capacity_definition(capacity_definition),
     }
+
+
+def _payload(request) -> dict:
+    return json.loads(request.body.decode("utf-8") or "{}")
+
+
+def _error_message(error: Exception) -> str:
+    if isinstance(error, ValidationError):
+        return "; ".join(error.messages)
+    return "Capacity event payload is invalid."

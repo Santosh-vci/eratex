@@ -795,6 +795,12 @@ async function setupEos04Mocks(page: Page) {
     lineCode: null,
     plannedStartDate: "2026-05-25",
     plannedEndDate: "2026-05-25",
+    plannedShift: "DAY",
+    planningZone: "FROZEN_ZONE",
+    productionStage: "CUTTING",
+    colorCode: "INDIGO",
+    shadeLot: "SHADE-A",
+    approvalRequired: true,
     plannedQuantity: 500,
     loadMinutes: 2500,
     sequenceNo: 10,
@@ -822,6 +828,20 @@ async function setupEos04Mocks(page: Page) {
       topAffectedOrderId: "order-ready-2",
       topAffectedOrderNo: "ORD-REL-001",
       suggestedAction: "Keep plan.",
+      capacityDefinition: {
+        id: "cap-def-cutting",
+        workcenterType: "CUTTING",
+        capacityUnit: "PIECES_PER_DAY",
+        planningBucket: "DAY",
+        primaryConstraintResource: "MANPOWER",
+        secondaryConstraintResource: "",
+        normalCapacityValue: 90000,
+        normalCapacityUnit: "minutes",
+        overtimeAllowed: true,
+        approvedOvertimeCapacityValue: 13500,
+        capacityLossTriggers: ["absenteeism"],
+        recoveryLevers: ["overtime"],
+      },
     },
     {
       id: "load-2",
@@ -842,6 +862,46 @@ async function setupEos04Mocks(page: Page) {
       topAffectedOrderId: "order-fab-1",
       topAffectedOrderNo: "ORD-FABQC-001",
       suggestedAction: "Approve capacity action before daily release.",
+      capacityDefinition: {
+        id: "cap-def-wash",
+        workcenterType: "WASH",
+        capacityUnit: "BATCH_MINUTES",
+        planningBucket: "DAY",
+        primaryConstraintResource: "WASHER_TIME",
+        secondaryConstraintResource: "",
+        normalCapacityValue: 25000,
+        normalCapacityUnit: "minutes",
+        overtimeAllowed: true,
+        approvedOvertimeCapacityValue: 3750,
+        capacityLossTriggers: ["machine_breakdown"],
+        recoveryLevers: ["overtime", "load_move"],
+      },
+    },
+  ];
+  const boundaryCases = [
+    {
+      id: "boundary-1",
+      eventNo: "SCN-017",
+      eventType: "CAPACITY_LOSS",
+      status: "IMPACT_PREVIEWED",
+      severity: "HIGH",
+      linkedOrderId: null,
+      linkedOrderNo: null,
+      linkedWorkcenterId: "wc-wash",
+      linkedWorkcenterCode: "WASH-WC",
+      eventStage: "WASH",
+      triggerSource: "SYSTEM",
+      affectedQuantity: 0,
+      affectedCapacityMinutes: -3600,
+      affectedShipmentDate: "2026-05-25",
+      riskBefore: "WATCH",
+      riskAfter: "ACTION",
+      recommendedAction: "Move load or approve recovery capacity",
+      approvalRequired: true,
+      ownerId: 1,
+      ownerName: "Production Planner",
+      metadata: {},
+      createdAt: "2026-05-27T00:00:00Z",
     },
   ];
   const validation = {
@@ -908,6 +968,21 @@ async function setupEos04Mocks(page: Page) {
           orderId: "order-ready-1",
           workcenterId: "wc-cutting",
           addedMinutes: 2500,
+          planningZone: "FROZEN_ZONE",
+          approvalRequired: true,
+          autoRescheduleAllowed: false,
+          schedulingGrain: {
+            orderId: "order-ready-1",
+            styleId: "style-1",
+            colorCode: "INDIGO",
+            shadeLot: "SHADE-A",
+            productionStage: "CUTTING",
+            workcenterId: "wc-cutting",
+            lineId: null,
+            plannedDate: "2026-05-25",
+            plannedShift: "DAY",
+            quantity: 500,
+          },
           before: {
             availableMinutes: 90000,
             plannedLoadMinutes: 2500,
@@ -923,6 +998,7 @@ async function setupEos04Mocks(page: Page) {
             riskStatus: "ON_TRACK",
           },
           writeApplied: false,
+          warnings: ["Approval required before applying changes in this planning zone."],
         },
         meta: {},
         errors: [],
@@ -949,6 +1025,37 @@ async function setupEos04Mocks(page: Page) {
       contentType: "application/json",
       headers: corsHeaders(route),
       body: JSON.stringify({ data: loads, meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/boundary-cases", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({ data: boundaryCases, meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/boundary-cases/impact-preview", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({
+        data: {
+          canApply: false,
+          approvalRequired: true,
+          riskBefore: "WATCH",
+          riskAfter: "ACTION",
+          affectedOrders: [],
+          affectedWorkcenters: [{ workcenterCode: "WASH-WC" }],
+          affectedWip: [],
+          affectedShipments: [],
+          capacityImpact: { minutesDelta: -3600 },
+          recommendedActions: ["Move load or approve recovery capacity"],
+          warnings: [],
+          blockingReasons: ["Capacity drops below active planned load."],
+        },
+        meta: {},
+        errors: [],
+      }),
     });
   });
   await page.route("**/api/v1/workcenters/current-constraint", async (route) => {

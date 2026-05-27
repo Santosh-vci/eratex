@@ -27,6 +27,22 @@ class OrderStatus(models.TextChoices):
     CLOSED = "CLOSED", "Closed"
 
 
+class OrderChangeType(models.TextChoices):
+    QUANTITY_CHANGE = "QUANTITY_CHANGE", "Quantity change"
+    DELIVERY_DATE_CHANGE = "DELIVERY_DATE_CHANGE", "Delivery date change"
+    CANCELLATION = "CANCELLATION", "Cancellation"
+    SHIPMENT_PULL_IN = "SHIPMENT_PULL_IN", "Shipment pull-in"
+
+
+class OrderChangeStatus(models.TextChoices):
+    PREVIEWED = "PREVIEWED", "Previewed"
+    REQUESTED = "REQUESTED", "Requested"
+    APPROVED = "APPROVED", "Approved"
+    APPLIED = "APPLIED", "Applied"
+    REJECTED = "REJECTED", "Rejected"
+    CANCELLED = "CANCELLED", "Cancelled"
+
+
 class ProductionOrder(BaseModel):
     order_no = models.CharField(max_length=120, unique=True)
     po_number = models.CharField(max_length=120, blank=True)
@@ -173,3 +189,52 @@ class OrderLifecycleEvent(BaseModel):
 
     def __str__(self) -> str:
         return f"{self.order.order_no}:{self.event_code}"
+
+
+class OrderChangeRequest(BaseModel):
+    request_no = models.CharField(max_length=120, unique=True)
+    order = models.ForeignKey(
+        ProductionOrder,
+        on_delete=models.CASCADE,
+        related_name="change_requests",
+    )
+    change_type = models.CharField(max_length=32, choices=OrderChangeType.choices)
+    status = models.CharField(
+        max_length=24,
+        choices=OrderChangeStatus.choices,
+        default=OrderChangeStatus.REQUESTED,
+    )
+    old_value_json = models.JSONField(default=dict, blank=True)
+    new_value_json = models.JSONField(default=dict, blank=True)
+    impact_preview = models.JSONField(default=dict, blank=True)
+    reason = models.TextField()
+    disposition_required = models.BooleanField(default=False)
+    requested_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="requested_order_changes",
+    )
+    approved_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="approved_order_changes",
+    )
+    approved_at = models.DateTimeField(null=True, blank=True)
+    applied_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="applied_order_changes",
+    )
+    applied_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at", "request_no"]
+
+    def __str__(self) -> str:
+        return self.request_no

@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     "apps.pcd_readiness",
     "apps.planning",
     "apps.production_release",
+    "apps.boundary_cases",
+    "apps.external_plans",
     "apps.demo_seed",
 ]
 

@@ -2,7 +2,21 @@ from django.contrib import admin
 from django.urls import path
 
 from apps.audit_governance.api import entity_audit_view
+from apps.boundary_cases.api import (
+    boundary_case_apply_action_view,
+    boundary_case_approve_action_view,
+    boundary_case_create_view,
+    boundary_case_detail_view,
+    boundary_case_impact_preview_view,
+    boundary_cases_view,
+)
 from apps.common.views import health_view, ping_view
+from apps.external_plans.api import (
+    external_plan_create_draft_view,
+    external_plan_import_view,
+    external_plan_reject_view,
+    external_plan_validation_view,
+)
 from apps.fabric_qc.api import (
     fabric_qc_inspection_create_view,
     fabric_qc_inspection_waive_view,
@@ -27,8 +41,18 @@ from apps.materials_procurement.api import (
     purchase_orders_view,
 )
 from apps.orders.api import (
+    order_cancel_impact_preview_view,
+    order_cancel_request_view,
+    order_change_apply_view,
+    order_change_approve_view,
+    order_change_impact_preview_view,
+    order_change_request_view,
     order_detail_view,
     order_release_to_cutting_view,
+    order_shipment_pull_in_apply_view,
+    order_shipment_pull_in_approve_view,
+    order_shipment_pull_in_preview_view,
+    order_shipment_pull_in_request_view,
     order_timeline_view,
     orders_collection_view,
 )
@@ -74,6 +98,10 @@ from apps.style_technical.api import (
 )
 from apps.workcenters.api import (
     capacity_days_view,
+    capacity_event_apply_view,
+    capacity_event_approve_view,
+    capacity_event_create_view,
+    capacity_event_impact_preview_view,
     current_constraint_view,
     line_capability_view,
     machine_types_view,
@@ -186,6 +214,22 @@ urlpatterns = [
         current_constraint_view,
         name="api-workcenters-current-constraint",
     ),
+    path(
+        "api/v1/capacity-events/impact-preview",
+        capacity_event_impact_preview_view,
+        name="api-capacity-event-impact-preview",
+    ),
+    path("api/v1/capacity-events", capacity_event_create_view, name="api-capacity-event-create"),
+    path(
+        "api/v1/capacity-events/<uuid:event_id>/approve",
+        capacity_event_approve_view,
+        name="api-capacity-event-approve",
+    ),
+    path(
+        "api/v1/capacity-events/<uuid:event_id>/apply",
+        capacity_event_apply_view,
+        name="api-capacity-event-apply",
+    ),
     path("api/v1/releases/daily", daily_releases_view, name="api-releases-daily"),
     path("api/v1/releases/validate", release_validate_view, name="api-releases-validate"),
     path("api/v1/releases", release_create_view, name="api-releases-create"),
@@ -206,6 +250,56 @@ urlpatterns = [
     ),
     path("api/v1/orders", orders_collection_view, name="api-orders"),
     path("api/v1/orders/<uuid:order_id>", order_detail_view, name="api-order-detail"),
+    path(
+        "api/v1/orders/<uuid:order_id>/change-impact-preview",
+        order_change_impact_preview_view,
+        name="api-order-change-impact-preview",
+    ),
+    path(
+        "api/v1/orders/<uuid:order_id>/change-request",
+        order_change_request_view,
+        name="api-order-change-request",
+    ),
+    path(
+        "api/v1/orders/<uuid:order_id>/cancel-impact-preview",
+        order_cancel_impact_preview_view,
+        name="api-order-cancel-impact-preview",
+    ),
+    path(
+        "api/v1/orders/<uuid:order_id>/cancel-request",
+        order_cancel_request_view,
+        name="api-order-cancel-request",
+    ),
+    path(
+        "api/v1/orders/change-requests/<uuid:request_id>/approve",
+        order_change_approve_view,
+        name="api-order-change-approve",
+    ),
+    path(
+        "api/v1/orders/change-requests/<uuid:request_id>/apply",
+        order_change_apply_view,
+        name="api-order-change-apply",
+    ),
+    path(
+        "api/v1/orders/<uuid:order_id>/shipment-pull-in-preview",
+        order_shipment_pull_in_preview_view,
+        name="api-shipment-pull-in-preview",
+    ),
+    path(
+        "api/v1/orders/<uuid:order_id>/shipment-pull-in-request",
+        order_shipment_pull_in_request_view,
+        name="api-shipment-pull-in-request",
+    ),
+    path(
+        "api/v1/orders/<uuid:order_id>/shipment-pull-in-approve",
+        order_shipment_pull_in_approve_view,
+        name="api-shipment-pull-in-approve",
+    ),
+    path(
+        "api/v1/orders/<uuid:order_id>/shipment-pull-in-apply",
+        order_shipment_pull_in_apply_view,
+        name="api-shipment-pull-in-apply",
+    ),
     path(
         "api/v1/orders/<uuid:order_id>/timeline",
         order_timeline_view,
@@ -278,6 +372,50 @@ urlpatterns = [
         "api/v1/pcd-readiness/<uuid:readiness_id>/approve-conditional-release",
         pcd_approve_conditional_release_view,
         name="api-pcd-approve-conditional",
+    ),
+    path("api/v1/boundary-cases", boundary_cases_view, name="api-boundary-cases"),
+    path(
+        "api/v1/boundary-cases/<uuid:event_id>",
+        boundary_case_detail_view,
+        name="api-boundary-case-detail",
+    ),
+    path(
+        "api/v1/boundary-cases/create",
+        boundary_case_create_view,
+        name="api-boundary-case-create",
+    ),
+    path(
+        "api/v1/boundary-cases/impact-preview",
+        boundary_case_impact_preview_view,
+        name="api-boundary-case-impact-preview",
+    ),
+    path(
+        "api/v1/boundary-cases/<uuid:event_id>/approve-action",
+        boundary_case_approve_action_view,
+        name="api-boundary-case-approve-action",
+    ),
+    path(
+        "api/v1/boundary-cases/<uuid:event_id>/apply-action",
+        boundary_case_apply_action_view,
+        name="api-boundary-case-apply-action",
+    ),
+    path(
+        "api/v1/external-plans/import", external_plan_import_view, name="api-external-plan-import"
+    ),
+    path(
+        "api/v1/external-plans/<uuid:import_id>/validation",
+        external_plan_validation_view,
+        name="api-external-plan-validation",
+    ),
+    path(
+        "api/v1/external-plans/<uuid:import_id>/create-draft-plan",
+        external_plan_create_draft_view,
+        name="api-external-plan-create-draft",
+    ),
+    path(
+        "api/v1/external-plans/<uuid:import_id>/reject",
+        external_plan_reject_view,
+        name="api-external-plan-reject",
     ),
     path(
         "api/v1/audit/<str:entity_type>/<str:entity_id>", entity_audit_view, name="api-audit-entity"

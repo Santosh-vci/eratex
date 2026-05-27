@@ -143,6 +143,13 @@ const navItems: NavItem[] = [
     group: "Operations",
     permission: "workcenters.view_load",
   },
+  {
+    href: "/boundary-cases",
+    label: "Boundary Cases",
+    icon: AlertTriangle,
+    group: "Operations",
+    permission: "boundary_case.view",
+  },
   { href: "/sewing/line-loading", label: "Sewing", icon: Shirt, group: "Execution", permission: "sewing.view" },
   { href: "/wash/planning", label: "Wash", icon: Waves, group: "Execution", permission: "wash.view" },
   { href: "/wip/pipeline", label: "WIP", icon: Boxes, group: "Execution", permission: "wip.view" },
@@ -177,6 +184,7 @@ const breadcrumbLabelOverrides: Record<string, string> = {
   "/technical/operator-skill-capacity": "Operator Skill Capacity",
   "/technical/styles": "Styles",
   "/workcenters/load": "Workcenter Load",
+  "/boundary-cases": "Boundary Cases",
 };
 
 function navLabel(item: NavItem) {

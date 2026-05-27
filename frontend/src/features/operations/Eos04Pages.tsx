@@ -22,6 +22,7 @@ import {
   requestReleaseOverride,
   validateRelease,
 } from "@/services/api/eos04";
+import { getBoundaryCases } from "@/services/api/scheduling-rulebook";
 import { queryKeys } from "@/services/query-keys";
 import { ConfirmDialog } from "@/shared/ConfirmDialog";
 import { DataGrid } from "@/shared/DataGrid";
@@ -41,6 +42,7 @@ import { EmptyState } from "@/shared/states/EmptyState";
 import { LoadingState } from "@/shared/states/LoadingState";
 import type {
   PlanImpactPreview,
+  BoundaryCaseEvent,
   PlanningHorizon,
   PlannedWorkItem,
   ProductionOrder,
@@ -172,6 +174,14 @@ function PlanImpactPanel({ impact }: { impact: PlanImpactPreview | null }) {
       </div>
       <div className="mt-4 space-y-2 text-sm text-slate-700">
         <div className="flex justify-between border-b border-grid-border py-1">
+          <span>Planning zone</span>
+          <span className="font-mono">{impact.planningZone.replaceAll("_", " ")}</span>
+        </div>
+        <div className="flex justify-between border-b border-grid-border py-1">
+          <span>Approval required</span>
+          <span className="font-mono">{impact.approvalRequired ? "YES" : "NO"}</span>
+        </div>
+        <div className="flex justify-between border-b border-grid-border py-1">
           <span>Added minutes</span>
           <span className="font-mono">{impact.addedMinutes}</span>
         </div>
@@ -189,6 +199,9 @@ function PlanImpactPanel({ impact }: { impact: PlanImpactPreview | null }) {
           Caution: Capacity risk changes after this placement.
         </p>
       ) : null}
+      {impact.warnings?.map((warning) => (
+        <p key={warning} className="mt-2 text-[12px] font-medium text-risk-action">{warning}</p>
+      ))}
     </div>
   );
 }
@@ -406,6 +419,9 @@ export function WeeklyPlanningWorkbenchPage() {
                         <p className="font-mono text-[10px] uppercase text-slate-500">{item.workcenterCode}</p>
                         <p className="truncate text-[13px] font-bold text-slate-950">{item.orderNo}</p>
                         <p className="text-[12px] text-slate-700">Qty: {item.plannedQuantity.toLocaleString()}</p>
+                        <p className="mt-1 font-mono text-[10px] uppercase text-slate-500">
+                          {item.planningZone.replaceAll("_", " ")} / {item.plannedShift}
+                        </p>
                       </button>
                     ))}
                     {isTarget || items.length === 0 ? (
@@ -484,6 +500,8 @@ export function WeeklyPlanningWorkbenchPage() {
               <div className="mt-2 space-y-1 text-sm text-slate-700">
                 <p>Style: {selectedItem.styleCode}</p>
                 <p>Lane: {formatShortDate(selectedItem.plannedStartDate)} / {selectedItem.workcenterCode}</p>
+                <p>Zone: {selectedItem.planningZone.replaceAll("_", " ")}</p>
+                <p>Grain: {selectedItem.productionStage} / {selectedItem.colorCode || "-"} / {selectedItem.shadeLot || "-"}</p>
                 <p>Load: {selectedItem.loadMinutes} minutes</p>
               </div>
               <ActionButton
@@ -634,6 +652,16 @@ function QueueDrawerContent({ load }: { load: WorkcenterLoad }) {
         <InfoRow label="Aggregate queue" value={`${load.queueQuantity.toLocaleString()} units active`} />
         <UtilizationBar value={load.utilizationPercent} />
       </section>
+      {load.capacityDefinition ? (
+        <section className="border border-grid-border p-3">
+          <SectionLabel>Capacity Definition</SectionLabel>
+          <InfoRow label="Unit" value={load.capacityDefinition.capacityUnit.replaceAll("_", " ")} />
+          <InfoRow label="Bucket" value={load.capacityDefinition.planningBucket} />
+          <InfoRow label="Primary constraint" value={load.capacityDefinition.primaryConstraintResource.replaceAll("_", " ")} />
+          <InfoRow label="Normal capacity" value={`${load.capacityDefinition.normalCapacityValue} ${load.capacityDefinition.normalCapacityUnit}`} />
+          <InfoRow label="Overtime" value={load.capacityDefinition.overtimeAllowed ? "Allowed" : "Not allowed"} />
+        </section>
+      ) : null}
       <section className="border border-risk-watch/30 bg-risk-watch/5 p-3">
         <SectionLabel>Impact Preview</SectionLabel>
         <InfoRow label="Original Queue Delay" value={`${Math.ceil((load.oldestQueueAgeHours ?? 0) / 24)} days`} />
@@ -699,11 +727,15 @@ export function DailyReleaseDashboardPage() {
   const queryClient = useQueryClient();
   const releases = useQuery({ queryKey: queryKeys.dailyReleases, queryFn: getDailyReleases });
   const weekly = useQuery({ queryKey: queryKeys.weeklyPlanning, queryFn: getWeeklyPlanning });
+  const boundaryCases = useQuery({ queryKey: queryKeys.boundaryCases, queryFn: getBoundaryCases });
   const [selected, setSelected] = useState<ProductionRelease | null>(null);
   const [validation, setValidation] = useState<ReleaseValidationResult | null>(null);
   const [confirmAction, setConfirmAction] = useState<"release" | "override" | "approve" | "complete" | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
   const rows = releases.data ?? [];
+  const unresolvedBoundaryCases = (boundaryCases.data ?? []).filter(
+    (event) => !["APPLIED", "RESOLVED", "CLOSED", "CANCELLED"].includes(event.status),
+  );
   const readyWorkItem = (weekly.data as WeeklyPlanningPayload | undefined)?.workItems.find(
     (item) => item.status === "RELEASE_READY",
   );
@@ -780,6 +812,7 @@ export function DailyReleaseDashboardPage() {
         <KpiTile label="Ready to Release" value={rows.filter((row) => row.status === "READY").length} risk="ON_TRACK" meta="Gate Approved" />
         <KpiTile label="Blocked Releases" value={rows.filter((row) => ["BLOCKED", "OVERRIDE_REQUESTED"].includes(row.status)).length} risk="WATCH" />
         <KpiTile label="Released Today" value={rows.filter((row) => ["RELEASED", "COMPLETED"].includes(row.status)).length} />
+        <KpiTile label="Open Boundary Cases" value={unresolvedBoundaryCases.length} risk={unresolvedBoundaryCases.length ? "ACTION" : "ON_TRACK"} />
       </KpiGrid>
       <div className="ops-grid-wrap max-h-[calc(100vh-340px)]">
         <table className="ops-grid min-w-[980px]">
@@ -837,6 +870,7 @@ export function DailyReleaseDashboardPage() {
               </div>
               <ReleaseValidationPanel validation={validation} />
             </section>
+            <ReleaseBoundaryCasePanel release={selected} events={unresolvedBoundaryCases} />
             <section className="border border-grid-border p-3">
               <SectionLabel>Impact Preview</SectionLabel>
               <InfoRow label="Workcenter" value={selected.workcenterCode} />
@@ -883,6 +917,39 @@ export function DailyReleaseDashboardPage() {
         }}
         onCancel={() => setConfirmAction(null)}
       />
+    </section>
+  );
+}
+
+function ReleaseBoundaryCasePanel({
+  release,
+  events,
+}: {
+  release: ProductionRelease;
+  events: BoundaryCaseEvent[];
+}) {
+  const related = events.filter(
+    (event) =>
+      event.linkedOrderId === release.orderId ||
+      event.linkedWorkcenterId === release.workcenterId ||
+      event.linkedOrderNo === release.orderNo ||
+      event.linkedWorkcenterCode === release.workcenterCode,
+  );
+  if (!related.length) return null;
+  return (
+    <section className="border border-red-200 bg-red-50 p-3">
+      <SectionLabel>Boundary Case Blockers</SectionLabel>
+      <div className="space-y-2">
+        {related.map((event) => (
+          <div key={event.id} className="grid grid-cols-[1fr_auto] gap-2 border border-red-200 bg-white px-2 py-2 text-sm">
+            <div>
+              <p className="font-mono font-semibold text-primary">{event.eventNo}</p>
+              <p className="text-xs text-slate-600">{event.eventType.replaceAll("_", " ")} / {event.recommendedAction}</p>
+            </div>
+            <RiskBadge risk={event.riskAfter} />
+          </div>
+        ))}
+      </div>
     </section>
   );
 }

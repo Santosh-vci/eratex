@@ -188,6 +188,7 @@ class Command(BaseCommand):
             fabric_blocked_order,
         )
         self._seed_releases(start, ready_item, overloaded_item, release_coordinator, planning_head)
+        call_command("seed_scheduling_rulebook", verbosity=0)
         self.stdout.write(self.style.SUCCESS("EOS-04 planning release seed data loaded."))
 
     def _seed_permissions(self):

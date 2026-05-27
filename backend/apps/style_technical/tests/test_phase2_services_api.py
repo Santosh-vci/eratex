@@ -88,4 +88,3 @@ def test_phase2_api_readiness_and_rbac(client, phase2_data):
     denied_response = client.get("/api/v1/master/customers")
     assert denied_response.status_code == 403
     assert denied_response.json()["errors"][0]["code"] == "PERMISSION_DENIED"
-

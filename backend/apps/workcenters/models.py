@@ -154,6 +154,69 @@ class ConstraintStatus(models.TextChoices):
     CRITICAL = "CRITICAL", "Critical"
 
 
+class CapacityUnit(models.TextChoices):
+    PIECES_PER_DAY = "PIECES_PER_DAY", "Pieces per day"
+    SMV_MINUTES = "SMV_MINUTES", "SMV minutes"
+    BATCH_MINUTES = "BATCH_MINUTES", "Batch minutes"
+    MACHINE_HOURS = "MACHINE_HOURS", "Machine hours"
+    OPERATOR_HOURS = "OPERATOR_HOURS", "Operator hours"
+    LINE_DAYS = "LINE_DAYS", "Line days"
+    CARTONS_PER_DAY = "CARTONS_PER_DAY", "Cartons per day"
+
+
+class PlanningBucket(models.TextChoices):
+    SHIFT = "SHIFT", "Shift"
+    DAY = "DAY", "Day"
+    WEEK = "WEEK", "Week"
+    BATCH = "BATCH", "Batch"
+
+
+class ConstraintResource(models.TextChoices):
+    MANPOWER = "MANPOWER", "Manpower"
+    LINE_BALANCE = "LINE_BALANCE", "Line balance"
+    MACHINE_TIME = "MACHINE_TIME", "Machine time"
+    WASHER_TIME = "WASHER_TIME", "Washer time"
+    DRYER_TIME = "DRYER_TIME", "Dryer time"
+    SKILLED_OPERATOR = "SKILLED_OPERATOR", "Skilled operator"
+    QC_CAPACITY = "QC_CAPACITY", "QC capacity"
+    PACKING_MANPOWER = "PACKING_MANPOWER", "Packing manpower"
+    DOCUMENTATION = "DOCUMENTATION", "Documentation"
+
+
+class WorkcenterCapacityDefinition(BaseModel):
+    workcenter_type = models.CharField(max_length=32)
+    capacity_unit = models.CharField(max_length=32, choices=CapacityUnit.choices)
+    planning_bucket = models.CharField(max_length=16, choices=PlanningBucket.choices)
+    primary_constraint_resource = models.CharField(
+        max_length=40,
+        choices=ConstraintResource.choices,
+    )
+    secondary_constraint_resource = models.CharField(max_length=40, blank=True)
+    normal_capacity_value = models.DecimalField(max_digits=12, decimal_places=2)
+    normal_capacity_unit = models.CharField(max_length=32)
+    overtime_allowed = models.BooleanField(default=False)
+    approved_overtime_capacity_value = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=Decimal("0.00"),
+    )
+    capacity_loss_triggers_json = models.JSONField(default=list, blank=True)
+    recovery_levers_json = models.JSONField(default=list, blank=True)
+    active_status = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["workcenter_type", "planning_bucket"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["workcenter_type", "planning_bucket"],
+                name="unique_workcenter_capacity_definition_bucket",
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.workcenter_type}:{self.planning_bucket}"
+
+
 class WorkcenterLoadSnapshot(BaseModel):
     workcenter = models.ForeignKey(
         "organization.Workcenter",

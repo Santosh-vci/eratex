@@ -10,7 +10,20 @@ from apps.common.decorators import api_permission_required
 from apps.common.errors import error_response
 from apps.common.responses import api_response
 from apps.materials_procurement.services.readiness import calculate_material_readiness
-from apps.orders.models import OrderLifecycleEvent, ProductionOrder
+from apps.orders.models import (
+    OrderChangeRequest,
+    OrderChangeType,
+    OrderLifecycleEvent,
+    ProductionOrder,
+)
+from apps.orders.services.changes import (
+    apply_order_change,
+    approve_order_change,
+    preview_order_cancellation,
+    preview_order_change,
+    preview_shipment_pull_in,
+    request_order_change,
+)
 from apps.orders.services.lifecycle import create_order
 from apps.pcd_readiness.api import serialize_pcd_readiness
 from apps.pcd_readiness.services.readiness import release_to_cutting, validate_release_to_cutting
@@ -260,3 +273,225 @@ def order_release_to_cutting_view(request, order_id):
             status=400,
         )
     return api_response(serialize_pcd_readiness(readiness))
+
+
+@require_POST
+@api_permission_required("orders.request_change")
+def order_change_impact_preview_view(request, order_id):
+    order = get_object_or_404(ProductionOrder, id=order_id)
+    try:
+        impact = preview_order_change(order, payload=_payload(request), user=request.user)
+    except (json.JSONDecodeError, ValidationError) as error:
+        return api_response(
+            None,
+            errors=error_response("ORDER_CHANGE_PREVIEW_INVALID", _error_message(error)),
+            status=400,
+        )
+    return api_response(_serialize_impact(impact))
+
+
+@require_POST
+@api_permission_required("orders.request_change")
+def order_change_request_view(request, order_id):
+    order = get_object_or_404(ProductionOrder, id=order_id)
+    try:
+        payload = _payload(request)
+        change = request_order_change(
+            order,
+            change_type=payload.get("changeType", OrderChangeType.QUANTITY_CHANGE),
+            payload=payload.get("payload", payload),
+            reason=payload.get("reason", ""),
+            requested_by=request.user,
+        )
+    except (json.JSONDecodeError, ValidationError) as error:
+        return api_response(
+            None,
+            errors=error_response("ORDER_CHANGE_REQUEST_INVALID", _error_message(error)),
+            status=400,
+        )
+    return api_response(serialize_order_change(change), status=201)
+
+
+@require_POST
+@api_permission_required("orders.cancel_preview")
+def order_cancel_impact_preview_view(request, order_id):
+    order = get_object_or_404(ProductionOrder, id=order_id)
+    try:
+        impact = preview_order_cancellation(order, payload=_payload(request), user=request.user)
+    except (json.JSONDecodeError, ValidationError) as error:
+        return api_response(
+            None,
+            errors=error_response("ORDER_CANCEL_PREVIEW_INVALID", _error_message(error)),
+            status=400,
+        )
+    return api_response(_serialize_impact(impact))
+
+
+@require_POST
+@api_permission_required("orders.request_cancellation")
+def order_cancel_request_view(request, order_id):
+    order = get_object_or_404(ProductionOrder, id=order_id)
+    try:
+        payload = _payload(request)
+        change = request_order_change(
+            order,
+            change_type=OrderChangeType.CANCELLATION,
+            payload=payload.get("payload", payload),
+            reason=payload.get("reason", ""),
+            requested_by=request.user,
+        )
+    except (json.JSONDecodeError, ValidationError) as error:
+        return api_response(
+            None,
+            errors=error_response("ORDER_CANCEL_REQUEST_INVALID", _error_message(error)),
+            status=400,
+        )
+    return api_response(serialize_order_change(change), status=201)
+
+
+@require_POST
+@api_permission_required("orders.approve_change")
+def order_change_approve_view(request, request_id):
+    change = get_object_or_404(OrderChangeRequest, id=request_id)
+    try:
+        change = approve_order_change(change, approved_by=request.user)
+    except ValidationError as error:
+        return api_response(
+            None,
+            errors=error_response("ORDER_CHANGE_APPROVAL_INVALID", _error_message(error)),
+            status=400,
+        )
+    return api_response(serialize_order_change(change))
+
+
+@require_POST
+@api_permission_required("orders.approve_change")
+def order_change_apply_view(request, request_id):
+    change = get_object_or_404(OrderChangeRequest, id=request_id)
+    try:
+        change = apply_order_change(change, applied_by=request.user)
+    except ValidationError as error:
+        return api_response(
+            None,
+            errors=error_response("ORDER_CHANGE_APPLY_INVALID", _error_message(error)),
+            status=400,
+        )
+    return api_response(serialize_order_change(change))
+
+
+@require_POST
+@api_permission_required("orders.request_change")
+def order_shipment_pull_in_preview_view(request, order_id):
+    order = get_object_or_404(ProductionOrder, id=order_id)
+    try:
+        impact = preview_shipment_pull_in(order, payload=_payload(request), user=request.user)
+    except (json.JSONDecodeError, ValidationError) as error:
+        return api_response(
+            None,
+            errors=error_response("SHIPMENT_PULL_IN_PREVIEW_INVALID", _error_message(error)),
+            status=400,
+        )
+    return api_response(_serialize_impact(impact))
+
+
+@require_POST
+@api_permission_required("orders.request_change")
+def order_shipment_pull_in_request_view(request, order_id):
+    order = get_object_or_404(ProductionOrder, id=order_id)
+    try:
+        payload = _payload(request)
+        change = request_order_change(
+            order,
+            change_type=OrderChangeType.SHIPMENT_PULL_IN,
+            payload=payload.get("payload", payload),
+            reason=payload.get("reason", ""),
+            requested_by=request.user,
+        )
+    except (json.JSONDecodeError, ValidationError) as error:
+        return api_response(
+            None,
+            errors=error_response("SHIPMENT_PULL_IN_REQUEST_INVALID", _error_message(error)),
+            status=400,
+        )
+    return api_response(serialize_order_change(change), status=201)
+
+
+@require_POST
+@api_permission_required("orders.approve_change")
+def order_shipment_pull_in_approve_view(request, order_id):
+    order = get_object_or_404(ProductionOrder, id=order_id)
+    change = get_object_or_404(
+        OrderChangeRequest,
+        order=order,
+        change_type=OrderChangeType.SHIPMENT_PULL_IN,
+        status="REQUESTED",
+    )
+    change = approve_order_change(change, approved_by=request.user)
+    return api_response(serialize_order_change(change))
+
+
+@require_POST
+@api_permission_required("orders.approve_change")
+def order_shipment_pull_in_apply_view(request, order_id):
+    order = get_object_or_404(ProductionOrder, id=order_id)
+    change = get_object_or_404(
+        OrderChangeRequest,
+        order=order,
+        change_type=OrderChangeType.SHIPMENT_PULL_IN,
+        status="APPROVED",
+    )
+    try:
+        change = apply_order_change(change, applied_by=request.user)
+    except ValidationError as error:
+        return api_response(
+            None,
+            errors=error_response("SHIPMENT_PULL_IN_APPLY_INVALID", _error_message(error)),
+            status=400,
+        )
+    return api_response(serialize_order_change(change))
+
+
+def serialize_order_change(change: OrderChangeRequest) -> dict[str, object]:
+    return {
+        "id": str(change.id),
+        "requestNo": change.request_no,
+        "orderId": str(change.order_id),
+        "orderNo": change.order.order_no,
+        "changeType": change.change_type,
+        "status": change.status,
+        "oldValue": change.old_value_json,
+        "newValue": change.new_value_json,
+        "impactPreview": _serialize_impact(change.impact_preview) if change.impact_preview else {},
+        "reason": change.reason,
+        "dispositionRequired": change.disposition_required,
+        "createdAt": change.created_at.isoformat(),
+    }
+
+
+def _serialize_impact(impact: dict[str, object]) -> dict[str, object]:
+    if "canApply" in impact:
+        return impact
+    return {
+        "canApply": impact.get("can_apply"),
+        "approvalRequired": impact.get("approval_required"),
+        "riskBefore": impact.get("risk_before"),
+        "riskAfter": impact.get("risk_after"),
+        "affectedOrders": impact.get("affected_orders", []),
+        "affectedWorkcenters": impact.get("affected_workcenters", []),
+        "affectedWip": impact.get("affected_wip", []),
+        "affectedShipments": impact.get("affected_shipments", []),
+        "capacityImpact": impact.get("capacity_impact", {}),
+        "recommendedActions": impact.get("recommended_actions", []),
+        "warnings": impact.get("warnings", []),
+        "blockingReasons": impact.get("blocking_reasons", []),
+    }
+
+
+def _payload(request) -> dict:
+    return json.loads(request.body.decode("utf-8") or "{}")
+
+
+def _error_message(error: Exception) -> str:
+    if isinstance(error, ValidationError):
+        return "; ".join(error.messages)
+    return "Order change payload is invalid."

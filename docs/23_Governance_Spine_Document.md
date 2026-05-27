@@ -1858,3 +1858,7 @@ The platform must make operational truth visible, make unsafe actions difficult,
 ```
 
 If this spine is followed, the product will not become another disconnected tool. It will become a governed planning and execution system capable of reducing Excel dependency, improving resource utilization, exposing hidden firefighting, and protecting shipment commitments with discipline.
+
+## Scheduling Behaviour Rulebook Alignment
+
+The governance spine now treats scheduling disruptions as owned, auditable boundary cases. The system recommends and previews first; planners or approvers commit. FastReact and Excel are coexistence inputs only and must pass validation before becoming draft platform plans.

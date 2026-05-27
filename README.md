@@ -138,6 +138,8 @@ Phase 3 intentionally excludes planning algorithms, daily release execution, cut
 
 Phase 4 / EOS-04 adds weekly planning, plan versions, planned work items, plan freeze/change governance, workcenter capacity/load snapshots, queue visibility, current constraint reporting, daily production release validation, override approval, release completion control, and operations workbenches for weekly planning, workcenter load, queue, and daily release.
 
+The scheduling behaviour rulebook alignment adds frozen/firm/flexible planning zones, workcenter capacity definitions, boundary-case events, impact previews for capacity/order/shipment disruptions, wash repeat governance metadata, and external-plan validation-as-draft. External plans such as FastReact or Excel are treated as draft inputs, not committed schedule truth.
+
 UI implementation is prototype-first. The canonical references are the folders under `docs/frontend_ui`; do not invent alternate UI structures where a prototype exists. Phase 4 / EOS-04 routes are governed by these references:
 
 | App Route | Required Prototype Source |
@@ -164,6 +166,7 @@ EOS-04 local validation:
 docker compose config
 docker compose up --build -d
 docker compose exec -T backend python manage.py seed_eos04
+docker compose exec -T backend python manage.py validate_seed_scenarios
 docker compose run --rm backend python -m pytest
 docker compose run --rm --no-deps frontend npm run test
 docker compose --profile test run --rm frontend_e2e

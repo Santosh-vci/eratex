@@ -11,6 +11,7 @@ Current implemented boundary:
 - Phase 2: controlled master data and technical product foundation only.
 - Phase 3: orders, procurement readiness, fabric QC, and PCD release-gate readiness only.
 - Phase 4 / EOS-04: planning, capacity visibility, workcenter load, plan freeze/change governance, and daily production release control only.
+- Scheduling behaviour rulebook alignment: boundary cases, planning zones, workcenter capacity definitions, order change previews, shipment pull-in previews, wash repeat governance metadata, and external-plan validation-as-draft.
 
 Do not add WIP inventory/reconciliation, cutting output, bundles, production output, sewing execution, wash execution, shipment workflow, analytics/control-tower maturity, what-if simulation workbench, multi-unit capacity simulation, imports, or offline/mobile behavior while working inside Phase 4 / EOS-04.
 
@@ -25,6 +26,9 @@ Do not add WIP inventory/reconciliation, cutting output, bundles, production out
 - Keep approved BOM, operation bulletin, and wash route versions immutable; clone to a new draft for changes.
 - Release-to-cutting must update only PCD/order lifecycle state and audit. Do not create cutting execution, WIP, bundles, sewing, wash, or production output records.
 - Daily release control must not create cutting execution, WIP, bundles, sewing, wash, shipment, or production output records.
+- Boundary cases are governed scheduling events. Preview impact first, require approval when configured, then apply through service-layer functions with audit.
+- FastReact, Excel, or other external plans are draft inputs only. They must be validated into a draft platform plan and never become committed schedule truth directly.
+- Do not name backend code artifacts using phase nomenclature. Use domain names such as `boundary_cases`, `external_plans`, `PlanningZoneConfiguration`, and `WorkcenterCapacityDefinition`.
 - Keep audit events business-readable and append-only.
 - Run backend checks before handoff inside Docker only:
 
@@ -102,6 +106,12 @@ Seed EOS-04 planning and release scenarios:
 
 ```powershell
 docker compose exec backend python manage.py seed_eos04
+```
+
+Validate scheduling rulebook scenarios:
+
+```powershell
+docker compose exec backend python manage.py validate_seed_scenarios
 ```
 
 ## Git Handoff

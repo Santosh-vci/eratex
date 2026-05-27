@@ -2281,3 +2281,7 @@ audit and analytics
 ```
 
 The schema should be implemented module by module, with migrations, admin configuration, APIs, service logic, and tests created together for each domain.
+
+## Scheduling Behaviour Rulebook Alignment
+
+The implemented scheduling foundation now includes explicit planning grain fields on planned work items, planning-zone configuration, workcenter capacity definitions, boundary-case events, order-change requests, wash repeat governance metadata, and external-plan import validation records. These are additive domain concepts and must be consumed by later WIP, sewing, wash, shipment, integration, and analytics modules.

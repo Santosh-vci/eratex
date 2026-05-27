@@ -3,6 +3,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from apps.audit_governance.services.audit import write_audit_event
+from apps.boundary_cases.models import BoundaryCaseEvent, BoundaryEventStatus
 from apps.common.models import RiskStatus
 from apps.fabric_qc.models import FabricQcStatus, FabricRoll
 from apps.materials_procurement.services.readiness import calculate_material_readiness
@@ -85,6 +86,36 @@ def validate_release(
         passed=load["constraintStatus"] != ConstraintStatus.CRITICAL,
         owner="Capacity",
         fail_message="Current constraint is critical.",
+    )
+    unresolved_boundary_events = BoundaryCaseEvent.objects.filter(
+        is_active=True,
+        status__in=[
+            BoundaryEventStatus.OPEN,
+            BoundaryEventStatus.IMPACT_PREVIEWED,
+            BoundaryEventStatus.ACTION_PROPOSED,
+            BoundaryEventStatus.APPROVAL_REQUIRED,
+            BoundaryEventStatus.APPROVED,
+        ],
+    ).filter(linked_order=order)
+    if workcenter:
+        unresolved_boundary_events = unresolved_boundary_events | BoundaryCaseEvent.objects.filter(
+            is_active=True,
+            linked_workcenter=workcenter,
+            status__in=[
+                BoundaryEventStatus.OPEN,
+                BoundaryEventStatus.IMPACT_PREVIEWED,
+                BoundaryEventStatus.ACTION_PROPOSED,
+                BoundaryEventStatus.APPROVAL_REQUIRED,
+                BoundaryEventStatus.APPROVED,
+            ],
+        )
+    _append_check(
+        checks,
+        blockers,
+        code="BOUNDARY_CASES_CLEARED",
+        passed=not unresolved_boundary_events.exists(),
+        owner="Planning",
+        fail_message="Unresolved scheduling boundary case blocks release.",
     )
     _append_check(
         checks,

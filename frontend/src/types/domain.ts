@@ -537,12 +537,33 @@ export type PlannedWorkItem = {
   lineCode: string | null;
   plannedStartDate: string;
   plannedEndDate: string;
+  plannedShift: string;
+  planningZone: "FROZEN_ZONE" | "FIRM_ZONE" | "FLEXIBLE_ZONE";
+  productionStage: string;
+  colorCode: string;
+  shadeLot: string;
+  approvalRequired: boolean;
   plannedQuantity: number;
   loadMinutes: number;
   sequenceNo: number;
   status: "PLANNED" | "RELEASE_READY" | "BLOCKED" | "RELEASED";
   riskStatus: RiskStatus;
   locked: boolean;
+};
+
+export type WorkcenterCapacityDefinition = {
+  id: string;
+  workcenterType: string;
+  capacityUnit: string;
+  planningBucket: string;
+  primaryConstraintResource: string;
+  secondaryConstraintResource: string;
+  normalCapacityValue: number;
+  normalCapacityUnit: string;
+  overtimeAllowed: boolean;
+  approvedOvertimeCapacityValue: number;
+  capacityLossTriggers: string[];
+  recoveryLevers: string[];
 };
 
 export type WorkcenterLoad = {
@@ -564,6 +585,7 @@ export type WorkcenterLoad = {
   topAffectedOrderId?: string | null;
   topAffectedOrderNo: string | null;
   suggestedAction: string;
+  capacityDefinition?: WorkcenterCapacityDefinition | null;
 };
 
 export type PlanImpactPreview = {
@@ -571,6 +593,10 @@ export type PlanImpactPreview = {
   orderId: string;
   workcenterId: string;
   addedMinutes: number;
+  planningZone: "FROZEN_ZONE" | "FIRM_ZONE" | "FLEXIBLE_ZONE";
+  approvalRequired: boolean;
+  autoRescheduleAllowed: boolean;
+  schedulingGrain: Record<string, unknown>;
   before: Pick<
     WorkcenterLoad,
     "availableMinutes" | "plannedLoadMinutes" | "utilizationPercent" | "constraintStatus" | "riskStatus"
@@ -580,6 +606,7 @@ export type PlanImpactPreview = {
     "availableMinutes" | "plannedLoadMinutes" | "utilizationPercent" | "constraintStatus" | "riskStatus"
   >;
   writeApplied: boolean;
+  warnings: string[];
 };
 
 export type WeeklyPlanningPayload = {
@@ -668,4 +695,81 @@ export type ProductionRelease = {
   completedAt: string | null;
   overrideReason: string;
   validation: ReleaseValidationResult | null;
+};
+
+export type BoundarySeverity = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+export type BoundaryEventStatus =
+  | "OPEN"
+  | "IMPACT_PREVIEWED"
+  | "ACTION_PROPOSED"
+  | "APPROVAL_REQUIRED"
+  | "APPROVED"
+  | "REJECTED"
+  | "APPLIED"
+  | "RESOLVED"
+  | "CLOSED"
+  | "CANCELLED";
+
+export type BoundaryImpactPreview = {
+  canApply: boolean;
+  approvalRequired: boolean;
+  riskBefore: RiskStatus;
+  riskAfter: RiskStatus;
+  affectedOrders: Array<Record<string, unknown>>;
+  affectedWorkcenters: Array<Record<string, unknown>>;
+  affectedWip: Array<Record<string, unknown>>;
+  affectedShipments: Array<Record<string, unknown>>;
+  capacityImpact: Record<string, unknown>;
+  recommendedActions: string[];
+  warnings: string[];
+  blockingReasons: string[];
+};
+
+export type BoundaryCaseEvent = {
+  id: string;
+  eventNo: string;
+  eventType: string;
+  status: BoundaryEventStatus;
+  severity: BoundarySeverity;
+  linkedOrderId: string | null;
+  linkedOrderNo: string | null;
+  linkedWorkcenterId: string | null;
+  linkedWorkcenterCode: string | null;
+  eventStage: string;
+  triggerSource: string;
+  affectedQuantity: number;
+  affectedCapacityMinutes: number;
+  affectedShipmentDate: string | null;
+  riskBefore: RiskStatus;
+  riskAfter: RiskStatus;
+  recommendedAction: string;
+  approvalRequired: boolean;
+  ownerId: number | null;
+  ownerName: string;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  impactPreviews?: BoundaryImpactPreview[];
+};
+
+export type ExternalPlanValidationResult = {
+  id: string;
+  conflictType: string;
+  severity: string;
+  rowNumber: number;
+  orderNo: string;
+  message: string;
+  metadata: Record<string, unknown>;
+};
+
+export type ExternalPlanImportBatch = {
+  id: string;
+  importNo: string;
+  sourceType: string;
+  status: string;
+  sourceReference: string;
+  rowCount: number;
+  validationSummary: Record<string, unknown>;
+  createdDraftPlanId: string | null;
+  validationResults: ExternalPlanValidationResult[];
+  createdAt: string;
 };

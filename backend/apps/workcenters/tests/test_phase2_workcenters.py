@@ -36,4 +36,3 @@ def test_machine_assignment_overlap_is_invalid(phase2_data):
 
     with pytest.raises(ValidationError):
         validate_line_machine_assignment(other_assignment)
-

@@ -61,9 +61,7 @@ def weekly_planning_view(request):
             {
                 "horizon": serialize_horizon(plan.horizon),
                 "plan": serialize_plan(plan),
-                "backlog": [
-                    serialize_backlog_order(order) for order in get_eligible_backlog(plan)
-                ],
+                "backlog": [serialize_backlog_order(order) for order in get_eligible_backlog(plan)],
                 "workItems": [
                     serialize_work_item(item)
                     for item in plan.work_items.filter(is_active=True).select_related(
@@ -281,6 +279,12 @@ def serialize_work_item(item: PlannedWorkItem) -> dict[str, object]:
         "lineCode": item.line.code if item.line else None,
         "plannedStartDate": item.planned_start_date.isoformat(),
         "plannedEndDate": item.planned_end_date.isoformat(),
+        "plannedShift": item.planned_shift,
+        "planningZone": item.planning_zone,
+        "productionStage": item.production_stage,
+        "colorCode": item.color_code,
+        "shadeLot": item.shade_lot,
+        "approvalRequired": item.planning_zone in {"FROZEN_ZONE", "FIRM_ZONE"},
         "plannedQuantity": item.planned_quantity,
         "loadMinutes": item.load_minutes,
         "sequenceNo": item.sequence_no,
@@ -311,6 +315,7 @@ def serialize_load(load: dict[str, object]) -> dict[str, object]:
         "workcenterId": str(workcenter.id),
         "workcenterCode": workcenter.code,
         "workcenterName": workcenter.name,
+        "workcenterType": workcenter.workcenter_type,
         "availableMinutes": load["availableMinutes"],
         "plannedLoadMinutes": load["plannedLoadMinutes"],
         "utilizationPercent": load["utilizationPercent"],

@@ -3457,3 +3457,7 @@ The most important API design principle is:
 The backend must calculate and govern.
 The frontend must render, guide, and trigger approved actions.
 ```
+
+## Scheduling Behaviour Rulebook Alignment
+
+The API contract now includes boundary-case, capacity-event, order-change, shipment pull-in, and external-plan validation endpoints. All endpoints retain the standard envelope `{ "data": ..., "meta": {}, "errors": [] }`. External plans are accepted only as draft inputs and validation results, never as committed schedule truth.

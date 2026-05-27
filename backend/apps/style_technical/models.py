@@ -75,6 +75,21 @@ class Style(BaseModel):
         on_delete=models.SET_NULL,
         related_name="default_styles",
     )
+    wash_complexity_class = models.CharField(max_length=32, blank=True)
+    fashion_effect_required = models.BooleanField(default=False)
+    approved_wash_standard_reference = models.CharField(max_length=160, blank=True)
+    dry_process_required = models.BooleanField(default=False)
+    wet_process_required = models.BooleanField(default=True)
+    repeat_cycle_allowed = models.BooleanField(default=True)
+    repeat_cycle_probability = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=Decimal("0.00"),
+    )
+    max_repeat_cycles = models.PositiveIntegerField(default=1)
+    post_wash_qc_criteria = models.JSONField(default=dict, blank=True)
+    shade_effect_tolerance = models.CharField(max_length=120, blank=True)
+    customer_effect_approval_status = models.CharField(max_length=32, default="PENDING")
 
     class Meta:
         ordering = ["style_code"]
@@ -262,6 +277,21 @@ class WashRoute(BaseModel):
     )
     approved_at = models.DateTimeField(null=True, blank=True)
     effective_date = models.DateField(null=True, blank=True)
+    wash_complexity_class = models.CharField(max_length=32, blank=True)
+    fashion_effect_required = models.BooleanField(default=False)
+    approved_wash_standard_reference = models.CharField(max_length=160, blank=True)
+    dry_process_required = models.BooleanField(default=False)
+    wet_process_required = models.BooleanField(default=True)
+    repeat_cycle_allowed = models.BooleanField(default=True)
+    repeat_cycle_probability = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=Decimal("0.00"),
+    )
+    max_repeat_cycles = models.PositiveIntegerField(default=1)
+    post_wash_qc_criteria = models.JSONField(default=dict, blank=True)
+    shade_effect_tolerance = models.CharField(max_length=120, blank=True)
+    customer_effect_approval_status = models.CharField(max_length=32, default="PENDING")
 
     class Meta:
         ordering = ["code"]

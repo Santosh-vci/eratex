@@ -1356,3 +1356,7 @@ The most important readiness principle is:
 Do not judge readiness by screens completed.
 Judge readiness by whether the system can control the real factory operating loop end to end.
 ```
+
+## Scheduling Behaviour Rulebook Alignment
+
+Readiness requires verified planning-zone configuration, capacity-definition matrix, boundary-case APIs, order change/cancellation previews, shipment pull-in preview, wash repeat governance metadata, external-plan validation-as-draft, required permissions, audit events, and validated SCN-014 to SCN-023 seed scenarios.

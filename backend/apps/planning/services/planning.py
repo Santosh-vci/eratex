@@ -20,6 +20,7 @@ from apps.planning.models import (
     PlanVersion,
     PlanVersionStatus,
 )
+from apps.planning.services.zones import assign_planning_zone, get_zone_configuration
 from apps.style_technical.models import OperationBulletin
 from apps.workcenters.services.load import calculate_load
 
@@ -100,6 +101,7 @@ def assign_work_item(
     planned_end_date = planned_end_date or planned_start_date
     if planned_end_date < planned_start_date:
         raise ValidationError("Plan end date cannot be before start date.")
+    planning_zone = assign_planning_zone(planned_start_date)
     load_minutes = _calculate_order_load_minutes(order, planned_quantity)
     impact = calculate_plan_impact(
         plan_version=plan_version,
@@ -117,6 +119,11 @@ def assign_work_item(
             "line": line,
             "planned_start_date": planned_start_date,
             "planned_end_date": planned_end_date,
+            "planned_shift": "DAY",
+            "planning_zone": planning_zone,
+            "production_stage": workcenter.workcenter_type,
+            "color_code": _order_color_code(order),
+            "shade_lot": _order_shade_lot(order),
             "planned_quantity": planned_quantity,
             "load_minutes": load_minutes,
             "sequence_no": sequence_no,
@@ -183,11 +190,28 @@ def calculate_plan_impact(
     from apps.workcenters.services.load import calculate_constraint_status
 
     constraint_status, risk_status = calculate_constraint_status(utilization)
+    planning_zone = assign_planning_zone(planned_start_date)
+    zone_config = get_zone_configuration(planning_zone)
     return {
         "planVersionId": str(plan_version.id),
         "orderId": str(order.id),
         "workcenterId": str(workcenter.id),
         "addedMinutes": added_minutes,
+        "planningZone": planning_zone,
+        "approvalRequired": zone_config.requires_approval_for_change,
+        "autoRescheduleAllowed": zone_config.auto_reschedule_allowed,
+        "schedulingGrain": {
+            "orderId": str(order.id),
+            "styleId": str(order.style_id),
+            "colorCode": _order_color_code(order),
+            "shadeLot": _order_shade_lot(order),
+            "productionStage": workcenter.workcenter_type,
+            "workcenterId": str(workcenter.id),
+            "lineId": None,
+            "plannedDate": planned_start_date.isoformat(),
+            "plannedShift": "DAY",
+            "quantity": planned_quantity,
+        },
         "before": {
             "availableMinutes": before["availableMinutes"],
             "plannedLoadMinutes": before["plannedLoadMinutes"],
@@ -203,6 +227,9 @@ def calculate_plan_impact(
             "riskStatus": risk_status,
         },
         "writeApplied": False,
+        "warnings": ["Approval required before applying changes in this planning zone."]
+        if zone_config.requires_approval_for_change
+        else [],
     }
 
 
@@ -318,6 +345,16 @@ def _calculate_order_load_minutes(order: ProductionOrder, quantity: int) -> int:
     )
     smv = bulletin.total_smv if bulletin else Decimal("1.00")
     return max(int((Decimal(quantity) * smv).quantize(Decimal("1"))), 1)
+
+
+def _order_color_code(order: ProductionOrder) -> str:
+    line = order.lines.order_by("color").first()
+    return line.color if line else ""
+
+
+def _order_shade_lot(order: ProductionOrder) -> str:
+    lot = order.fabric_lots.order_by("shade_lot").first()
+    return lot.shade_lot if lot else ""
 
 
 def default_plan_dates():

@@ -29,4 +29,3 @@ def test_approved_bom_admin_is_read_only(phase2_data):
 
     assert "version" in readonly_fields
     assert "status" in readonly_fields
-

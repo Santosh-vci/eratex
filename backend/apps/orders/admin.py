@@ -1,6 +1,12 @@
 from django.contrib import admin
 
-from apps.orders.models import OrderLifecycleEvent, OrderLine, OrderMilestone, ProductionOrder
+from apps.orders.models import (
+    OrderChangeRequest,
+    OrderLifecycleEvent,
+    OrderLine,
+    OrderMilestone,
+    ProductionOrder,
+)
 
 
 class OrderLineInline(admin.TabularInline):
@@ -37,6 +43,14 @@ class OrderLifecycleEventAdmin(admin.ModelAdmin):
     list_filter = ("event_code", "to_stage")
     search_fields = ("order__order_no", "event_code", "message")
     readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(OrderChangeRequest)
+class OrderChangeRequestAdmin(admin.ModelAdmin):
+    list_display = ("request_no", "order", "change_type", "status", "requested_by", "approved_by")
+    list_filter = ("change_type", "status", "disposition_required")
+    search_fields = ("request_no", "order__order_no", "reason")
+    readonly_fields = ("request_no", "created_at", "updated_at")
 
 
 admin.site.register(OrderLine)

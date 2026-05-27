@@ -9,6 +9,7 @@ from .models import (
     Operator,
     OperatorSkill,
     WorkcenterCapacityDay,
+    WorkcenterCapacityDefinition,
     WorkcenterLoadSnapshot,
     WorkcenterQueueSnapshot,
 )
@@ -59,6 +60,26 @@ class WorkcenterCapacityDayAdmin(admin.ModelAdmin):
     list_display = ("workcenter", "capacity_date", "available_minutes", "capacity_value", "source")
     search_fields = ("workcenter__code",)
     list_filter = ("workcenter", "source", "is_active")
+
+
+@admin.register(WorkcenterCapacityDefinition)
+class WorkcenterCapacityDefinitionAdmin(admin.ModelAdmin):
+    list_display = (
+        "workcenter_type",
+        "capacity_unit",
+        "planning_bucket",
+        "primary_constraint_resource",
+        "normal_capacity_value",
+        "overtime_allowed",
+        "active_status",
+    )
+    search_fields = ("workcenter_type", "primary_constraint_resource")
+    list_filter = (
+        "capacity_unit",
+        "planning_bucket",
+        "primary_constraint_resource",
+        "active_status",
+    )
 
 
 @admin.register(WorkcenterLoadSnapshot)

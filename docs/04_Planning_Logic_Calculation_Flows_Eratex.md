@@ -2074,3 +2074,7 @@ recovery options
 The backend must own these calculations. The frontend should render the calculated state and guide user action.
 
 This logic layer is what transforms the system from a static planning board into a live operational control platform.
+
+## Scheduling Behaviour Rulebook Alignment
+
+Planning logic must preview before it writes. Frozen-zone changes require approval, firm-zone changes require impact preview, and flexible-zone changes may be adjusted within configured rules. Capacity loss/addition, order cancellation/change, shipment pull-in, repeat wash risk, and external-plan conflicts are governed through boundary-case impact preview before any committed schedule action.

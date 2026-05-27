@@ -1961,3 +1961,7 @@ They should change through governed, validated, auditable transitions.
 ```
 
 This discipline is essential if the platform is to replace Excel-driven follow-up with a true live operating system for Eratex garment manufacturing.
+
+## Scheduling Behaviour Rulebook Alignment
+
+Boundary cases are now formal stateful events with `OPEN`, `IMPACT_PREVIEWED`, `APPROVAL_REQUIRED`, `APPROVED`, `APPLIED`, `RESOLVED`, and `CLOSED` style transitions. Future exception, WIP, sewing, wash, shipment, and integration flows must link disruption handling back to these governed events.

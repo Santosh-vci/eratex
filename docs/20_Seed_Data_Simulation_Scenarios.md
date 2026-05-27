@@ -2028,3 +2028,7 @@ Seed data must tell operational stories.
 ```
 
 A strong scenario seed pack will allow developers, QA, planners, supervisors, and management to validate whether the platform can realistically replace Excel-driven planning and become a live operating system for Eratex.
+
+## Scheduling Behaviour Rulebook Alignment
+
+The deterministic seed pack now includes SCN-014 through SCN-023 for order cancellation, post-cut cancellation, wash-stage cancellation, sewing/wash capacity loss, overtime capacity addition, shipment pull-in, frozen-plan change request, FastReact imported plan conflict, and wash effect/repeat-cycle rejection. `validate_seed_scenarios` is the acceptance command for these scenarios.

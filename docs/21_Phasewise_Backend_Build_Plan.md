@@ -2434,3 +2434,7 @@ Build controlled business actions first, then expose them through APIs, then con
 ```
 
 This ensures the system does not become another loose data-entry application, but a reliable production planning and execution control layer for Eratex.
+
+## Scheduling Behaviour Rulebook Alignment
+
+Backend implementation must consume the rulebook before deeper MVP phases. Use domain artifacts such as `boundary_cases`, `external_plans`, `PlanningZoneConfiguration`, and `WorkcenterCapacityDefinition`; do not create backend code named after phase labels. Future WIP, sewing, wash, shipment, integration, and analytics work must reference boundary cases and impact previews.

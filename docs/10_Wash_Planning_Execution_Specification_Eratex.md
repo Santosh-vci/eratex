@@ -2444,3 +2444,7 @@ handheld capture
 ```
 
 This ensures that planners do not see sewing completion as a false signal of shipment readiness while wash remains the hidden bottleneck.
+
+## Scheduling Behaviour Rulebook Alignment
+
+Wash is treated as value creation, quality risk, and capacity constraint. Style and wash-route metadata must expose fashion effect requirements, approved wash standards, repeat-cycle probability, maximum repeat cycles, shade/effect tolerance, and customer effect approval status. Full wash-batch execution remains a later module, but repeat-wash approval and capacity impact must be visible to planning now.

@@ -2254,3 +2254,7 @@ The guiding principle is:
 ```text
 The user should always know what is planned, what is actually happening, what is at risk, and what action is needed next.
 ```
+
+## Scheduling Behaviour Rulebook Alignment
+
+Frontend surfaces must expose planning zones, capacity definitions, boundary-case blockers, and no-write impact previews where scheduling decisions are made. `/boundary-cases` has no dedicated prototype at this point; until one exists it must reuse the approved operational table and right-drawer pattern from EOS-04 workcenter load and daily release.

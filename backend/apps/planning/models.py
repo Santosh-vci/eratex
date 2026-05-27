@@ -35,6 +35,29 @@ class PlanChangeType(models.TextChoices):
     MOVE = "MOVE", "Move"
     CAPACITY = "CAPACITY", "Capacity"
     RELEASE = "RELEASE", "Release"
+    BOUNDARY_REPLAN = "BOUNDARY_REPLAN", "Boundary replan"
+
+
+class PlanningZoneCode(models.TextChoices):
+    FROZEN_ZONE = "FROZEN_ZONE", "Frozen zone"
+    FIRM_ZONE = "FIRM_ZONE", "Firm zone"
+    FLEXIBLE_ZONE = "FLEXIBLE_ZONE", "Flexible zone"
+
+
+class PlanningZoneConfiguration(BaseModel):
+    zone_code = models.CharField(max_length=32, choices=PlanningZoneCode.choices, unique=True)
+    zone_name = models.CharField(max_length=120)
+    horizon_start_days = models.PositiveIntegerField(default=0)
+    horizon_end_days = models.PositiveIntegerField(default=0)
+    requires_approval_for_change = models.BooleanField(default=False)
+    auto_reschedule_allowed = models.BooleanField(default=False)
+    active_status = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["horizon_start_days", "zone_code"]
+
+    def __str__(self) -> str:
+        return self.zone_code
 
 
 class PlanningHorizon(BaseModel):
@@ -128,6 +151,15 @@ class PlannedWorkItem(BaseModel):
     )
     planned_start_date = models.DateField()
     planned_end_date = models.DateField()
+    planned_shift = models.CharField(max_length=40, default="DAY")
+    planning_zone = models.CharField(
+        max_length=32,
+        choices=PlanningZoneCode.choices,
+        default=PlanningZoneCode.FLEXIBLE_ZONE,
+    )
+    production_stage = models.CharField(max_length=40, default="PLANNING")
+    color_code = models.CharField(max_length=80, blank=True)
+    shade_lot = models.CharField(max_length=80, blank=True)
     planned_quantity = models.PositiveIntegerField()
     load_minutes = models.PositiveIntegerField(default=0)
     sequence_no = models.PositiveIntegerField(default=10)

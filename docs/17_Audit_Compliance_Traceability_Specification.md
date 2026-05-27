@@ -2019,3 +2019,9 @@ The guiding principle is:
 ```text
 No critical operational decision should happen without a visible, durable, business-readable trace.
 ```
+
+## Phase 5 / EOS-05 Execution Audit Events
+
+Execution actions must write business-readable audit events for cutting job creation, cutting output, bundle creation, cutting-to-sewing handover, line loading preview and activation, line realignment request/approval/application/rejection, sewing output capture, output correction, WIP movement, and line shortfall detection.
+
+Audit is append-only. Output correction must not overwrite the original capture; it records the reversal and replacement context.

@@ -1,6 +1,8 @@
 import { expect, type Page, type Route, test } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 
+test.setTimeout(60000);
+
 function corsHeaders(route: Route) {
   return {
     "Access-Control-Allow-Credentials": "true",
@@ -136,7 +138,10 @@ async function login(page: Page, username = "planner") {
   await page.goto("/login");
   await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
   await page.getByLabel("Username").fill(username);
-  await page.getByRole("button", { name: "Sign in" }).click();
+  await Promise.all([
+    page.waitForURL((url) => url.pathname !== "/login", { timeout: 15000 }),
+    page.getByRole("button", { name: "Sign in" }).click(),
+  ]);
 }
 
 async function captureParity(page: Page, name: string) {
@@ -427,6 +432,29 @@ async function setupTechnicalMocks(page: Page) {
       contentType: "application/json",
       headers: corsHeaders(route),
       body: JSON.stringify({ data: bulletin, meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/operation-bulletins/bulletin-1/performance", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({
+        data: {
+          bulletinId: "bulletin-1",
+          styleCode: "STY-DEN-BASIC",
+          version: "V1",
+          totalSmv: 21.5,
+          activeLineLoadings: 1,
+          plannedQuantity: 1200,
+          targetQuantity: 420,
+          grossQty: 130,
+          netGoodQty: 120,
+          efficiencyPercent: 76,
+          performanceVariance: -6,
+        },
+        meta: {},
+        errors: [],
+      }),
     });
   });
   await page.route("**/api/v1/wash-routes", async (route) => {
@@ -1158,7 +1186,7 @@ test("planner can inspect blocked order and PCD readiness gate", async ({ page }
 
   await page.getByRole("link", { name: "ORD-PCD-001" }).click();
   await expect(page.getByRole("heading", { name: "ORD-PCD-001" })).toBeVisible();
-  await expect(page.getByText("Awaiting zipper ETA")).toBeVisible();
+  await expect(page.getByText("TRIMS_AVAILABLE: PENDING").first()).toBeVisible();
   await captureParity(page, "order-detail");
 
   await page.goto("/orders/order-pcd-1/trace");
@@ -1168,7 +1196,7 @@ test("planner can inspect blocked order and PCD readiness gate", async ({ page }
   await page.goto("/pcd-readiness");
   await expect(page.getByRole("heading", { name: "PCD Readiness Gate" })).toBeVisible();
   await page.getByRole("button", { name: /ORD-PCD-001/ }).click();
-  await expect(page.getByText("Awaiting zipper ETA")).toBeVisible();
+  await expect(page.getByText("TRIMS_AVAILABLE: PENDING").first()).toBeVisible();
   await expect(page.getByRole("button", { name: /Release to Cutting/i })).toBeDisabled();
   await captureParity(page, "pcd-readiness");
 

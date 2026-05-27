@@ -2032,3 +2032,20 @@ A strong scenario seed pack will allow developers, QA, planners, supervisors, an
 ## Scheduling Behaviour Rulebook Alignment
 
 The deterministic seed pack now includes SCN-014 through SCN-023 for order cancellation, post-cut cancellation, wash-stage cancellation, sewing/wash capacity loss, overtime capacity addition, shipment pull-in, frozen-plan change request, FastReact imported plan conflict, and wash effect/repeat-cycle rejection. `validate_seed_scenarios` is the acceptance command for these scenarios.
+
+## Phase 5 / EOS-05 Execution Scenarios
+
+`seed_execution_flow` extends the deterministic seed pack after EOS-04 and creates SCN-024 through SCN-033:
+
+- SCN-024: production release creates a cutting job.
+- SCN-025: cutting output creates cut-panel WIP and bundles.
+- SCN-026: line loading is gated by approved operation bulletin.
+- SCN-027: approved exception permits governed loading where required.
+- SCN-028: capability mismatch produces machine or skill fit warnings.
+- SCN-029: line realignment approval is requested and applied.
+- SCN-030: net-good sewing output updates WIP and efficiency.
+- SCN-031: correction/idempotency prevents double counting.
+- SCN-032: line shortfall creates a boundary event.
+- SCN-033: sewn quantity is handed to the wash queue.
+
+`validate_seed_scenarios` must pass after `seed_execution_flow` before the execution bridge is treated as ready.

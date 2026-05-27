@@ -11,6 +11,14 @@ from apps.boundary_cases.api import (
     boundary_cases_view,
 )
 from apps.common.views import health_view, ping_view
+from apps.cutting.api import (
+    cutting_handover_to_sewing_view,
+    cutting_job_detail_view,
+    cutting_job_start_view,
+    cutting_jobs_view,
+    cutting_output_correct_view,
+    cutting_output_create_view,
+)
 from apps.external_plans.api import (
     external_plan_create_draft_view,
     external_plan_import_view,
@@ -81,12 +89,33 @@ from apps.production_release.api import (
     release_request_override_view,
     release_validate_view,
 )
+from apps.sewing.api import (
+    line_realignment_apply_view,
+    line_realignment_approve_view,
+    line_realignment_create_view,
+    line_realignment_detail_view,
+    line_realignment_preview_view,
+    line_realignment_reject_view,
+    line_style_fit_view,
+    sewing_line_efficiency_view,
+    sewing_line_loading_activate_view,
+    sewing_line_loading_board_view,
+    sewing_line_loading_close_view,
+    sewing_line_loading_create_view,
+    sewing_line_loading_detail_view,
+    sewing_line_loading_preview_view,
+    sewing_line_loadings_view,
+    sewing_output_correct_view,
+    sewing_output_create_view,
+    sewing_output_view,
+)
 from apps.style_technical.api import (
     bom_detail_view,
     boms_view,
     operation_bulletin_approve_view,
     operation_bulletin_clone_view,
     operation_bulletin_detail_view,
+    operation_bulletin_performance_view,
     operation_bulletins_collection_view,
     operation_masters_view,
     style_detail_view,
@@ -96,6 +125,7 @@ from apps.style_technical.api import (
     wash_route_detail_view,
     wash_routes_view,
 )
+from apps.wip_inventory.api import order_wip_summary_view, wip_movements_view
 from apps.workcenters.api import (
     capacity_days_view,
     capacity_event_apply_view,
@@ -161,6 +191,11 @@ urlpatterns = [
         "api/v1/operation-bulletins/<uuid:bulletin_id>/clone",
         operation_bulletin_clone_view,
         name="api-operation-bulletin-clone",
+    ),
+    path(
+        "api/v1/operation-bulletins/<uuid:bulletin_id>/performance",
+        operation_bulletin_performance_view,
+        name="api-operation-bulletin-performance",
     ),
     path("api/v1/wash-routes", wash_routes_view, name="api-wash-routes"),
     path(
@@ -310,6 +345,104 @@ urlpatterns = [
         order_release_to_cutting_view,
         name="api-order-release-to-cutting",
     ),
+    path("api/v1/cutting/jobs", cutting_jobs_view, name="api-cutting-jobs"),
+    path("api/v1/cutting/jobs/<uuid:job_id>", cutting_job_detail_view, name="api-cutting-job"),
+    path(
+        "api/v1/cutting/jobs/<uuid:job_id>/start",
+        cutting_job_start_view,
+        name="api-cutting-job-start",
+    ),
+    path("api/v1/cutting/output", cutting_output_create_view, name="api-cutting-output"),
+    path(
+        "api/v1/cutting/output/<uuid:output_id>/correct",
+        cutting_output_correct_view,
+        name="api-cutting-output-correct",
+    ),
+    path(
+        "api/v1/cutting/jobs/<uuid:job_id>/handover-to-sewing",
+        cutting_handover_to_sewing_view,
+        name="api-cutting-handover-to-sewing",
+    ),
+    path(
+        "api/v1/wip/orders/<uuid:order_id>/summary",
+        order_wip_summary_view,
+        name="api-wip-order-summary",
+    ),
+    path("api/v1/wip/movements", wip_movements_view, name="api-wip-movements"),
+    path("api/v1/sewing/line-loadings", sewing_line_loadings_view, name="api-sewing-line-loadings"),
+    path(
+        "api/v1/sewing/line-loading-board",
+        sewing_line_loading_board_view,
+        name="api-sewing-line-loading-board",
+    ),
+    path(
+        "api/v1/sewing/line-loadings/<uuid:loading_id>",
+        sewing_line_loading_detail_view,
+        name="api-sewing-line-loading-detail",
+    ),
+    path(
+        "api/v1/sewing/line-loadings/preview",
+        sewing_line_loading_preview_view,
+        name="api-sewing-line-loading-preview",
+    ),
+    path(
+        "api/v1/sewing/line-loadings/create",
+        sewing_line_loading_create_view,
+        name="api-sewing-line-loading-create",
+    ),
+    path(
+        "api/v1/sewing/line-loadings/<uuid:loading_id>/activate",
+        sewing_line_loading_activate_view,
+        name="api-sewing-line-loading-activate",
+    ),
+    path(
+        "api/v1/sewing/line-loadings/<uuid:loading_id>/close",
+        sewing_line_loading_close_view,
+        name="api-sewing-line-loading-close",
+    ),
+    path(
+        "api/v1/sewing/line-realignment/preview",
+        line_realignment_preview_view,
+        name="api-line-realignment-preview",
+    ),
+    path(
+        "api/v1/sewing/line-realignment",
+        line_realignment_create_view,
+        name="api-line-realignment-create",
+    ),
+    path(
+        "api/v1/sewing/line-realignment/<uuid:realignment_id>",
+        line_realignment_detail_view,
+        name="api-line-realignment-detail",
+    ),
+    path(
+        "api/v1/sewing/line-realignment/<uuid:realignment_id>/approve",
+        line_realignment_approve_view,
+        name="api-line-realignment-approve",
+    ),
+    path(
+        "api/v1/sewing/line-realignment/<uuid:realignment_id>/apply",
+        line_realignment_apply_view,
+        name="api-line-realignment-apply",
+    ),
+    path(
+        "api/v1/sewing/line-realignment/<uuid:realignment_id>/reject",
+        line_realignment_reject_view,
+        name="api-line-realignment-reject",
+    ),
+    path("api/v1/sewing/output", sewing_output_view, name="api-sewing-output"),
+    path("api/v1/sewing/output/create", sewing_output_create_view, name="api-sewing-output-create"),
+    path(
+        "api/v1/sewing/output/<uuid:output_id>/correct",
+        sewing_output_correct_view,
+        name="api-sewing-output-correct",
+    ),
+    path(
+        "api/v1/sewing/line-efficiency",
+        sewing_line_efficiency_view,
+        name="api-sewing-line-efficiency",
+    ),
+    path("api/v1/sewing/line-style-fit", line_style_fit_view, name="api-sewing-line-style-fit"),
     path("api/v1/material-readiness", material_readiness_view, name="api-material-readiness"),
     path(
         "api/v1/orders/<uuid:order_id>/material-readiness",

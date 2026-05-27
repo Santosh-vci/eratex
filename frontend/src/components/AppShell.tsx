@@ -20,6 +20,7 @@ import {
   PackageCheck,
   Route,
   ScanLine,
+  Scissors,
   Search,
   Settings,
   Shirt,
@@ -150,7 +151,16 @@ const navItems: NavItem[] = [
     group: "Operations",
     permission: "boundary_case.view",
   },
-  { href: "/sewing/line-loading", label: "Sewing", icon: Shirt, group: "Execution", permission: "sewing.view" },
+  { href: "/cutting/room", label: "Cutting", icon: Scissors, group: "Execution", permission: "cutting.view" },
+  {
+    href: "/sewing/line-loading",
+    label: "Sewing Line Loading",
+    icon: Shirt,
+    group: "Execution",
+    permission: "sewing.view",
+  },
+  { href: "/sewing/line-realignment", label: "Realignment", icon: Route, group: "Execution", permission: "sewing.realign_line" },
+  { href: "/sewing/output", label: "Output", icon: ClipboardCheck, group: "Execution", permission: "sewing.record_output" },
   { href: "/wash/planning", label: "Wash", icon: Waves, group: "Execution", permission: "wash.view" },
   { href: "/wip/pipeline", label: "WIP", icon: Boxes, group: "Execution", permission: "wip.view" },
   {
@@ -185,6 +195,10 @@ const breadcrumbLabelOverrides: Record<string, string> = {
   "/technical/styles": "Styles",
   "/workcenters/load": "Workcenter Load",
   "/boundary-cases": "Boundary Cases",
+  "/cutting/room": "Cutting Room",
+  "/sewing/line-loading": "Sewing Line Loading",
+  "/sewing/line-realignment": "Line Realignment",
+  "/sewing/output": "Sewing Output",
 };
 
 function navLabel(item: NavItem) {

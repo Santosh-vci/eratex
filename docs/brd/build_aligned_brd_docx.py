@@ -10,7 +10,7 @@ from docx.shared import Inches, Pt, RGBColor
 
 
 ROOT = Path(__file__).resolve().parent
-OUT = ROOT / "Eratex_Planning_Scheduling_Tool_BRD_Professional_Aligned.docx"
+OUT = ROOT / "Eratex_Planning_Scheduling_Tool_BRD_Final_Fair_Copy.docx"
 
 NAVY = "183A5F"
 BLUE = "2E75B6"
@@ -286,7 +286,7 @@ def configure_doc(doc):
 
     header = section.header
     hp = header.paragraphs[0]
-    hp.text = "Eratex BRD | Planning & Scheduling Tool | Aligned Revision"
+    hp.text = "Eratex Planning & Scheduling Tool BRD"
     hp.alignment = WD_ALIGN_PARAGRAPH.RIGHT
     for run in hp.runs:
         run.font.size = Pt(8)
@@ -295,7 +295,7 @@ def configure_doc(doc):
 
     footer = section.footer
     fp = footer.paragraphs[0]
-    fp.text = "Confidential - Eratex Internal Use Only"
+    fp.text = "Confidential - Prepared for Eratex by Vector Consulting Indonesia"
     fp.alignment = WD_ALIGN_PARAGRAPH.LEFT
     for run in fp.runs:
         run.font.size = Pt(8)
@@ -323,23 +323,21 @@ def cover(doc):
     shading.set(qn("w:fill"), NAVY)
     p._p.get_or_add_pPr().append(shading)
 
-    p = add_para(doc, "Aligned with Rajesh Inputs and BRD Diff Recommendations", after=24, align=WD_ALIGN_PARAGRAPH.CENTER, color="C9DCEB", size=12)
+    p = add_para(doc, "Proposed by Vector Consulting Indonesia for Eratex garment manufacturing operations", after=24, align=WD_ALIGN_PARAGRAPH.CENTER, color="C9DCEB", size=12)
     shading = OxmlElement("w:shd")
     shading.set(qn("w:fill"), NAVY)
     p._p.get_or_add_pPr().append(shading)
 
     add_key_value_table(doc, [
-        ("Company", "Eratex"),
+        ("Prepared For", "Eratex garment manufacturing company"),
+        ("Prepared By", "Vector Consulting Indonesia"),
         ("Document Type", "Business Requirements Document"),
         ("Product Scope", "Denim-aware planning and scheduling platform for garment manufacturing operations"),
         ("Manufacturing Scope", "Denim bottoms and chinos; denim treated as dominant complexity driver"),
-        ("Baseline", "Eratex_Planning_Scheduling_Tool_BRD_Professional_Generated.docx"),
-        ("Alignment Source", "04_Diff_Eratex_BRD_Refinement_From_Rajesh_Inputs.md"),
-        ("Version", "1.1 aligned draft"),
         ("Prepared Date", "2026-05-27"),
-        ("Status", "Draft for business review"),
+        ("Status", "Final fair copy for business review"),
     ])
-    add_callout(doc, "Core revision", "The BRD now frames the product as a governed, denim-aware operating spine rather than only a scheduling screen or Excel replacement.")
+    add_callout(doc, "Core proposition", "The BRD frames the product as a governed, denim-aware operating spine rather than only a scheduling screen or Excel replacement.")
     doc.add_page_break()
 
 
@@ -356,7 +354,7 @@ def build():
 
     add_para(doc, "2. Business Context", style="Heading 1")
     add_para(doc, "2.1 Export-Oriented Operating Context", style="Heading 2")
-    add_para(doc, "Eratex should be treated as an export-oriented garmenting operation where customer delivery commitments, buyer approvals, inspection readiness, documentation, packing, and dispatch reliability are central to business performance. Orders are expected to be driven by international customers, with US and Europe referenced as primary markets in the consultant input.")
+    add_para(doc, "Eratex should be treated as an export-oriented garmenting operation where customer delivery commitments, buyer approvals, inspection readiness, documentation, packing, and dispatch reliability are central to business performance. Orders are expected to be driven by international customers, with US and Europe referenced as primary markets in business discovery inputs.")
     add_para(doc, "2.2 End-to-End Garment Flow", style="Heading 2")
     add_bullets(doc, [
         "Customer enquiry, quotation visibility, sampling, buyer approval, and order confirmation.",
@@ -395,7 +393,7 @@ def build():
         ("Where is the bottleneck?", "Show load, queue, WIP ageing, utilization, and constraint flags by workcenter."),
         ("What can be released today?", "Validate material, prior-process, capacity, quality, manpower, and next-process readiness."),
         ("What recovery action is required?", "Recommend rule-based actions with owner, due date, and approval requirement."),
-        ("What changed in the plan?", "Maintain version, audit trail, boundary-case event, and impact preview."),
+        ("What changed in the plan?", "Maintain change history, audit trail, boundary-case event, and impact preview."),
     ], [2600, 6760])
     add_para(doc, "The product must also define how the system reacts when operating reality changes:", style="Heading 2")
     add_bullets(doc, [
@@ -573,7 +571,7 @@ def build():
 
     part(doc, "Part B: Mature-State Scope")
     add_para(doc, "The MVP stabilizes planning discipline. Mature deployment extends into deeper commercial, technical, execution, governance, and analytics capability.")
-    add_table(doc, ["Surface", "Aligned Mature-State Intent"], [
+    add_table(doc, ["Surface", "Mature-State Intent"], [
         ("Executive Control Tower", "Management risk dashboard for shipment risk, bottlenecks, utilization, overtime exposure, recovery actions, and order-book health."),
         ("Enquiry and Costing", "Full costing and feasibility surface remains mature-state; MVP only captures milestone visibility unless business confirms immediate need."),
         ("Sampling and Approval Tracker", "Full sample workflow remains mature-state; MVP captures sample approval as lifecycle and PCD dependency."),
@@ -590,7 +588,7 @@ def build():
         ("Recovery Planning / What-If Simulation", "Scenario tests for fabric delay, line split, wash rework, overtime, shift extension, and shipment pull-forward."),
         ("Plan Change and Approval", "Frozen-zone and firm-zone plan change request, reason code, impact analysis, approval, and audit trail."),
         ("Department Handover", "Formal interdepartmental handovers with completeness checks."),
-        ("Master Data Governance", "Completeness and version control for style, BOM, SMV, workcenter capacity, calendar, wash recipe, and vendor lead time."),
+        ("Master Data Governance", "Completeness and controlled change history for style, BOM, SMV, workcenter capacity, calendar, wash recipe, and vendor lead time."),
         ("Performance Analytics", "OTIF, utilization, plan adherence, line efficiency, net-good output, wash rework, quality defects, WIP ageing, and recovery cost."),
         ("Mobile / Shopfloor Update", "Low-friction output, defect, shortage, machine issue, absenteeism, and handover updates."),
         ("Role-Based Home Surfaces", "Role-specific dashboards for management, planners, merchandisers, procurement, QC, production, and shipment teams."),
@@ -697,7 +695,7 @@ def build():
         ("Usability", "Screens must be simple, action-oriented, and suitable for planners and shopfloor supervisors."),
         ("Performance", "Workcenter load, WIP, and order-risk views should load quickly for large order volumes."),
         ("Scalability", "System must support large factory operations with many lines, workcenters, styles, and orders."),
-        ("Reliability", "Planning data must be version-controlled and auditable."),
+        ("Reliability", "Planning data must be controlled, traceable, and auditable."),
         ("Security", "Access should be role-based and protect sensitive commercial and customer data."),
         ("Auditability", "Plan changes, overrides, conditional releases, and shipment changes must be traceable."),
         ("Configurability", "Workcenters, statuses, thresholds, calendars, roles, product complexity, and capacity units must be configurable."),
@@ -760,20 +758,21 @@ def build():
         ("Planning Rulebook Compliance Report", "Whether critical releases followed defined scheduling rules."),
     ], [2700, 6660], font_size=8.2)
 
+    doc.add_page_break()
     part(doc, "Part I: Implementation Roadmap")
     add_para(doc, "Phase 0A: Scheduling Behaviour Rulebook and Simulation Validation", style="Heading 2")
-    add_para(doc, "Before deep implementation, conduct a focused business workshop and produce the following deliverables:")
-    add_numbered(doc, [
-        "Capacity definition matrix.",
-        "MVP planning grain decision.",
-        "Order cancellation matrix.",
-        "Capacity change matrix.",
-        "Wash/rewash behaviour matrix.",
-        "Shipment risk reaction matrix.",
-        "Planner-control vs system-control boundary.",
-        "Boundary-case seed scenario pack.",
-        "BRD-to-build traceability matrix.",
-    ])
+    add_para(doc, "Before deep implementation, conduct a focused business workshop and produce the following deliverables:", keep=True)
+    add_table(doc, ["Deliverable", "Purpose"], [
+        ("Capacity definition matrix", "Confirm how capacity is measured for sewing lines, workcenters, wash batches, finishing, and shipment readiness."),
+        ("MVP planning grain decision", "Lock the control level used for MVP planning, release, recovery, and reporting."),
+        ("Order cancellation matrix", "Define system response by cancellation stage and downstream commitment already triggered."),
+        ("Capacity change matrix", "Define approved reactions to absenteeism, overtime, downtime, machine breakdown, and shift changes."),
+        ("Wash/rewash behaviour matrix", "Define routing, approval, capacity impact, quality checks, and recovery treatment for repeat wash and rework."),
+        ("Shipment risk reaction matrix", "Define escalation, pull-forward, split shipment, overtime, and management approval rules."),
+        ("Planner-control vs system-control boundary", "Clarify where the system recommends, warns, blocks, or requires planner approval."),
+        ("Boundary-case seed scenario pack", "Create realistic scenarios for cancellation, capacity loss, rewash, delayed material, and shipment pull-in."),
+        ("BRD-to-build traceability matrix", "Map final BRD requirements to user stories, UI surfaces, acceptance criteria, and test evidence."),
+    ], [2950, 6410], font_size=8.2)
     add_callout(doc, "Build gate", "Do not finalize daily release, workcenter load, or wash planning logic until Phase 0A confirms capacity definitions, wash/rework behaviour, and boundary-case reaction rules.")
     add_para(doc, "Phase 1: MVP Foundation", style="Heading 2")
     add_bullets(doc, ["Order Lifecycle", "PCD Readiness", "Weekly Planning Workbench", "Daily Production Release", "Workcenter Load Monitor", "Sewing Line Loading", "Wash Planning", "WIP and Queue Monitoring", "Exception and Alert Management", "Shipment Readiness"])
@@ -843,10 +842,10 @@ def build():
     ]
     for title, qs in question_groups:
         add_para(doc, title, style="Heading 2")
-        add_numbered(doc, qs)
+        add_bullets(doc, qs)
 
-    add_para(doc, "20. Final BRD Summary", style="Heading 1")
-    add_para(doc, "Eratex requires an end-to-end planning and scheduling tool because its current planning environment appears to be partially digitized but still operationally dependent on Excel. The aligned BRD sharpens the root cause: denim manufacturing requires a governed operating spine that understands wash/laundry complexity, WIP movement, capacity changes, boundary cases, and exception ownership.")
+    add_para(doc, "Final BRD Summary", style="Heading 1")
+    add_para(doc, "Eratex requires an end-to-end planning and scheduling tool because its current planning environment appears to be partially digitized but still operationally dependent on Excel. This BRD sharpens the root cause: denim manufacturing requires a governed operating spine that understands wash/laundry complexity, WIP movement, capacity changes, boundary cases, and exception ownership.")
     add_para(doc, "The proposed tool must become the daily operating discipline layer for Eratex. It must enforce order visibility, PCD readiness, weekly and daily planning control, workcenter load monitoring, realistic sewing line loading, denim-specific wash and rewash planning, WIP ageing visibility, exception ownership, shipment readiness, and controlled system reaction when factory reality changes.")
     add_callout(doc, "Final position", "Build a governed denim-aware operating spine, not just a scheduling screen.")
 

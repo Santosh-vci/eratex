@@ -1,10 +1,5 @@
-import { PlaceholderPage } from "@/components/PlaceholderPage";
+import { SewingLineLoadingPage as SewingLineLoadingWorkbench } from "@/features/execution/ExecutionPages";
 
-export default function SewingLineLoadingPage() {
-  return (
-    <PlaceholderPage
-      title="Sewing Line Loading"
-      description="Line load, target, actual, defect, net-good output, and bottleneck pattern from the sewing reference."
-    />
-  );
+export default function Page() {
+  return <SewingLineLoadingWorkbench />;
 }

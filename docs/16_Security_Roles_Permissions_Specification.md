@@ -2006,3 +2006,14 @@ The core governance principle is:
 ```text
 The right user may take the right action, on the right entity, in the right state, with a traceable audit record.
 ```
+
+## Phase 5 / EOS-05 Execution Permissions
+
+The execution bridge adds permission gates for cutting, WIP movement, sewing line loading, line realignment, and sewing output:
+
+- `cutting.view/start_job/record_output/correct_output/handover_to_sewing`
+- `wip.view/move_execution`
+- `sewing.view/load_line/record_output/correct_output/realign_line/approve_realignment/apply_realignment/view_efficiency`
+- `boundary_case.create_line_shortfall`
+
+Operational actions must be denied when the user lacks the relevant permission, even if the user can view the workbench. Approval permissions are separate from request permissions for line realignment and governed shortfall recovery.

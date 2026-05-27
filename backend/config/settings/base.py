@@ -46,6 +46,9 @@ INSTALLED_APPS = [
     "apps.production_release",
     "apps.boundary_cases",
     "apps.external_plans",
+    "apps.wip_inventory",
+    "apps.cutting",
+    "apps.sewing",
     "apps.demo_seed",
 ]
 

@@ -13,6 +13,7 @@ import {
   getThresholds,
   getVendors,
 } from "@/services/api/master-data";
+import { getOperationBulletinPerformance } from "@/services/api/execution";
 import { getMaterialReadiness } from "@/services/api/pre-production";
 import {
   approveOperationBulletin,
@@ -531,6 +532,13 @@ export function OperationBulletinsPage() {
     queryFn: () => getOperationBulletin(activeBulletin?.id ?? ""),
     enabled: Boolean(activeBulletin?.id),
   });
+  const performance = useQuery({
+    queryKey: activeBulletin?.id
+      ? queryKeys.operationBulletinPerformance(activeBulletin.id)
+      : ["execution", "operation-bulletin-performance", "none"],
+    queryFn: () => getOperationBulletinPerformance(activeBulletin?.id ?? ""),
+    enabled: Boolean(activeBulletin?.id),
+  });
   const operations = detail.data?.operations ?? [];
   const approve = useMutation({
     mutationFn: (bulletinId: string) => approveOperationBulletin(bulletinId),
@@ -588,10 +596,12 @@ export function OperationBulletinsPage() {
           {activeBulletin ? (
             <div className="space-y-5">
               <section className="border border-outline-variant bg-surface-container p-3">
-                <SectionLabel>Impact Simulation</SectionLabel>
+                <SectionLabel>Active Production Performance</SectionLabel>
                 <div className="grid grid-cols-2 gap-3">
-                  <TechnicalRef label="Current SMV" value={activeBulletin.totalSmv} />
-                  <TechnicalRef label="Critical ops" value={activeBulletin.criticalOperationCount} />
+                  <TechnicalRef label="Active loads" value={performance.data?.activeLineLoadings ?? 0} />
+                  <TechnicalRef label="Net good" value={performance.data?.netGoodQty ?? 0} />
+                  <TechnicalRef label="Efficiency" value={`${performance.data?.efficiencyPercent ?? 0}%`} />
+                  <TechnicalRef label="SMV" value={activeBulletin.totalSmv} />
                 </div>
               </section>
               <section>

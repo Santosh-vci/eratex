@@ -773,3 +773,296 @@ export type ExternalPlanImportBatch = {
   validationResults: ExternalPlanValidationResult[];
   createdAt: string;
 };
+
+export type CutBundle = {
+  id: string;
+  bundleNo: string;
+  quantity: number;
+  shadeLot: string;
+  status: string;
+};
+
+export type CuttingOutputEntry = {
+  id: string;
+  jobId: string;
+  jobNo: string;
+  clientEventId: string;
+  outputQty: number;
+  defectQty: number;
+  reworkQty: number;
+  netCutQty: number;
+  recordedAt: string;
+  remarks: string;
+};
+
+export type CuttingJob = {
+  id: string;
+  jobNo: string;
+  releaseId: string;
+  releaseNo: string;
+  orderId: string;
+  orderNo: string;
+  styleCode: string;
+  workcenterId: string;
+  workcenterCode: string;
+  plannedQuantity: number;
+  markerNo: string;
+  colorCode: string;
+  shadeLot: string;
+  status: string;
+  riskStatus: RiskStatus;
+  startedAt: string | null;
+  completedAt: string | null;
+  handedOverAt: string | null;
+  outputQty: number;
+  netCutQty: number;
+  bundleCount: number;
+  outputs?: CuttingOutputEntry[];
+  bundles?: CutBundle[];
+};
+
+export type WipStageSummary = {
+  quantity: number;
+  availableQuantity: number;
+  heldQuantity: number;
+  riskStatus: RiskStatus;
+};
+
+export type WipSummary = {
+  orderId: string;
+  orderNo: string;
+  stages: Record<string, WipStageSummary>;
+  totalAvailable: number;
+};
+
+export type WipMovement = {
+  id: string;
+  movementNo: string;
+  orderId: string;
+  orderNo: string;
+  sourceLotId: string | null;
+  targetLotId: string | null;
+  fromStage: string;
+  toStage: string;
+  quantity: number;
+  movementType: string;
+  reason: string;
+  createdAt: string;
+};
+
+export type SewingLineLoading = {
+  id: string;
+  loadingNo: string;
+  releaseId: string;
+  releaseNo: string;
+  orderId: string;
+  orderNo: string;
+  styleCode: string;
+  lineId: string;
+  lineCode: string;
+  lineName: string;
+  workcenterId: string;
+  workcenterCode: string;
+  bulletinId: string;
+  bulletinVersion: string;
+  plannedQuantity: number;
+  targetOutputPerDay: number;
+  targetEfficiency: number;
+  expectedDefectRate: number;
+  planningZone: string;
+  plannedShift: string;
+  colorCode: string;
+  shadeLot: string;
+  fitStatus: string;
+  status: string;
+  riskStatus: RiskStatus;
+  activatedAt: string | null;
+  closedAt: string | null;
+};
+
+export type HourlyOutputBucket = {
+  time: string;
+  target: number;
+  actual: number;
+};
+
+export type OperatorAllocation = {
+  code: string;
+  name: string;
+  role: string;
+  status: "PRESENT" | "ABSENT" | string;
+};
+
+export type RecoveryAction = {
+  label: string;
+  description: string;
+  actionLabel: string;
+};
+
+export type SewingLineAnalysis = {
+  title: string;
+  subtitle: string;
+  hourlyOutput: HourlyOutputBucket[];
+  bottleneckOperation: {
+    operationName: string;
+    smv: number;
+    station: string;
+    wipAccumulation: number;
+  };
+  operatorAllocation: OperatorAllocation[];
+  absenceImpact: string;
+  recoveryAction: RecoveryAction;
+};
+
+export type SewingLineBoardRow = {
+  id: string;
+  lineLoadingId: string;
+  lineCode: string;
+  rawLineCode: string;
+  poNo: string;
+  orderNo: string;
+  style: string;
+  smv: number;
+  target: number;
+  actual: number;
+  efficiencyPercent: number;
+  defectPercent: number;
+  netGood: number;
+  plannedManpower: number;
+  actualManpower: number;
+  status: string;
+  riskStatus: RiskStatus;
+  analysis: SewingLineAnalysis;
+};
+
+export type SewingLineLoadingBoard = {
+  summary: {
+    activeLines: number;
+    overloadedLines: number;
+    underloadedLines: number;
+    avgNetGoodEfficiency: number;
+    highestRisk: {
+      lineId: string;
+      lineCode: string;
+      efficiencyPercent: number;
+      defectPercent: number;
+      riskStatus: RiskStatus;
+    };
+  };
+  lines: SewingLineBoardRow[];
+  selectedLineId: string | null;
+};
+
+export type LineLoadingPreview = {
+  releaseId: string;
+  releaseNo: string;
+  orderId: string;
+  orderNo: string;
+  lineId: string;
+  lineCode: string;
+  bulletinId: string;
+  bulletinVersion: string;
+  styleCode: string;
+  styleSmv: number;
+  plannedQuantity: number;
+  dailyTarget: number;
+  targetEfficiency: number;
+  expectedDefectRate: number;
+  availableMinutes: number;
+  fitStatus: string;
+  riskStatus: RiskStatus;
+  machineGaps: Array<Record<string, unknown>>;
+  skillGaps: Array<Record<string, unknown>>;
+  approvalRequired: boolean;
+  warnings: string[];
+};
+
+export type LineRealignmentGap = {
+  id?: string;
+  gapType?: string;
+  label?: string;
+  machineType?: string;
+  operationName?: string;
+  required?: number;
+  available?: number;
+  requiredOperators?: number;
+  availableOperators?: number;
+  gap: number;
+  recommendation: string;
+};
+
+export type LineRealignmentPreview = {
+  lineId: string;
+  lineCode: string;
+  lineLoadingId: string | null;
+  orderId: string | null;
+  orderNo: string;
+  styleCode: string;
+  bulletinId: string;
+  bulletinVersion: string;
+  fitStatus: string;
+  expectedOutputBefore: number;
+  expectedOutputAfter: number;
+  changeoverMinutes: number;
+  machineGaps: LineRealignmentGap[];
+  skillGaps: LineRealignmentGap[];
+  bottleneckOperations: Array<{ operationName: string; loadPercent: number }>;
+  recommendations: string[];
+  approvalRequired: boolean;
+  riskStatus: RiskStatus;
+};
+
+export type LineRealignment = LineRealignmentPreview & {
+  id: string;
+  requestNo: string;
+  status: string;
+  targetOutput: number;
+  gaps: LineRealignmentGap[];
+};
+
+export type SewingOutputEntry = {
+  id: string;
+  lineLoadingId: string;
+  loadingNo: string;
+  clientEventId: string;
+  orderId: string;
+  orderNo: string;
+  lineId: string;
+  lineCode: string;
+  entryTime: string;
+  timeSlot: string;
+  grossQty: number;
+  defectQty: number;
+  reworkQty: number;
+  netGoodQty: number;
+  source: string;
+  remarks: string;
+};
+
+export type SewingLineEfficiency = {
+  lineLoadingId: string;
+  loadingNo: string;
+  orderNo: string;
+  lineCode: string;
+  targetOutput: number;
+  grossQty: number;
+  defectQty: number;
+  reworkQty: number;
+  netGoodQty: number;
+  efficiencyPercent: number;
+  riskStatus: RiskStatus;
+};
+
+export type OperationBulletinPerformance = {
+  bulletinId: string;
+  styleCode: string;
+  version: string;
+  totalSmv: number;
+  activeLineLoadings: number;
+  plannedQuantity: number;
+  targetQuantity: number;
+  grossQty: number;
+  netGoodQty: number;
+  efficiencyPercent: number;
+  performanceVariance: number;
+};

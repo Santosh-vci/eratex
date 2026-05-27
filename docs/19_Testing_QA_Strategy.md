@@ -1797,3 +1797,19 @@ A strong automated and UAT-driven QA discipline is essential to ensure the platf
 ## Scheduling Behaviour Rulebook Alignment
 
 QA must prove "what happens when" behaviour: frozen-zone changes, firm-zone preview/approval, capacity loss/addition, order cancellation by stage, shipment pull-in, repeat wash beyond maximum cycles, external plan conflicts, RBAC denial, audit creation, and seed scenario validation for SCN-014 to SCN-023.
+
+## Phase 5 / EOS-05 Execution QA Alignment
+
+QA must prove that production execution is controlled, not merely displayed:
+
+- governed production releases create cutting jobs;
+- cutting output creates cut-panel WIP and bundles;
+- cutting-to-sewing handover cannot exceed available cut-panel quantity;
+- line loading is blocked without approved operation bulletin or approved exception;
+- line realignment preview shows machine gap, skill gap, bottleneck, and before/after output;
+- sewing output requires active line loading;
+- net-good output updates WIP and efficiency;
+- duplicate client event IDs do not double-count output;
+- output correction writes audit and applies the corrected WIP delta;
+- shortfall creates a boundary case with owner and due date;
+- seed validation covers SCN-024 through SCN-033.

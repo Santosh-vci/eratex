@@ -32,4 +32,14 @@ export const queryKeys = {
   boundaryCases: ["rulebook", "boundary-cases"] as const,
   boundaryImpactPreview: ["rulebook", "boundary-impact-preview"] as const,
   externalPlans: ["rulebook", "external-plans"] as const,
+  cuttingJobs: ["execution", "cutting-jobs"] as const,
+  wipMovements: ["execution", "wip-movements"] as const,
+  wipOrderSummary: (orderId: string) => ["execution", "wip-order-summary", orderId] as const,
+  sewingLineLoadingBoard: ["execution", "sewing-line-loading-board"] as const,
+  sewingLineLoadings: ["execution", "sewing-line-loadings"] as const,
+  sewingOutput: ["execution", "sewing-output"] as const,
+  sewingLineEfficiency: ["execution", "sewing-line-efficiency"] as const,
+  lineStyleFit: ["execution", "line-style-fit"] as const,
+  operationBulletinPerformance: (bulletinId: string) =>
+    ["execution", "operation-bulletin-performance", bulletinId] as const,
 };

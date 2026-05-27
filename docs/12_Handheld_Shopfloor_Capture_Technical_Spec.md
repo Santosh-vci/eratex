@@ -2127,3 +2127,17 @@ The planning board is only as accurate as the shopfloor capture layer.
 ```
 
 Therefore, handheld/PWA capture must be treated as a core MVP capability, not a later reporting add-on.
+
+## Phase 5 / EOS-05 Execution Alignment
+
+The first sewing output capture surface is delivered as a desktop/tablet workbench. It captures gross quantity, defect quantity, rework quantity, and calculated net-good quantity against an active line loading.
+
+Rules:
+
+- Output cannot be captured without an active release-to-line assignment.
+- Net-good quantity is calculated as gross minus defect and rework.
+- Defect plus rework cannot exceed gross quantity.
+- Duplicate client event IDs must not double-count output.
+- Corrections reverse and reapply the WIP delta with audit.
+
+Mobile offline capture, device sync, and broader handheld workflows remain future handheld scope.

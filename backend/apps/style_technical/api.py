@@ -322,6 +322,40 @@ def operation_bulletin_detail_view(_request, bulletin_id):
     return api_response(serialize_bulletin(bulletin, include_lines=True))
 
 
+@require_GET
+@api_permission_required("sewing.view_efficiency")
+def operation_bulletin_performance_view(_request, bulletin_id):
+    bulletin = get_object_or_404(
+        OperationBulletin.objects.select_related("style").prefetch_related("sewing_line_loadings"),
+        id=bulletin_id,
+    )
+    loadings = bulletin.sewing_line_loadings.filter(is_active=True).prefetch_related(
+        "output_entries"
+    )
+    planned_qty = sum(loading.planned_quantity for loading in loadings)
+    target_qty = sum(loading.target_output_per_day for loading in loadings)
+    net_good = sum(
+        output.net_good_qty for loading in loadings for output in loading.output_entries.all()
+    )
+    gross = sum(output.gross_qty for loading in loadings for output in loading.output_entries.all())
+    efficiency = round((net_good / target_qty * 100), 2) if target_qty else 0
+    return api_response(
+        {
+            "bulletinId": str(bulletin.id),
+            "styleCode": bulletin.style.style_code,
+            "version": bulletin.version,
+            "totalSmv": float(bulletin.total_smv),
+            "activeLineLoadings": loadings.count(),
+            "plannedQuantity": planned_qty,
+            "targetQuantity": target_qty,
+            "grossQty": gross,
+            "netGoodQty": net_good,
+            "efficiencyPercent": efficiency,
+            "performanceVariance": round(efficiency - 100, 2) if target_qty else 0,
+        }
+    )
+
+
 @require_POST
 @api_permission_required("bulletin.approve")
 def operation_bulletin_approve_view(request, bulletin_id):

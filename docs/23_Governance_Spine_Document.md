@@ -1862,3 +1862,31 @@ If this spine is followed, the product will not become another disconnected tool
 ## Scheduling Behaviour Rulebook Alignment
 
 The governance spine now treats scheduling disruptions as owned, auditable boundary cases. The system recommends and previews first; planners or approvers commit. FastReact and Excel are coexistence inputs only and must pass validation before becoming draft platform plans.
+
+## Phase 5 / EOS-05 Execution Governance
+
+The execution bridge connects planning truth to shopfloor truth without opening later-phase scope:
+
+- Cutting jobs must come from governed production releases.
+- Sewing line loading requires approved operation bulletin or approved governed exception.
+- Realignment is previewed before request, approved when governed, and then applied with audit.
+- Sewing output is captured as gross, defect, rework, and net-good quantity.
+- Net-good quantity is the controlled quantity that updates execution WIP and line efficiency.
+- Shortfall creates or links to a boundary case until the full exception lifecycle is implemented.
+
+The UI remains prototype-governed from `docs/frontend_ui`. Execution surfaces must map to cutting room management, sewing line loading, line realignment, operation bulletin routing, and sewing output capture prototypes.
+
+## Prototype Parity Governance Gate
+
+The prototype folders under `docs/frontend_ui` are executable UI contracts for any route that maps to them. A route is not ready merely because it renders, passes generic e2e navigation, or has a screenshot.
+
+Before a prototype-backed route may be marked verified:
+
+1. The implementation must preserve the prototype's primary layout, workbench density, action placement, drawer or fixed-panel behavior, and operational copy structure.
+2. The e2e test must assert structural landmarks from the prototype: KPI names/count, table columns, row density behavior, detail drawer sections, action labels, and any chart/swimlane/fixed-panel regions.
+3. Screenshot evidence must be captured from the running app after those assertions pass.
+4. Seed data must exercise the same operating shape as the prototype. Multi-line, multi-order, multi-state workbenches cannot be proven with one happy-path record.
+5. API or seed payload gaps must be documented before UI build. Missing fields must not be hidden by substituting cards, generic panels, or invented copy.
+6. Readiness notes must distinguish `Backend verified`, `Frontend rendered`, and `Prototype parity verified`; these statuses are not interchangeable.
+
+If any of these checks fail, the surface must be marked `Blocked by prototype drift` and excluded from handoff readiness until corrected.

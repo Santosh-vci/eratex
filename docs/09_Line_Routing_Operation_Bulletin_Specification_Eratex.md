@@ -2120,3 +2120,14 @@ style technical design
 This capability is critical because Eratex-scale garment manufacturing cannot rely only on high-level line loading. The system must know whether the planned line can actually produce the style at the expected quantity, quality, and efficiency.
 
 The operation bulletin and line routing layer turns planning from manual estimation into governed, data-backed execution planning.
+
+## Phase 5 / EOS-05 Execution Alignment
+
+Line loading must validate against the approved operation bulletin before a release can become active on a sewing line. The loading service checks:
+
+- approved bulletin status, unless an approved governed exception is linked;
+- machine type coverage against operation requirements;
+- operator skill coverage against critical operation needs;
+- expected output before and after any realignment.
+
+The operation bulletin master and routing builder now expose read-only production usage and performance deviation. These values support planning recalibration but do not mutate the approved bulletin version.

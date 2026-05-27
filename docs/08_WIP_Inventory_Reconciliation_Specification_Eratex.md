@@ -2410,3 +2410,15 @@ order quantity
 This WIP layer is essential because it connects the planning board with physical reality. Without it, Eratex will continue to depend on manual Excel trackers for the true shopfloor position.
 
 The WIP module must therefore be treated as a central control layer, not as a secondary report.
+
+## Phase 5 / EOS-05 Execution Alignment
+
+The initial execution build introduces a deliberately narrow WIP layer for cutting and sewing proof:
+
+- `WipLot` represents governed execution quantity at `CUTTING`, `CUT_PANEL`, `SEWING_ACTIVE`, and `SEWN_WAITING_WASH`.
+- `WipMovement` records transactional movement between those stages and must not allow quantities to exceed available source quantity.
+- `WipHandover` links formal cutting-to-sewing transfer to the movement record.
+- Cutting output creates cut-panel WIP and bundles.
+- Sewing net-good output moves quantity from active sewing WIP toward sewn waiting wash.
+
+This alignment does not implement full inventory reconciliation, ageing dashboards, wash batch WIP, shipment WIP, or adjustment workflows. Those remain later execution and reconciliation scope.

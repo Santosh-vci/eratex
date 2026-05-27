@@ -1,6 +1,6 @@
 # Eratex Planning and Scheduling Platform
 
-Phase 0 bootstraps the Eratex monorepo into a runnable full-stack foundation. Phase 1 adds the common platform layer, Phase 2 adds controlled master data and technical product foundations, Phase 3 adds order readiness control, and Phase 4 / EOS-04 adds planning, capacity, workcenter load, and daily release control.
+Phase 0 bootstraps the Eratex monorepo into a runnable full-stack foundation. Phase 1 adds the common platform layer, Phase 2 adds controlled master data and technical product foundations, Phase 3 adds order readiness control, Phase 4 / EOS-04 adds planning, capacity, workcenter load, and daily release control, and Phase 5 / EOS-05 adds the first production-execution bridge for cutting, sewing line loading, line realignment, and net-good sewing output.
 
 ## Stack
 
@@ -32,6 +32,13 @@ Seed EOS-04 planning and release data, which idempotently loads the earlier foun
 
 ```powershell
 docker compose exec backend python manage.py seed_eos04
+```
+
+Seed EOS-05 execution flow data, which idempotently loads EOS-04 first:
+
+```powershell
+docker compose exec backend python manage.py seed_execution_flow
+docker compose exec backend python manage.py validate_seed_scenarios
 ```
 
 Primary local endpoints:
@@ -173,3 +180,41 @@ docker compose --profile test run --rm frontend_e2e
 ```
 
 Phase 4 / EOS-04 intentionally excludes WIP inventory/reconciliation, cutting execution, sewing output, wash execution, shipment workflow, analytics/control-tower maturity, what-if simulation workbench, multi-unit capacity simulation, imports, and offline/mobile behavior.
+
+## Phase 5 / EOS-05 Baseline
+
+Phase 5 / EOS-05 adds cutting jobs from governed production releases, cutting output and cut bundles, minimal execution WIP lots/movements, sewing line loading, active line assignment, governed line realignment, desktop/tablet sewing output capture, net-good output calculation, line efficiency, and shortfall boundary-case creation.
+
+UI implementation remains prototype-first. The canonical references are:
+
+| App Route | Required Prototype Source |
+|---|---|
+| `/cutting/room` | `docs/frontend_ui/cutting_room_management_dashboard` |
+| `/sewing/line-loading` | `docs/frontend_ui/sewing_line_loading_dashboard` |
+| `/sewing/line-realignment` | `docs/frontend_ui/line_realignment_workbench` |
+| `/sewing/output` | `docs/frontend_ui/sewing_output_capture` |
+| `/technical/operation-bulletins` | `docs/frontend_ui/operation_bulletin_master_dashboard` |
+| `/technical/operation-bulletins/{id}/routing` | `docs/frontend_ui/operation_bulletin_detail_routing_builder` |
+
+Additional local seeded users:
+
+| Username | Password | Role |
+|---|---|---|
+| `cutting_user` | `planning123` | Cutting User |
+| `line_supervisor` | `planning123` | Line Supervisor |
+| `sewing_mgr` | `planning123` | Sewing Manager |
+
+EOS-05 local validation:
+
+```powershell
+docker compose config
+docker compose up --build -d backend frontend
+docker compose exec -T backend python manage.py seed_eos04
+docker compose exec -T backend python manage.py seed_execution_flow
+docker compose exec -T backend python manage.py validate_seed_scenarios
+docker compose run --rm backend python -m pytest
+docker compose run --rm --no-deps frontend npm run test
+docker compose --profile test run --rm frontend_e2e
+```
+
+Phase 5 / EOS-05 intentionally excludes full WIP reconciliation, wash batch execution, shipment workflow, full exception recovery, mature analytics snapshots, mobile offline capture, imports, mature simulation, and optimizer behavior.

@@ -10,8 +10,9 @@ Current implemented boundary:
 - Phase 1: common platform foundation only.
 - Phase 2: controlled master data and technical product foundation only.
 - Phase 3: orders, procurement readiness, fabric QC, and PCD release-gate readiness only.
+- Phase 4 / EOS-04: planning, capacity visibility, workcenter load, plan freeze/change governance, and daily production release control only.
 
-Do not add planning algorithms, daily release execution, cutting output, bundles, production output, WIP movement, sewing execution, wash execution, shipment workflow, full exception management, imports, or offline/mobile behavior while working inside Phase 3.
+Do not add WIP inventory/reconciliation, cutting output, bundles, production output, sewing execution, wash execution, shipment workflow, analytics/control-tower maturity, what-if simulation workbench, multi-unit capacity simulation, imports, or offline/mobile behavior while working inside Phase 4 / EOS-04.
 
 ## Backend Rules
 
@@ -20,8 +21,10 @@ Do not add planning algorithms, daily release execution, cutting output, bundles
 - Use explicit API endpoints and the standard envelope: `{ "data": ..., "meta": {}, "errors": [] }`.
 - Use Django Admin for master correction, user/role administration, and seed/admin correction.
 - Frontend owns operational Phase 3 updates for PCD items, ETA updates, fabric QC inspection capture, conditional release, and release-to-cutting.
+- Frontend owns operational EOS-04 updates for planning assignment, impact preview, plan freeze/change requests, release validation, release override, and release completion.
 - Keep approved BOM, operation bulletin, and wash route versions immutable; clone to a new draft for changes.
 - Release-to-cutting must update only PCD/order lifecycle state and audit. Do not create cutting execution, WIP, bundles, sewing, wash, or production output records.
+- Daily release control must not create cutting execution, WIP, bundles, sewing, wash, shipment, or production output records.
 - Keep audit events business-readable and append-only.
 - Run backend checks before handoff inside Docker only:
 
@@ -82,6 +85,12 @@ Seed Phase 3 order readiness scenarios:
 
 ```powershell
 docker compose exec backend python manage.py seed_phase3
+```
+
+Seed EOS-04 planning and release scenarios:
+
+```powershell
+docker compose exec backend python manage.py seed_eos04
 ```
 
 ## Git Handoff

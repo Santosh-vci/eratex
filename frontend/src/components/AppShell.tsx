@@ -142,7 +142,7 @@ const navItems: NavItem[] = [
     label: "Workcenters",
     icon: BarChart3,
     group: "Operations",
-    permission: "workcenters.view",
+    permission: "workcenters.view_load",
   },
   { href: "/sewing/line-loading", label: "Sewing", icon: Shirt, group: "Execution", permission: "sewing.view" },
   { href: "/wash/planning", label: "Wash", icon: Waves, group: "Execution", permission: "wash.view" },
@@ -170,11 +170,14 @@ const breadcrumbLabelOverrides: Record<string, string> = {
   "/foundation/components": "Components",
   "/master-data/governance": "Master Data Governance",
   "/pcd-readiness": "PCD Readiness",
+  "/planning/weekly": "Weekly Planning",
   "/procurement/vendor-follow-up": "Vendor Follow-Up",
+  "/releases/daily": "Daily Release",
   "/technical/bom": "BOM",
   "/technical/operation-bulletins": "Operation Bulletins",
   "/technical/operator-skill-capacity": "Operator Skill Capacity",
   "/technical/styles": "Styles",
+  "/workcenters/load": "Workcenter Load",
 };
 
 function navLabel(item: NavItem) {
@@ -216,6 +219,11 @@ function buildShellBreadcrumbs(
 
   if (pathname.startsWith("/technical/operation-bulletins/")) {
     crumbs.push({ label: "Operation Bulletins", href: "/technical/operation-bulletins" }, { label: "Routing" });
+    return crumbs;
+  }
+
+  if (pathname.startsWith("/workcenters/") && pathname.endsWith("/queue")) {
+    crumbs.push({ label: "Workcenter Load", href: "/workcenters/load" }, { label: "Queue" });
     return crumbs;
   }
 
@@ -349,8 +357,8 @@ export function AppShell({ children }: { children: ReactNode }) {
       <nav
         className={
           isNavExpanded
-            ? "ops-rail overflow-visible px-3 py-3 transition-[width,padding] duration-200 ease-out"
-            : "ops-rail overflow-visible px-2 py-3 transition-[width,padding] duration-200 ease-out"
+            ? "ops-rail overflow-x-visible overflow-y-auto px-3 py-3 transition-[width,padding] duration-200 ease-out"
+            : "ops-rail overflow-x-visible overflow-y-auto px-2 py-3 transition-[width,padding] duration-200 ease-out"
         }
         style={{ width: isNavExpanded ? 240 : 64 }}
         aria-label="Primary navigation"

@@ -1,9 +1,18 @@
+from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_GET
 
 from apps.common.decorators import api_permission_required
 from apps.common.responses import api_response
-from apps.workcenters.models import LineProfile, Machine, MachineType, WorkcenterCapacityDay
+from apps.organization.models import Workcenter
+from apps.workcenters.models import (
+    LineProfile,
+    Machine,
+    MachineType,
+    WorkcenterCapacityDay,
+    WorkcenterLoadSnapshot,
+)
 from apps.workcenters.services.capacity import calculate_available_capacity
+from apps.workcenters.services.load import get_current_constraint, get_workcenter_queue
 
 
 def serialize_machine_type(machine_type: MachineType) -> dict[str, object]:
@@ -101,3 +110,74 @@ def capacity_days_view(_request):
             for day in capacity_days
         ]
     )
+
+
+@require_GET
+@api_permission_required("workcenters.view_load")
+def workcenter_load_view(_request):
+    snapshots = (
+        WorkcenterLoadSnapshot.objects.filter(is_active=True)
+        .select_related("workcenter", "workcenter__factory", "top_affected_order")
+        .order_by("-snapshot_date", "-utilization_percent", "workcenter__code")[:100]
+    )
+    return api_response([serialize_workcenter_load(snapshot) for snapshot in snapshots])
+
+
+@require_GET
+@api_permission_required("workcenters.view_queue")
+def workcenter_queue_view(_request, workcenter_id):
+    workcenter = get_object_or_404(Workcenter, id=workcenter_id)
+    rows = get_workcenter_queue(workcenter)
+    return api_response(
+        [
+            {
+                "id": str(row.id),
+                "workcenterId": str(row.workcenter_id),
+                "workcenterCode": row.workcenter.code,
+                "snapshotDate": row.snapshot_date.isoformat(),
+                "orderId": str(row.order_id) if row.order_id else None,
+                "orderNo": row.order.order_no if row.order else None,
+                "queueStage": row.queue_stage,
+                "queueQuantity": row.queue_quantity,
+                "ageHours": row.age_hours,
+                "riskStatus": row.risk_status,
+                "ownerLabel": row.owner_label,
+                "nextAction": row.next_action,
+            }
+            for row in rows
+        ]
+    )
+
+
+@require_GET
+@api_permission_required("workcenters.view_load")
+def current_constraint_view(_request):
+    snapshot = get_current_constraint()
+    return api_response(serialize_workcenter_load(snapshot) if snapshot else None)
+
+
+def serialize_workcenter_load(snapshot: WorkcenterLoadSnapshot) -> dict[str, object]:
+    return {
+        "id": str(snapshot.id),
+        "workcenterId": str(snapshot.workcenter_id),
+        "workcenterCode": snapshot.workcenter.code,
+        "workcenterName": snapshot.workcenter.name,
+        "workcenterType": snapshot.workcenter.workcenter_type,
+        "factoryCode": snapshot.workcenter.factory.code,
+        "snapshotDate": snapshot.snapshot_date.isoformat(),
+        "availableMinutes": snapshot.available_minutes,
+        "plannedLoadMinutes": snapshot.planned_load_minutes,
+        "actualLoadMinutes": snapshot.actual_load_minutes,
+        "utilizationPercent": float(snapshot.utilization_percent),
+        "queueQuantity": snapshot.queue_quantity,
+        "oldestQueueAgeHours": snapshot.oldest_queue_age_hours,
+        "constraintStatus": snapshot.constraint_status,
+        "riskStatus": snapshot.risk_status,
+        "topAffectedOrderId": str(snapshot.top_affected_order_id)
+        if snapshot.top_affected_order_id
+        else None,
+        "topAffectedOrderNo": snapshot.top_affected_order.order_no
+        if snapshot.top_affected_order
+        else None,
+        "suggestedAction": snapshot.suggested_action,
+    }

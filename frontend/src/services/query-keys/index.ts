@@ -24,4 +24,9 @@ export const queryKeys = {
   materialReadiness: ["pre-production", "material-readiness"] as const,
   purchaseOrders: ["pre-production", "purchase-orders"] as const,
   fabricQc: ["pre-production", "fabric-qc"] as const,
+  weeklyPlanning: ["operations", "weekly-planning"] as const,
+  workcenterLoad: ["operations", "workcenter-load"] as const,
+  workcenterQueue: (workcenterId: string) => ["operations", "workcenter-queue", workcenterId] as const,
+  currentConstraint: ["operations", "current-constraint"] as const,
+  dailyReleases: ["operations", "daily-releases"] as const,
 };

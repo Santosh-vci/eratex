@@ -1,6 +1,6 @@
 # Eratex Planning and Scheduling Platform
 
-Phase 0 bootstraps the Eratex monorepo into a runnable full-stack foundation. Phase 1 adds the common platform layer, Phase 2 adds controlled master data and technical product foundations, and Phase 3 adds order readiness control before planning execution.
+Phase 0 bootstraps the Eratex monorepo into a runnable full-stack foundation. Phase 1 adds the common platform layer, Phase 2 adds controlled master data and technical product foundations, Phase 3 adds order readiness control, and Phase 4 / EOS-04 adds planning, capacity, workcenter load, and daily release control.
 
 ## Stack
 
@@ -26,6 +26,12 @@ Seed Phase 3 data, which idempotently validates/loads the Phase 1 and Phase 2 fo
 
 ```powershell
 docker compose exec backend python manage.py seed_phase3
+```
+
+Seed EOS-04 planning and release data, which idempotently loads the earlier foundations first:
+
+```powershell
+docker compose exec backend python manage.py seed_eos04
 ```
 
 Primary local endpoints:
@@ -127,3 +133,27 @@ docker compose --profile test run --rm frontend_e2e
 Leave the stack running after this validation flow. Use `docker compose down` only as an explicit cleanup step.
 
 Phase 3 intentionally excludes planning algorithms, daily release execution, cutting output, WIP movement, sewing/wash execution, shipment workflow, full exception management, imports, and offline/mobile behavior.
+
+## Phase 4 / EOS-04 Baseline
+
+Phase 4 / EOS-04 adds weekly planning, plan versions, planned work items, plan freeze/change governance, workcenter capacity/load snapshots, queue visibility, current constraint reporting, daily production release validation, override approval, release completion control, and operations workbenches for weekly planning, workcenter load, queue, and daily release.
+
+Additional local seeded users:
+
+| Username | Password | Role |
+|---|---|---|
+| `capacity_manager` | `planning123` | Capacity Manager |
+| `release_coordinator` | `planning123` | Release Coordinator |
+
+EOS-04 local validation:
+
+```powershell
+docker compose config
+docker compose up --build -d
+docker compose exec -T backend python manage.py seed_eos04
+docker compose run --rm backend python -m pytest
+docker compose run --rm --no-deps frontend npm run test
+docker compose --profile test run --rm frontend_e2e
+```
+
+Phase 4 / EOS-04 intentionally excludes WIP inventory/reconciliation, cutting execution, sewing output, wash execution, shipment workflow, analytics/control-tower maturity, what-if simulation workbench, multi-unit capacity simulation, imports, and offline/mobile behavior.

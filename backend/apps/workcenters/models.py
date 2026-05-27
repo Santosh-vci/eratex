@@ -3,7 +3,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.db import models
 
-from apps.common.models import BaseModel
+from apps.common.models import ApprovalStatus, BaseModel, RiskStatus
 
 
 class MachineType(BaseModel):
@@ -145,6 +145,144 @@ class WorkcenterCapacityDay(BaseModel):
 
     def __str__(self) -> str:
         return f"{self.workcenter.code}:{self.capacity_date}"
+
+
+class ConstraintStatus(models.TextChoices):
+    NORMAL = "NORMAL", "Normal"
+    WATCH = "WATCH", "Watch"
+    OVERLOADED = "OVERLOADED", "Overloaded"
+    CRITICAL = "CRITICAL", "Critical"
+
+
+class WorkcenterLoadSnapshot(BaseModel):
+    workcenter = models.ForeignKey(
+        "organization.Workcenter",
+        on_delete=models.PROTECT,
+        related_name="load_snapshots",
+    )
+    horizon = models.ForeignKey(
+        "planning.PlanningHorizon",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="workcenter_load_snapshots",
+    )
+    snapshot_date = models.DateField()
+    available_minutes = models.PositiveIntegerField(default=0)
+    planned_load_minutes = models.PositiveIntegerField(default=0)
+    actual_load_minutes = models.PositiveIntegerField(default=0)
+    utilization_percent = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        default=Decimal("0.00"),
+    )
+    queue_quantity = models.PositiveIntegerField(default=0)
+    oldest_queue_age_hours = models.PositiveIntegerField(default=0)
+    constraint_status = models.CharField(
+        max_length=20,
+        choices=ConstraintStatus.choices,
+        default=ConstraintStatus.NORMAL,
+    )
+    risk_status = models.CharField(
+        max_length=20,
+        choices=RiskStatus.choices,
+        default=RiskStatus.ON_TRACK,
+    )
+    top_affected_order = models.ForeignKey(
+        "orders.ProductionOrder",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="top_constraint_snapshots",
+    )
+    suggested_action = models.CharField(max_length=240, blank=True)
+
+    class Meta:
+        ordering = ["-utilization_percent", "workcenter__code"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["workcenter", "snapshot_date"],
+                name="unique_workcenter_load_snapshot_day",
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.workcenter.code}:{self.snapshot_date}"
+
+
+class WorkcenterQueueSnapshot(BaseModel):
+    workcenter = models.ForeignKey(
+        "organization.Workcenter",
+        on_delete=models.PROTECT,
+        related_name="queue_snapshots",
+    )
+    snapshot_date = models.DateField()
+    order = models.ForeignKey(
+        "orders.ProductionOrder",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="workcenter_queue_snapshots",
+    )
+    queue_stage = models.CharField(max_length=80, default="PLANNED")
+    queue_quantity = models.PositiveIntegerField(default=0)
+    age_hours = models.PositiveIntegerField(default=0)
+    risk_status = models.CharField(
+        max_length=20,
+        choices=RiskStatus.choices,
+        default=RiskStatus.ON_TRACK,
+    )
+    owner_label = models.CharField(max_length=120, blank=True)
+    next_action = models.CharField(max_length=240, blank=True)
+
+    class Meta:
+        ordering = ["-age_hours", "order__order_no"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["workcenter", "snapshot_date", "order", "queue_stage"],
+                name="unique_workcenter_queue_order_stage",
+            )
+        ]
+
+    def __str__(self) -> str:
+        order_no = self.order.order_no if self.order else "UNALLOCATED"
+        return f"{self.workcenter.code}:{order_no}:{self.queue_stage}"
+
+
+class CapacityAdjustment(BaseModel):
+    class AdjustmentType(models.TextChoices):
+        OVERTIME = "OVERTIME", "Overtime"
+        DOWNTIME = "DOWNTIME", "Downtime"
+        MANPOWER = "MANPOWER", "Manpower"
+        MAINTENANCE = "MAINTENANCE", "Maintenance"
+
+    workcenter = models.ForeignKey(
+        "organization.Workcenter",
+        on_delete=models.PROTECT,
+        related_name="capacity_adjustments",
+    )
+    adjustment_date = models.DateField()
+    adjustment_type = models.CharField(max_length=24, choices=AdjustmentType.choices)
+    minutes_delta = models.IntegerField()
+    reason = models.TextField()
+    status = models.CharField(
+        max_length=20,
+        choices=ApprovalStatus.choices,
+        default=ApprovalStatus.APPROVED,
+    )
+    approved_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="approved_capacity_adjustments",
+    )
+
+    class Meta:
+        ordering = ["workcenter__code", "adjustment_date", "adjustment_type"]
+
+    def __str__(self) -> str:
+        return f"{self.workcenter.code}:{self.adjustment_date}:{self.minutes_delta}"
 
 
 class Operator(BaseModel):

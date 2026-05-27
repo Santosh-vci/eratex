@@ -41,6 +41,22 @@ from apps.pcd_readiness.api import (
     pcd_readiness_list_view,
     pcd_request_conditional_release_view,
 )
+from apps.planning.api import (
+    plan_change_approve_view,
+    plan_change_request_view,
+    weekly_plan_assign_item_view,
+    weekly_plan_freeze_view,
+    weekly_plan_impact_preview_view,
+    weekly_planning_view,
+)
+from apps.production_release.api import (
+    daily_releases_view,
+    release_approve_override_view,
+    release_complete_view,
+    release_create_view,
+    release_request_override_view,
+    release_validate_view,
+)
 from apps.style_technical.api import (
     bom_detail_view,
     boms_view,
@@ -58,9 +74,12 @@ from apps.style_technical.api import (
 )
 from apps.workcenters.api import (
     capacity_days_view,
+    current_constraint_view,
     line_capability_view,
     machine_types_view,
     machines_view,
+    workcenter_load_view,
+    workcenter_queue_view,
 )
 
 urlpatterns = [
@@ -130,6 +149,61 @@ urlpatterns = [
         name="api-line-capability",
     ),
     path("api/v1/workcenters/capacity-days", capacity_days_view, name="api-capacity-days"),
+    path("api/v1/planning/weekly", weekly_planning_view, name="api-planning-weekly"),
+    path(
+        "api/v1/planning/weekly/<uuid:plan_id>/assign-item",
+        weekly_plan_assign_item_view,
+        name="api-planning-weekly-assign",
+    ),
+    path(
+        "api/v1/planning/weekly/<uuid:plan_id>/impact-preview",
+        weekly_plan_impact_preview_view,
+        name="api-planning-weekly-impact",
+    ),
+    path(
+        "api/v1/planning/weekly/<uuid:plan_id>/freeze",
+        weekly_plan_freeze_view,
+        name="api-planning-weekly-freeze",
+    ),
+    path(
+        "api/v1/planning/change-requests",
+        plan_change_request_view,
+        name="api-planning-change-request",
+    ),
+    path(
+        "api/v1/planning/change-requests/<uuid:change_id>/approve",
+        plan_change_approve_view,
+        name="api-planning-change-approve",
+    ),
+    path("api/v1/workcenters/load", workcenter_load_view, name="api-workcenters-load"),
+    path(
+        "api/v1/workcenters/<uuid:workcenter_id>/queue",
+        workcenter_queue_view,
+        name="api-workcenters-queue",
+    ),
+    path(
+        "api/v1/workcenters/current-constraint",
+        current_constraint_view,
+        name="api-workcenters-current-constraint",
+    ),
+    path("api/v1/releases/daily", daily_releases_view, name="api-releases-daily"),
+    path("api/v1/releases/validate", release_validate_view, name="api-releases-validate"),
+    path("api/v1/releases", release_create_view, name="api-releases-create"),
+    path(
+        "api/v1/releases/<uuid:release_id>/request-override",
+        release_request_override_view,
+        name="api-releases-request-override",
+    ),
+    path(
+        "api/v1/releases/<uuid:release_id>/approve-override",
+        release_approve_override_view,
+        name="api-releases-approve-override",
+    ),
+    path(
+        "api/v1/releases/<uuid:release_id>/complete",
+        release_complete_view,
+        name="api-releases-complete",
+    ),
     path("api/v1/orders", orders_collection_view, name="api-orders"),
     path("api/v1/orders/<uuid:order_id>", order_detail_view, name="api-order-detail"),
     path(

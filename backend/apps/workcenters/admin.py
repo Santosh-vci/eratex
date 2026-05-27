@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from .models import (
+    CapacityAdjustment,
     LineMachineAssignment,
     LineProfile,
     Machine,
@@ -8,6 +9,8 @@ from .models import (
     Operator,
     OperatorSkill,
     WorkcenterCapacityDay,
+    WorkcenterLoadSnapshot,
+    WorkcenterQueueSnapshot,
 )
 
 
@@ -56,6 +59,33 @@ class WorkcenterCapacityDayAdmin(admin.ModelAdmin):
     list_display = ("workcenter", "capacity_date", "available_minutes", "capacity_value", "source")
     search_fields = ("workcenter__code",)
     list_filter = ("workcenter", "source", "is_active")
+
+
+@admin.register(WorkcenterLoadSnapshot)
+class WorkcenterLoadSnapshotAdmin(admin.ModelAdmin):
+    list_display = (
+        "workcenter",
+        "snapshot_date",
+        "utilization_percent",
+        "constraint_status",
+        "risk_status",
+    )
+    search_fields = ("workcenter__code", "top_affected_order__order_no")
+    list_filter = ("constraint_status", "risk_status", "snapshot_date")
+
+
+@admin.register(WorkcenterQueueSnapshot)
+class WorkcenterQueueSnapshotAdmin(admin.ModelAdmin):
+    list_display = ("workcenter", "snapshot_date", "order", "queue_stage", "queue_quantity")
+    search_fields = ("workcenter__code", "order__order_no", "queue_stage")
+    list_filter = ("queue_stage", "risk_status", "snapshot_date")
+
+
+@admin.register(CapacityAdjustment)
+class CapacityAdjustmentAdmin(admin.ModelAdmin):
+    list_display = ("workcenter", "adjustment_date", "adjustment_type", "minutes_delta", "status")
+    search_fields = ("workcenter__code", "reason")
+    list_filter = ("adjustment_type", "status", "adjustment_date")
 
 
 @admin.register(Operator)

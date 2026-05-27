@@ -500,3 +500,172 @@ export type PcdReadiness = {
   items: PcdReadinessItem[];
   conditionalReleases: ConditionalRelease[];
 };
+
+export type RiskStatus = "ON_TRACK" | "WATCH" | "ACTION" | "CRITICAL";
+
+export type PlanningHorizon = {
+  id: string;
+  code: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  status: string;
+  isCurrent: boolean;
+};
+
+export type PlanVersion = {
+  id: string;
+  horizonId: string;
+  versionNo: number;
+  status: "DRAFT" | "FROZEN" | "ARCHIVED";
+  riskStatus: RiskStatus;
+  frozenAt: string | null;
+  notes: string;
+};
+
+export type PlannedWorkItem = {
+  id: string;
+  planVersionId: string;
+  orderId: string;
+  orderNo: string;
+  styleCode: string;
+  customerName: string;
+  workcenterId: string;
+  workcenterCode: string;
+  workcenterName: string;
+  lineId: string | null;
+  lineCode: string | null;
+  plannedStartDate: string;
+  plannedEndDate: string;
+  plannedQuantity: number;
+  loadMinutes: number;
+  sequenceNo: number;
+  status: "PLANNED" | "RELEASE_READY" | "BLOCKED" | "RELEASED";
+  riskStatus: RiskStatus;
+  locked: boolean;
+};
+
+export type WorkcenterLoad = {
+  id?: string;
+  workcenterId: string;
+  workcenterCode: string;
+  workcenterName: string;
+  workcenterType?: string;
+  factoryCode?: string;
+  snapshotDate?: string;
+  availableMinutes: number;
+  plannedLoadMinutes: number;
+  actualLoadMinutes?: number;
+  utilizationPercent: number;
+  queueQuantity: number;
+  oldestQueueAgeHours?: number;
+  constraintStatus: "NORMAL" | "WATCH" | "OVERLOADED" | "CRITICAL";
+  riskStatus: RiskStatus;
+  topAffectedOrderId?: string | null;
+  topAffectedOrderNo: string | null;
+  suggestedAction: string;
+};
+
+export type PlanImpactPreview = {
+  planVersionId: string;
+  orderId: string;
+  workcenterId: string;
+  addedMinutes: number;
+  before: Pick<
+    WorkcenterLoad,
+    "availableMinutes" | "plannedLoadMinutes" | "utilizationPercent" | "constraintStatus" | "riskStatus"
+  >;
+  after: Pick<
+    WorkcenterLoad,
+    "availableMinutes" | "plannedLoadMinutes" | "utilizationPercent" | "constraintStatus" | "riskStatus"
+  >;
+  writeApplied: boolean;
+};
+
+export type WeeklyPlanningPayload = {
+  horizon: PlanningHorizon | null;
+  plan: PlanVersion | null;
+  backlog: ProductionOrder[];
+  workItems: PlannedWorkItem[];
+  workcenterLoads: WorkcenterLoad[];
+  changeRequests: PlanChangeRequest[];
+};
+
+export type PlanChangeRequest = {
+  id: string;
+  planVersionId: string;
+  workItemId: string | null;
+  changeType: string;
+  status: string;
+  reason: string;
+  payload: Record<string, unknown>;
+  impactPreview: Record<string, unknown>;
+  createdAt: string;
+};
+
+export type WorkcenterQueueItem = {
+  id: string;
+  workcenterId: string;
+  workcenterCode: string;
+  snapshotDate: string;
+  orderId: string | null;
+  orderNo: string | null;
+  queueStage: string;
+  queueQuantity: number;
+  ageHours: number;
+  riskStatus: RiskStatus;
+  ownerLabel: string;
+  nextAction: string;
+};
+
+export type ReleaseValidationCheck = {
+  code: string;
+  passed: boolean;
+  owner: string;
+};
+
+export type ReleaseBlocker = {
+  code: string;
+  message: string;
+  severity: "WATCH" | "ACTION" | "CRITICAL";
+  owner: string;
+};
+
+export type ReleaseValidationResult = {
+  id: string;
+  releaseId: string | null;
+  plannedWorkItemId: string | null;
+  orderId: string;
+  orderNo: string;
+  isValid: boolean;
+  riskStatus: RiskStatus;
+  checkedAt: string;
+  checks: ReleaseValidationCheck[];
+  blockers: ReleaseBlocker[];
+};
+
+export type ProductionRelease = {
+  id: string;
+  releaseNo: string;
+  plannedWorkItemId: string | null;
+  orderId: string;
+  orderNo: string;
+  workcenterId: string;
+  workcenterCode: string;
+  workcenterName: string;
+  releaseDate: string;
+  releaseType: string;
+  status:
+    | "DRAFT"
+    | "READY"
+    | "BLOCKED"
+    | "OVERRIDE_REQUESTED"
+    | "OVERRIDE_APPROVED"
+    | "RELEASED"
+    | "COMPLETED";
+  riskStatus: RiskStatus;
+  releasedAt: string | null;
+  completedAt: string | null;
+  overrideReason: string;
+  validation: ReleaseValidationResult | null;
+};

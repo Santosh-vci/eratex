@@ -1,10 +1,5 @@
-import { PlaceholderPage } from "@/components/PlaceholderPage";
+import { DailyReleaseDashboardPage } from "@/features/operations/Eos04Pages";
 
 export default function DailyReleasePage() {
-  return (
-    <PlaceholderPage
-      title="Daily Release"
-      description="Ready, blocked, released, and exception-release validation pattern from the daily release reference."
-    />
-  );
+  return <DailyReleaseDashboardPage />;
 }

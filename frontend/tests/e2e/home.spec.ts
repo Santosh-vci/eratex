@@ -23,6 +23,18 @@ const plannerUser = {
     "foundation.view",
     "orders.view",
     "planning.view",
+    "planning.create",
+    "planning.assign",
+    "planning.impact_preview",
+    "planning.freeze",
+    "planning.request_change",
+    "workcenters.view_load",
+    "workcenters.view_queue",
+    "release.view",
+    "release.validate",
+    "release.create",
+    "release.request_override",
+    "release.complete",
     "master_data.view",
     "bulletin.view",
     "skill_matrix.view",
@@ -67,6 +79,9 @@ const planningHeadUser = {
     "pcd.update_item",
     "pcd.approve_conditional_release",
     "pcd.view_audit",
+    "planning.approve_change",
+    "workcenters.adjust_capacity",
+    "release.approve_override",
   ],
 };
 
@@ -443,6 +458,305 @@ async function setupPreProductionMocks(page: Page) {
   });
 }
 
+async function setupEos04Mocks(page: Page) {
+  const horizon = {
+    id: "horizon-1",
+    code: "WEEK-20260525",
+    name: "Weekly plan",
+    startDate: "2026-05-25",
+    endDate: "2026-05-31",
+    status: "ACTIVE",
+    isCurrent: true,
+  };
+  const plan = {
+    id: "plan-1",
+    horizonId: "horizon-1",
+    versionNo: 2,
+    status: "DRAFT",
+    riskStatus: "WATCH",
+    frozenAt: null,
+    notes: "",
+  };
+  const backlogOrder = {
+    id: "order-ready-1",
+    orderNo: "ORD-HP-001",
+    poNumber: "PO-HP-001",
+    customer: { id: "cust-1", code: "NSR", name: "Northstar Retail", isActive: true },
+    buyer: null,
+    style: {
+      id: "style-1",
+      styleCode: "STY-DEN-BASIC",
+      productType: "DENIM",
+      washComplexity: "BASIC",
+      sewingComplexity: "BASIC",
+    },
+    productType: "DENIM",
+    orderQty: 1000,
+    plannedPcdDate: "2026-05-30",
+    plannedShipDate: "2026-06-20",
+    committedShipDate: "2026-06-20",
+    currentStage: "PCD_READY",
+    lifecycleStatus: "PCD_READY",
+    riskStatus: "ON_TRACK",
+    pcdStatus: "READY",
+    materialReadinessStatus: "READY",
+    fabricQcStatus: "PASSED",
+    shipmentReadinessStatus: "NOT_STARTED",
+    owner: { id: 1, displayName: "Production Planner" },
+    nextAction: "Plan order",
+    openExceptionCount: 0,
+    releaseAllowed: true,
+    releaseBlockers: [],
+    lastUpdatedAt: "2026-05-27T00:00:00Z",
+  };
+  const workItem = {
+    id: "work-item-1",
+    planVersionId: "plan-1",
+    orderId: "order-ready-2",
+    orderNo: "ORD-REL-001",
+    styleCode: "STY-DEN-BASIC",
+    customerName: "Northstar Retail",
+    workcenterId: "wc-cutting",
+    workcenterCode: "CUTTING",
+    workcenterName: "Cutting",
+    lineId: null,
+    lineCode: null,
+    plannedStartDate: "2026-05-25",
+    plannedEndDate: "2026-05-25",
+    plannedQuantity: 500,
+    loadMinutes: 2500,
+    sequenceNo: 10,
+    status: "RELEASE_READY",
+    riskStatus: "ON_TRACK",
+    locked: false,
+  };
+  const loads = [
+    {
+      id: "load-1",
+      workcenterId: "wc-cutting",
+      workcenterCode: "CUTTING",
+      workcenterName: "Cutting",
+      workcenterType: "CUTTING",
+      factoryCode: "UNIT-04",
+      snapshotDate: "2026-05-25",
+      availableMinutes: 90000,
+      plannedLoadMinutes: 2500,
+      actualLoadMinutes: 0,
+      utilizationPercent: 2.78,
+      queueQuantity: 500,
+      oldestQueueAgeHours: 4,
+      constraintStatus: "NORMAL",
+      riskStatus: "ON_TRACK",
+      topAffectedOrderId: "order-ready-2",
+      topAffectedOrderNo: "ORD-REL-001",
+      suggestedAction: "Keep plan.",
+    },
+    {
+      id: "load-2",
+      workcenterId: "wc-wash",
+      workcenterCode: "WASH-WC",
+      workcenterName: "Wet Wash",
+      workcenterType: "WASH",
+      factoryCode: "UNIT-04",
+      snapshotDate: "2026-05-25",
+      availableMinutes: 25000,
+      plannedLoadMinutes: 42000,
+      actualLoadMinutes: 0,
+      utilizationPercent: 168,
+      queueQuantity: 7000,
+      oldestQueueAgeHours: 28,
+      constraintStatus: "CRITICAL",
+      riskStatus: "CRITICAL",
+      topAffectedOrderId: "order-fab-1",
+      topAffectedOrderNo: "ORD-FABQC-001",
+      suggestedAction: "Approve capacity action before daily release.",
+    },
+  ];
+  const validation = {
+    id: "validation-1",
+    releaseId: "release-1",
+    plannedWorkItemId: "work-item-1",
+    orderId: "order-ready-2",
+    orderNo: "ORD-REL-001",
+    isValid: true,
+    riskStatus: "ON_TRACK",
+    checkedAt: "2026-05-27T00:00:00Z",
+    checks: [
+      { code: "PCD_READY", passed: true, owner: "Planning" },
+      { code: "MATERIAL_READY", passed: true, owner: "Procurement" },
+    ],
+    blockers: [],
+  };
+  const releases = [
+    {
+      id: "release-1",
+      releaseNo: "REL-ORD-REL-001-20260525",
+      plannedWorkItemId: "work-item-1",
+      orderId: "order-ready-2",
+      orderNo: "ORD-REL-001",
+      workcenterId: "wc-cutting",
+      workcenterCode: "CUTTING",
+      workcenterName: "Cutting",
+      releaseDate: "2026-05-25",
+      releaseType: "CUTTING",
+      status: "READY",
+      riskStatus: "ON_TRACK",
+      releasedAt: null,
+      completedAt: null,
+      overrideReason: "",
+      validation,
+    },
+  ];
+
+  await page.route("**/api/v1/planning/weekly", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({
+        data: {
+          horizon,
+          plan,
+          backlog: [backlogOrder],
+          workItems: [workItem],
+          workcenterLoads: loads,
+          changeRequests: [],
+        },
+        meta: {},
+        errors: [],
+      }),
+    });
+  });
+  await page.route("**/api/v1/planning/weekly/plan-1/impact-preview", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({
+        data: {
+          planVersionId: "plan-1",
+          orderId: "order-ready-1",
+          workcenterId: "wc-cutting",
+          addedMinutes: 2500,
+          before: {
+            availableMinutes: 90000,
+            plannedLoadMinutes: 2500,
+            utilizationPercent: 2.78,
+            constraintStatus: "NORMAL",
+            riskStatus: "ON_TRACK",
+          },
+          after: {
+            availableMinutes: 90000,
+            plannedLoadMinutes: 5000,
+            utilizationPercent: 5.56,
+            constraintStatus: "NORMAL",
+            riskStatus: "ON_TRACK",
+          },
+          writeApplied: false,
+        },
+        meta: {},
+        errors: [],
+      }),
+    });
+  });
+  await page.route("**/api/v1/planning/weekly/plan-1/assign-item", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({ data: { ...workItem, id: "work-item-2", orderNo: "ORD-HP-001" }, meta: {}, errors: [] }),
+      status: 201,
+    });
+  });
+  await page.route("**/api/v1/planning/weekly/plan-1/freeze", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({ data: { ...plan, status: "FROZEN" }, meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/workcenters/load", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({ data: loads, meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/workcenters/current-constraint", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({ data: loads[1], meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/workcenters/wc-wash/queue", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({
+        data: [
+          {
+            id: "queue-1",
+            workcenterId: "wc-wash",
+            workcenterCode: "WASH-WC",
+            snapshotDate: "2026-05-25",
+            orderId: "order-fab-1",
+            orderNo: "ORD-FABQC-001",
+            queueStage: "WASH_QUEUE",
+            queueQuantity: 7000,
+            ageHours: 28,
+            riskStatus: "CRITICAL",
+            ownerLabel: "Wash",
+            nextAction: "Resolve blocker",
+          },
+        ],
+        meta: {},
+        errors: [],
+      }),
+    });
+  });
+  await page.route("**/api/v1/releases/daily", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({ data: releases, meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/releases/validate", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({ data: validation, meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/releases", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({ data: { ...releases[0], status: "RELEASED" }, meta: {}, errors: [] }),
+      status: 201,
+    });
+  });
+  await page.route("**/api/v1/releases/release-1/request-override", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({ data: { ...releases[0], status: "OVERRIDE_REQUESTED" }, meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/releases/release-1/approve-override", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({ data: { ...releases[0], status: "OVERRIDE_APPROVED" }, meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/releases/release-1/complete", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({ data: { ...releases[0], status: "COMPLETED" }, meta: {}, errors: [] }),
+    });
+  });
+}
+
 test("home route renders the foundation shell", async ({ page }) => {
   await setupAuthMocks(page, plannerUser);
   await login(page);
@@ -502,7 +816,7 @@ test("ie user can open technical style and routing workbenches", async ({ page }
 
   await page.getByRole("link", { name: "STY-DEN-BASIC" }).click();
   await expect(page.getByRole("heading", { name: "STY-DEN-BASIC" })).toBeVisible();
-  await expect(page.getByText("bom-1")).toBeVisible();
+  await expect(page.getByText("Approved BOM")).toBeVisible();
 
   await page.getByRole("link", { name: /Bulletins/ }).click();
   await expect(page.getByRole("heading", { name: "Operation Bulletins" })).toBeVisible();
@@ -510,4 +824,30 @@ test("ie user can open technical style and routing workbenches", async ({ page }
   await page.getByRole("link", { name: "Open routing" }).click();
   await expect(page.getByRole("heading", { name: "STY-DEN-BASIC routing" })).toBeVisible();
   await expect(page.getByText("Front pocket attach")).toBeVisible();
+});
+
+test("planner can use EOS-04 planning load and release surfaces", async ({ page }) => {
+  await setupAuthMocks(page, plannerUser);
+  await setupEos04Mocks(page);
+  await login(page);
+
+  await page.getByRole("link", { name: /Planning/ }).click();
+  await expect(page.getByRole("heading", { name: "Weekly Planning" })).toBeVisible();
+  await page.getByRole("button", { name: /ORD-HP-001/ }).click();
+  await expect(page.getByText("Write applied")).toBeVisible();
+  await page.getByRole("button", { name: "Assign Selected" }).click();
+  await expect(page.getByRole("status")).toContainText("Backlog order assigned");
+
+  await page.getByRole("link", { name: /Workcenters/ }).click();
+  await expect(page.getByRole("heading", { name: "Workcenter Load" })).toBeVisible();
+  await expect(page.getByRole("cell", { name: "WASH-WC" })).toBeVisible();
+  await page.getByRole("link", { name: "Open Queue" }).click();
+  await expect(page.getByRole("heading", { name: "Workcenter Queue" })).toBeVisible();
+  await expect(page.getByText("ORD-FABQC-001")).toBeVisible();
+
+  await page.getByRole("link", { name: /Daily Release/ }).click();
+  await expect(page.getByRole("heading", { level: 2, name: "Daily Release" })).toBeVisible();
+  await page.getByRole("row", { name: /REL-ORD-REL-001/ }).click();
+  await page.getByRole("button", { name: "Validate" }).click();
+  await expect(page.getByText("PCD READY")).toBeVisible();
 });

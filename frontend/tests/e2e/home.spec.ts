@@ -1,4 +1,5 @@
 import { expect, type Page, type Route, test } from "@playwright/test";
+import { mkdir } from "node:fs/promises";
 
 function corsHeaders(route: Route) {
   return {
@@ -132,10 +133,15 @@ async function setupAuthMocks(page: Page, currentUser: typeof plannerUser) {
 }
 
 async function login(page: Page, username = "planner") {
-  await page.goto("/");
+  await page.goto("/login");
   await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
   await page.getByLabel("Username").fill(username);
   await page.getByRole("button", { name: "Sign in" }).click();
+}
+
+async function captureParity(page: Page, name: string) {
+  await mkdir("test-results/ui-parity", { recursive: true });
+  await page.screenshot({ path: `test-results/ui-parity/${name}.png`, fullPage: true });
 }
 
 async function setupTechnicalMocks(page: Page) {
@@ -238,6 +244,85 @@ async function setupTechnicalMocks(page: Page) {
       },
     ],
   };
+  const bom = {
+    id: "bom-1",
+    styleId: "style-1",
+    styleCode: "STY-DEN-BASIC",
+    version: "V1",
+    status: "APPROVED",
+    effectiveDate: "2026-05-20",
+    approvedAt: "2026-05-21T00:00:00Z",
+    lineCount: 2,
+    lines: [
+      {
+        id: "bom-line-1",
+        material: {
+          id: "mat-1",
+          code: "FAB-DEN-12OZ",
+          name: "12oz Indigo Denim",
+          materialType: "FABRIC",
+          uom: "M",
+          standardLeadTimeDays: 14,
+          defaultVendorId: "vendor-1",
+          nominatedVendorRequired: true,
+          inspectionRequired: true,
+          isActive: true,
+        },
+        consumptionPerPiece: 1.65,
+        wastagePercent: 3,
+        uom: "M",
+        requiredStage: "PCD",
+        nominatedVendorRequired: true,
+      },
+      {
+        id: "bom-line-2",
+        material: {
+          id: "mat-2",
+          code: "TRM-ZIP-05",
+          name: "Metal zipper #5",
+          materialType: "TRIMS",
+          uom: "PCS",
+          standardLeadTimeDays: 10,
+          defaultVendorId: "vendor-2",
+          nominatedVendorRequired: true,
+          inspectionRequired: false,
+          isActive: true,
+        },
+        consumptionPerPiece: 1,
+        wastagePercent: 1,
+        uom: "PCS",
+        requiredStage: "PCD",
+        nominatedVendorRequired: true,
+      },
+    ],
+  };
+  const materialReadiness = [
+    {
+      orderId: "order-pcd-1",
+      orderNo: "ORD-PCD-001",
+      readinessStatus: "BLOCKED",
+      riskStatus: "ACTION",
+      blockedCount: 1,
+      items: [
+        {
+          id: "req-1",
+          orderId: "order-pcd-1",
+          orderNo: "ORD-PCD-001",
+          materialId: "mat-2",
+          materialCode: "TRM-ZIP-05",
+          materialName: "Metal zipper #5",
+          requiredQty: 1200,
+          shortageQty: 400,
+          requiredDate: "2026-06-01",
+          requiredStage: "PCD",
+          status: "SHORT",
+          latestEta: "2026-06-05",
+          etaAfterPcd: true,
+          vendorCode: "YKK",
+        },
+      ],
+    },
+  ];
 
   await page.route("**/api/v1/styles", async (route) => {
     await route.fulfill({
@@ -260,6 +345,76 @@ async function setupTechnicalMocks(page: Page) {
       body: JSON.stringify({ data: [{ id: "ptype-1", code: "DENIM", name: "Denim", isActive: true }], meta: {}, errors: [] }),
     });
   });
+  await page.route("**/api/v1/master/customers", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({ data: [{ id: "cust-1", code: "NSR", name: "Northstar Retail", priorityLevel: "HIGH", defaultAqlLevel: "2.5", isActive: true }], meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/master/materials", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({ data: bom.lines.map((line) => line.material), meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/master/vendors", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({
+        data: [
+          { id: "vendor-1", code: "CONE", name: "Cone Denim", vendorType: "FABRIC", nominated: true, standardLeadTimeDays: 14, isActive: true },
+          { id: "vendor-2", code: "YKK", name: "YKK Zippers", vendorType: "TRIMS", nominated: true, standardLeadTimeDays: 10, isActive: true },
+        ],
+        meta: {},
+        errors: [],
+      }),
+    });
+  });
+  await page.route("**/api/v1/master/thresholds", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({ data: [{ id: "threshold-1", code: "PCD_BLOCKER_DAYS", name: "PCD blocker days", thresholdType: "PCD", value: 3, unit: "DAYS", isActive: true }], meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/master/machines", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({
+        data: [
+          { id: "machine-1", code: "SNLS-01", name: "Single Needle 01", machineTypeId: "machine-type-1", machineTypeCode: "SNLS", factoryId: "factory-1", status: "ASSIGNED", currentLineId: "line-1", isActive: true },
+          { id: "machine-2", code: "DNLS-01", name: "Double Needle 01", machineTypeId: "machine-type-2", machineTypeCode: "DNLS", factoryId: "factory-1", status: "ASSIGNED", currentLineId: "line-1", isActive: true },
+        ],
+        meta: {},
+        errors: [],
+      }),
+    });
+  });
+  await page.route("**/api/v1/boms", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({ data: [{ ...bom, lines: undefined }], meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/boms/bom-1", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({ data: bom, meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/material-readiness", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({ data: materialReadiness, meta: {}, errors: [] }),
+    });
+  });
   await page.route("**/api/v1/operation-bulletins", async (route) => {
     await route.fulfill({
       contentType: "application/json",
@@ -272,6 +427,34 @@ async function setupTechnicalMocks(page: Page) {
       contentType: "application/json",
       headers: corsHeaders(route),
       body: JSON.stringify({ data: bulletin, meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/wash-routes", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({ data: [{ id: "wash-1", code: "WASH-RINSE", name: "Rinse wash", productType: "DENIM", complexity: "LOW", status: "APPROVED", approvedAt: "2026-05-21T00:00:00Z", stepCount: 3, isActive: true }], meta: {}, errors: [] }),
+    });
+  });
+  await page.route("**/api/v1/workcenters/line-capability", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({
+        data: [
+          { lineId: "line-1", lineCode: "Line 01", lineName: "Sewing Line 01", workingMinutes: 480, currentManpower: 42, baselineEfficiency: 74, availableMinutes: 14918, allowedProductTypes: ["DENIM"], machineCount: 28, machineTypes: ["SNLS", "DNLS"] },
+          { lineId: "line-2", lineCode: "Line 04", lineName: "Sewing Line 04", workingMinutes: 480, currentManpower: 38, baselineEfficiency: 68, availableMinutes: 12403, allowedProductTypes: ["DENIM"], machineCount: 24, machineTypes: ["SNLS", "OL"] },
+        ],
+        meta: {},
+        errors: [],
+      }),
+    });
+  });
+  await page.route("**/api/v1/workcenters/capacity-days", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({ data: [{ id: "cap-1", workcenterId: "wc-1", workcenterCode: "SEW-WC", capacityDate: "2026-05-27", availableMinutes: 14918, capacityUnit: "MINUTES", capacityValue: 14918, source: "SHIFT" }], meta: {}, errors: [] }),
     });
   });
 }
@@ -439,21 +622,110 @@ async function setupPreProductionMocks(page: Page) {
     await route.fulfill({
       contentType: "application/json",
       headers: corsHeaders(route),
-      body: JSON.stringify({ data: [], meta: {}, errors: [] }),
+      body: JSON.stringify({
+        data: [
+          {
+            orderId: "order-pcd-1",
+            orderNo: "ORD-PCD-001",
+            readinessStatus: "BLOCKED",
+            riskStatus: "ACTION",
+            blockedCount: 1,
+            items: [
+              {
+                id: "req-1",
+                orderId: "order-pcd-1",
+                orderNo: "ORD-PCD-001",
+                materialId: "mat-zip",
+                materialCode: "TRM-ZIP-05",
+                materialName: "Metal zipper #5",
+                requiredQty: 1200,
+                shortageQty: 400,
+                requiredDate: "2026-06-01",
+                requiredStage: "PCD",
+                status: "SHORT",
+                latestEta: "2026-06-05",
+                etaAfterPcd: true,
+                vendorCode: "YKK",
+              },
+            ],
+          },
+        ],
+        meta: {},
+        errors: [],
+      }),
     });
   });
   await page.route("**/api/v1/procurement/purchase-orders", async (route) => {
     await route.fulfill({
       contentType: "application/json",
       headers: corsHeaders(route),
-      body: JSON.stringify({ data: [], meta: {}, errors: [] }),
+      body: JSON.stringify({
+        data: [
+          {
+            id: "po-1",
+            poNo: "PO-YKK-001",
+            orderId: "order-pcd-1",
+            orderNo: "ORD-PCD-001",
+            vendorCode: "YKK",
+            vendorName: "YKK Zippers",
+            materialCode: "TRM-ZIP-05",
+            materialName: "Metal zipper #5 Antique Brass",
+            orderedQty: 1200,
+            acknowledgedQty: 800,
+            expectedArrivalDate: "2026-06-01",
+            revisedEta: "2026-06-05",
+            actualArrivalDate: null,
+            status: "DELAYED",
+          },
+        ],
+        meta: {},
+        errors: [],
+      }),
     });
   });
   await page.route("**/api/v1/fabric-qc", async (route) => {
     await route.fulfill({
       contentType: "application/json",
       headers: corsHeaders(route),
-      body: JSON.stringify({ data: { lots: [], inspections: [] }, meta: {}, errors: [] }),
+      body: JSON.stringify({
+        data: {
+          lots: [
+            {
+              id: "lot-1",
+              orderId: "order-pcd-1",
+              orderNo: "ORD-PCD-001",
+              lotNo: "LOT-A2",
+              shadeLot: "A2",
+              receivedQty: 8520,
+              receivedDate: "2026-05-27",
+              status: "RECEIVED",
+              rolls: [
+                { id: "roll-1", rollNo: "R-2024-012", rollLength: 100, width: 58, gsm: 340, shade: "INDIGO", qcStatus: "PASSED" },
+                { id: "roll-2", rollNo: "R-2024-013", rollLength: 98, width: 57.5, gsm: 336, shade: "INDIGO", qcStatus: "HOLD" },
+              ],
+            },
+          ],
+          inspections: [
+            {
+              id: "insp-1",
+              fabricRollId: "roll-1",
+              rollNo: "R-2024-012",
+              lotNo: "LOT-A2",
+              orderNo: "ORD-PCD-001",
+              inspectionDate: "2026-05-27",
+              fourPointScore: 18,
+              widthResult: 58,
+              gsmResult: 340,
+              shrinkagePercent: 2.5,
+              status: "PASSED",
+              remarks: "Within tolerance",
+              waiverReason: "",
+            },
+          ],
+        },
+        meta: {},
+        errors: [],
+      }),
     });
   });
 }
@@ -479,8 +751,8 @@ async function setupEos04Mocks(page: Page) {
   };
   const backlogOrder = {
     id: "order-ready-1",
-    orderNo: "ORD-HP-001",
-    poNumber: "PO-HP-001",
+    orderNo: "ORD-PLAN-001",
+    poNumber: "PO-PLAN-001",
     customer: { id: "cust-1", code: "NSR", name: "Northstar Retail", isActive: true },
     buyer: null,
     style: {
@@ -661,7 +933,7 @@ async function setupEos04Mocks(page: Page) {
     await route.fulfill({
       contentType: "application/json",
       headers: corsHeaders(route),
-      body: JSON.stringify({ data: { ...workItem, id: "work-item-2", orderNo: "ORD-HP-001" }, meta: {}, errors: [] }),
+      body: JSON.stringify({ data: { ...workItem, id: "work-item-2", orderNo: "ORD-PLAN-001" }, meta: {}, errors: [] }),
       status: 201,
     });
   });
@@ -772,19 +1044,38 @@ test("planner can inspect blocked order and PCD readiness gate", async ({ page }
   await setupPreProductionMocks(page);
   await login(page);
 
-  await page.getByRole("link", { name: /Orders/ }).click();
+  await page.goto("/orders");
   await expect(page.getByRole("heading", { name: "Order Lifecycle Explorer" })).toBeVisible();
   await expect(page.getByRole("link", { name: "ORD-PCD-001" })).toBeVisible();
+  await captureParity(page, "orders");
 
   await page.getByRole("link", { name: "ORD-PCD-001" }).click();
   await expect(page.getByRole("heading", { name: "ORD-PCD-001" })).toBeVisible();
-  await expect(page.getByRole("cell", { name: "TRIMS_AVAILABLE: PENDING" })).toBeVisible();
-
-  await page.getByRole("link", { name: "PCD", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "PCD Readiness" })).toBeVisible();
-  await page.locator("tbody tr").first().click();
   await expect(page.getByText("Awaiting zipper ETA")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Release to cutting" })).toBeDisabled();
+  await captureParity(page, "order-detail");
+
+  await page.goto("/orders/order-pcd-1/trace");
+  await expect(page.getByRole("heading", { name: "Lifecycle Trace" })).toBeVisible();
+  await captureParity(page, "order-trace");
+
+  await page.goto("/pcd-readiness");
+  await expect(page.getByRole("heading", { name: "PCD Readiness Gate" })).toBeVisible();
+  await page.getByRole("button", { name: /ORD-PCD-001/ }).click();
+  await expect(page.getByText("Awaiting zipper ETA")).toBeVisible();
+  await expect(page.getByRole("button", { name: /Release to Cutting/i })).toBeDisabled();
+  await captureParity(page, "pcd-readiness");
+
+  await page.goto("/procurement/vendor-follow-up");
+  await expect(page.getByRole("heading", { name: "Procurement & Vendor Follow-Up" })).toBeVisible();
+  await page.getByText("PO-YKK-001").click();
+  await expect(page.getByText("PO Status Timeline")).toBeVisible();
+  await captureParity(page, "procurement-vendor-follow-up");
+
+  await page.goto("/fabric/qc");
+  await expect(page.getByRole("heading", { name: "Fabric Inward & QC Monitor" })).toBeVisible();
+  await page.getByRole("cell", { name: "R-2024-012" }).click();
+  await expect(page.getByText("4-Point Result Map")).toBeVisible();
+  await captureParity(page, "fabric-qc");
 });
 
 test("planning head can approve conditional release and release order gate", async ({ page }) => {
@@ -792,15 +1083,15 @@ test("planning head can approve conditional release and release order gate", asy
   await setupPreProductionMocks(page);
   await login(page, "planning_head");
 
-  await page.getByRole("link", { name: "PCD", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "PCD Readiness" })).toBeVisible();
-  await page.getByRole("row", { name: /ORD-PCD-001/ }).click();
-  await page.getByRole("button", { name: "Approve conditional" }).click();
+  await page.goto("/pcd-readiness");
+  await expect(page.getByRole("heading", { name: "PCD Readiness Gate" })).toBeVisible();
+  await page.getByRole("button", { name: /ORD-PCD-001/ }).click();
+  await page.getByRole("button", { name: /Approve Conditional Release/i }).click();
   await page.getByRole("button", { name: "Confirm" }).click();
   await expect(page.getByRole("status")).toContainText("Conditional release approved.");
-  await expect(page.getByRole("button", { name: "Release to cutting" })).toBeEnabled();
+  await expect(page.getByRole("button", { name: /Release to Cutting/i })).toBeEnabled();
 
-  await page.getByRole("button", { name: "Release to cutting" }).click();
+  await page.getByRole("button", { name: /Release to Cutting/i }).click();
   await page.getByRole("button", { name: "Release", exact: true }).click();
   await expect(page.getByRole("status")).toContainText("Order released to cutting.");
 });
@@ -810,20 +1101,41 @@ test("ie user can open technical style and routing workbenches", async ({ page }
   await setupTechnicalMocks(page);
   await login(page, "ie_user");
 
-  await page.getByRole("link", { name: /Styles/ }).click();
+  await page.goto("/master-data/governance");
+  await expect(page.getByRole("heading", { name: "Master Data Governance" })).toBeVisible();
+  await expect(page.getByText("Parameter Detail")).toBeVisible();
+  await captureParity(page, "master-data-governance");
+
+  await page.goto("/technical/styles");
   await expect(page.getByRole("heading", { name: "Style Technical File" })).toBeVisible();
   await expect(page.getByRole("link", { name: "STY-DEN-BASIC" })).toBeVisible();
+  await captureParity(page, "technical-styles");
 
   await page.getByRole("link", { name: "STY-DEN-BASIC" }).click();
   await expect(page.getByRole("heading", { name: "STY-DEN-BASIC" })).toBeVisible();
-  await expect(page.getByText("Approved BOM")).toBeVisible();
+  await expect(page.getByText("Operation Bulletin Grid")).toBeVisible();
+  await captureParity(page, "technical-style-detail");
 
-  await page.getByRole("link", { name: /Bulletins/ }).click();
-  await expect(page.getByRole("heading", { name: "Operation Bulletins" })).toBeVisible();
+  await page.goto("/technical/bom");
+  await expect(page.getByRole("heading", { name: "BOM & Material Planning" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Material Readiness Explorer" })).toBeVisible();
+  await captureParity(page, "technical-bom");
+
+  await page.goto("/technical/operation-bulletins");
+  await expect(page.getByRole("heading", { name: "Operation Bulletins (OB)" })).toBeVisible();
   await page.locator("tbody tr").first().click();
   await page.getByRole("link", { name: "Open routing" }).click();
-  await expect(page.getByRole("heading", { name: "STY-DEN-BASIC routing" })).toBeVisible();
-  await expect(page.getByText("Front pocket attach")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Routing: STY-DEN-BASIC" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Front pocket attach" })).toBeVisible();
+  await captureParity(page, "routing-builder");
+
+  await page.goto("/technical/operation-bulletins");
+  await captureParity(page, "technical-operation-bulletins");
+
+  await page.goto("/technical/operator-skill-capacity");
+  await expect(page.getByRole("heading", { name: "Operator Skill & Capacity Monitor" })).toBeVisible();
+  await expect(page.getByText("Skill Matrix (Ops Proficiency)")).toBeVisible();
+  await captureParity(page, "operator-skill-capacity");
 });
 
 test("planner can use EOS-04 planning load and release surfaces", async ({ page }) => {
@@ -831,23 +1143,29 @@ test("planner can use EOS-04 planning load and release surfaces", async ({ page 
   await setupEos04Mocks(page);
   await login(page);
 
-  await page.getByRole("link", { name: /Planning/ }).click();
-  await expect(page.getByRole("heading", { name: "Weekly Planning" })).toBeVisible();
-  await page.getByRole("button", { name: /ORD-HP-001/ }).click();
+  await page.goto("/planning/weekly");
+  await expect(page.getByRole("heading", { name: /May Week/ })).toBeVisible();
+  await page
+    .getByRole("button", { name: /ORD-PLAN-001/ })
+    .dragTo(page.getByLabel("Plan MON 25 swim lane"));
   await expect(page.getByText("Write applied")).toBeVisible();
+  await captureParity(page, "planning-weekly");
   await page.getByRole("button", { name: "Assign Selected" }).click();
   await expect(page.getByRole("status")).toContainText("Backlog order assigned");
 
-  await page.getByRole("link", { name: /Workcenters/ }).click();
-  await expect(page.getByRole("heading", { name: "Workcenter Load" })).toBeVisible();
-  await expect(page.getByRole("cell", { name: "WASH-WC" })).toBeVisible();
+  await page.goto("/workcenters/load");
+  await expect(page.getByRole("heading", { name: "Workcenter Load & Constraint Monitor" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /WASH-WC/ })).toBeVisible();
+  await captureParity(page, "workcenters-load");
   await page.getByRole("link", { name: "Open Queue" }).click();
   await expect(page.getByRole("heading", { name: "Workcenter Queue" })).toBeVisible();
   await expect(page.getByText("ORD-FABQC-001")).toBeVisible();
+  await captureParity(page, "workcenter-queue");
 
-  await page.getByRole("link", { name: /Daily Release/ }).click();
-  await expect(page.getByRole("heading", { level: 2, name: "Daily Release" })).toBeVisible();
+  await page.goto("/releases/daily");
+  await expect(page.getByRole("heading", { name: "Daily Production Release" })).toBeVisible();
   await page.getByRole("row", { name: /REL-ORD-REL-001/ }).click();
   await page.getByRole("button", { name: "Validate" }).click();
   await expect(page.getByText("PCD READY")).toBeVisible();
+  await captureParity(page, "releases-daily");
 });

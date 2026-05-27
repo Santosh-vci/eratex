@@ -36,11 +36,35 @@ operations workbenches for weekly planning, workcenter load, queue, and daily re
 | Planning governance | Backend Lead | Planning horizon, plan version, planned work item, freeze, impact preview, and change-request services |
 | Capacity and constraint visibility | Backend Lead | Workcenter load snapshots, queue snapshots, capacity adjustments, current constraint service |
 | Daily release governance | Backend Lead | Release validation, blockers, override approval, completion, and audit events |
-| EOS-04 reference UI parity | Frontend Lead | Weekly planning, workcenter load, queue, and daily release routes follow `docs/frontend_ui` EOS-04 references |
+| EOS-04 reference UI parity | Frontend Lead | Weekly planning, workcenter load, queue, and daily release routes follow only the approved `docs/frontend_ui` EOS-04 references |
 | Docker-first repeatability | DevOps Lead | Docker Compose stack plus `seed_eos04` command |
 | Verification evidence | QA Lead | Backend, frontend, Playwright, UI screenshots, API checks, and full-stack verification listed below after pass |
 
 ---
+
+## 2.1 Prototype Parity Gate
+
+Phase 4 / EOS-04 UI readiness is governed by the prototype folders, not by invented screens.
+
+| Route | Approved Source Prototype | Required Parity Evidence |
+|---|---|---|
+| `/planning/weekly` | `docs/frontend_ui/weekly_planning_workbench`; compact planning cues from `docs/frontend_ui/calendar_gantt_planning_dashboard` | Screenshot showing ready backlog, time/day swimlanes, swimlane drop target, fixed impact preview, capacity overlay, no-write impact preview, freeze/change actions |
+| `/workcenters/load` | `docs/frontend_ui/workcenter_load_monitor` | Screenshot showing current constraint, utilization/load, queue quantity, affected order, queue navigation |
+| `/workcenters/{id}/queue` | `docs/frontend_ui/workcenter_load_monitor` | Screenshot or Playwright assertion showing queue detail tied to the selected workcenter |
+| `/releases/daily` | `docs/frontend_ui/daily_production_release_dashboard` | Screenshot showing daily release grid/drawer, validation checks, blocker/override/release actions |
+
+Disallowed without a recorded governance gap:
+
+```text
+alternate dashboard layouts
+workcenter tile boards replacing the time/day swimlane planner
+decorative card mosaics
+phase labels or implementation commentary in the UI
+duplicate page breadcrumbs
+marketing or explanatory copy
+mature what-if simulation workbench
+multi-unit capacity simulation
+```
 
 ## 3. Verification Commands
 
@@ -90,6 +114,7 @@ Full stack:
 ```text
 draft and frozen weekly plans
 ready planned work item
+ready backlog order for click-drag planning practice
 blocked planned work items
 overloaded workcenter constraint
 queue ageing snapshot

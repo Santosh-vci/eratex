@@ -18,7 +18,6 @@ import {
   LogOut,
   Menu,
   PackageCheck,
-  PanelRight,
   Route,
   ScanLine,
   Search,
@@ -421,7 +420,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         className="ops-workarea transition-[padding-left] duration-200 ease-out"
         style={{ paddingLeft: isNavExpanded ? 256 : 80 }}
       >
-        <div className="mb-3 flex items-center justify-between gap-3 font-mono text-[11px] uppercase text-slate-500">
+        <div className="mb-3 flex items-center gap-3 font-mono text-[11px] uppercase text-slate-500">
           <nav aria-label="Breadcrumb" className="flex min-w-0 flex-wrap items-center gap-1">
             {shellBreadcrumbs.map((crumb, index) => {
               const isLast = index === shellBreadcrumbs.length - 1;
@@ -444,10 +443,6 @@ export function AppShell({ children }: { children: ReactNode }) {
               );
             })}
           </nav>
-          <span className="inline-flex items-center gap-1">
-            <PanelRight className="h-3.5 w-3.5" aria-hidden />
-            Drawer pattern active
-          </span>
         </div>
         {children}
       </main>

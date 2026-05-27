@@ -17,7 +17,10 @@ from apps.identity_access.models import (
     UserScope,
 )
 from apps.orders.models import ProductionOrder
+from apps.orders.services.lifecycle import initialize_order_lifecycle
 from apps.organization.models import Department, Factory, Workcenter
+from apps.pcd_readiness.models import PCDItemStatus
+from apps.pcd_readiness.services.readiness import calculate_pcd_readiness, initialize_pcd_readiness
 from apps.planning.models import (
     PlannedWorkItem,
     PlannedWorkItemStatus,
@@ -29,6 +32,7 @@ from apps.planning.models import (
 from apps.planning.services.planning import assign_work_item, default_plan_dates
 from apps.production_release.models import ProductionRelease, ProductionReleaseStatus
 from apps.production_release.services.release import validate_release
+from apps.style_technical.models import Style
 from apps.workcenters.models import (
     CapacityAdjustment,
     ConstraintStatus,
@@ -117,8 +121,10 @@ class Command(BaseCommand):
 
         frozen = self._upsert_plan_version(horizon, 1, PlanVersionStatus.FROZEN, planner)
         draft = self._upsert_plan_version(horizon, 2, PlanVersionStatus.DRAFT, planner)
+        PlanVersion.objects.filter(horizon=horizon, version_no__gt=2).delete()
 
         ready_order = ProductionOrder.objects.get(order_no="ORD-HP-001")
+        self._seed_ready_backlog_order(factory, planner)
         pcd_blocked_order = ProductionOrder.objects.get(order_no="ORD-PCD-001")
         fabric_blocked_order = ProductionOrder.objects.get(order_no="ORD-FABQC-001")
         material_blocked_order = ProductionOrder.objects.get(order_no="ORD-MAT-001")
@@ -328,6 +334,41 @@ class Command(BaseCommand):
             },
         )
         return plan
+
+    def _seed_ready_backlog_order(self, factory, owner):
+        today = timezone.localdate()
+        style = Style.objects.select_related("customer", "buyer", "product_type").get(
+            style_code="STY-DEN-RUSH"
+        )
+        order, _ = ProductionOrder.objects.update_or_create(
+            order_no="ORD-PLAN-001",
+            defaults={
+                "po_number": "PO-PLAN-001",
+                "customer": style.customer,
+                "buyer": style.buyer,
+                "style": style,
+                "factory": factory,
+                "product_type": style.product_type,
+                "order_qty": 6500,
+                "planned_pcd_date": today + timedelta(days=5),
+                "planned_ship_date": today + timedelta(days=21),
+                "committed_ship_date": today + timedelta(days=21),
+                "owner": owner,
+                "order_status": "ACTIVE",
+                "risk_status": RiskStatus.ON_TRACK,
+                "is_active": True,
+            },
+        )
+        initialize_order_lifecycle(order, performed_by=owner)
+        initialize_pcd_readiness(order, performed_by=owner)
+        order.pcd_readiness.items.update(
+            status=PCDItemStatus.PASSED,
+            remarks="EOS-04 ready backlog seed.",
+            updated_at=timezone.now(),
+        )
+        calculate_pcd_readiness(order.pcd_readiness)
+        PlannedWorkItem.objects.filter(order=order).delete()
+        return order
 
     def _direct_work_item(self, plan, order, workcenter, plan_date, quantity, status, risk):
         item, _ = PlannedWorkItem.objects.update_or_create(

@@ -257,6 +257,29 @@ All surfaces should follow the `Industrial Logic` design system:
 - stale data visibility
 - desktop workbench layouts separate from mobile capture layouts
 
+### 6.5 Prototype-First Governance
+
+`docs/frontend_ui` is the governed UI source of truth. The prototype folders are not mood boards and must not be replaced by invented layouts.
+
+Rules:
+
+- Build each route from its mapped prototype folder's `code.html`, `screen.png`, and design notes.
+- Preserve the prototype's information hierarchy, workbench zones, action placement, drawer pattern, density, status language, and operator workflow unless a recorded product decision says otherwise.
+- Do not add unreferenced phase labels, implementation commentary, duplicate breadcrumbs, decorative card mosaics, marketing copy, or generic dashboard compositions.
+- Do not use mature-state prototypes in an earlier implementation phase unless the phase section explicitly lists the surface and the readiness note records the limited scope.
+- If no prototype exists for a required surface, record a UI governance gap in the phase readiness note before building. The gap must name the closest approved prototype, the accepted deviation, and the approving owner.
+- A phase cannot pass UI readiness until app screenshots from the running Docker stack are captured and mapped to the source prototype folders.
+
+### 6.6 Phase 4 / EOS-04 Prototype Mapping
+
+| App Route | Required Prototype Source | Implementation Constraint |
+|---|---|---|
+| `/planning/weekly` | `docs/frontend_ui/weekly_planning_workbench` | Ready backlog, time-based day swimlanes, click-drag planning, fixed impact preview drawer, capacity overlay, freeze/change actions |
+| `/planning/weekly` compact timeline area | `docs/frontend_ui/calendar_gantt_planning_dashboard` | Calendar/Gantt cues may appear only as compact planning context, not as mature simulation |
+| `/workcenters/load` | `docs/frontend_ui/workcenter_load_monitor` | Current constraint, utilization, queue quantity, affected orders, and queue drawer/detail |
+| `/workcenters/{id}/queue` | `docs/frontend_ui/workcenter_load_monitor` | Workcenter queue detail must stay tied to the load monitor pattern |
+| `/releases/daily` | `docs/frontend_ui/daily_production_release_dashboard` | Ready/blocked/released release control, validation drawer, blocker checks, override/release actions |
+
 ---
 
 ## 7. Non-Negotiable Build Rules
@@ -510,6 +533,14 @@ EOS-04, EOS-11, EOS-12
 - `calendar_gantt_planning_dashboard`
 - `workcenter_load_monitor`
 - `daily_production_release_dashboard`
+
+## UI Governance Gate
+
+- Route implementation must match the prototype mapping in section 6.6.
+- No invented Phase 4 UI surfaces are allowed.
+- The planning workbench must preserve the prototype's time/day swimlane visualization and support click-drag from ready backlog into a day lane before commit, with a no-write impact preview.
+- Calendar/Gantt content is limited to compact EOS-04 planning context; mature what-if simulation and multi-unit capacity simulation remain out of scope.
+- Screenshot evidence from the Docker-running app must be captured for `/planning/weekly`, `/workcenters/load`, and `/releases/daily`.
 
 ## Exit Gate
 
@@ -984,4 +1015,3 @@ Build the governed operating loop.
 ```
 
 The Eratex Operating Spine is the shared reference for that loop. It lets every implementation decision be traced back to a business purpose, source specification, API contract, UI surface, permission, audit event, seed scenario, and exit gate.
-

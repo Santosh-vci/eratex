@@ -40,18 +40,22 @@ def weekly_planning_view(request):
                     "changeRequests": [],
                 }
             )
+        workcenters_by_id = {
+            item.workcenter_id: item.workcenter
+            for item in plan.work_items.filter(is_active=True).select_related(
+                "workcenter", "workcenter__factory"
+            )
+        }
         loads = [
             serialize_load(
                 calculate_load(
-                    item.workcenter,
+                    workcenter,
                     start_date=plan.horizon.start_date,
                     end_date=plan.horizon.end_date,
                     horizon=plan.horizon,
                 )
             )
-            for item in plan.work_items.filter(is_active=True).select_related(
-                "workcenter", "workcenter__factory"
-            )
+            for workcenter in workcenters_by_id.values()
         ]
         return api_response(
             {

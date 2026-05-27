@@ -39,11 +39,22 @@ docker compose run --rm backend python -m pytest
 ## Frontend Rules
 
 - Treat the UI as an operational app, not a landing page.
-- Follow the Industrial Logic design system in `docs/frontend_ui/DESIGN.md`.
+- Treat `docs/frontend_ui` as the canonical UI contract, not inspiration.
+- When a route has a matching prototype folder, implement from that folder's `code.html`, `screen.png`, and local design notes. Do not invent a different layout, dashboard pattern, navigation model, copy structure, or action flow.
+- Follow the Industrial Logic design system in `docs/frontend_ui/DESIGN.md` and `docs/frontend_ui/industrial_logic/DESIGN.md`.
+- If a required surface has no prototype, stop and record a UI governance gap before building. Use the closest approved prototype only when the Product Owner/Tech Lead decision is documented in the phase readiness note.
+- Each implemented UI surface must keep a traceable mapping to its source prototype folder and have screenshot evidence from the running app before handoff.
+- Do not add phase labels, implementation commentary, duplicate breadcrumbs, explanatory banners, decorative cards, or UI artifacts that are absent from the source prototype.
 - Keep layouts dense, calm, and role-aware.
 - Use semantic risk/status colors only for operational state.
 - Use lucide icons for navigation/actions where an icon is useful.
 - Do not create decorative dashboard card mosaics.
+- For Phase 4 / EOS-04, the only approved UI sources are:
+  - `docs/frontend_ui/weekly_planning_workbench`
+  - `docs/frontend_ui/calendar_gantt_planning_dashboard`
+  - `docs/frontend_ui/workcenter_load_monitor`
+  - `docs/frontend_ui/daily_production_release_dashboard`
+- The Phase 4 weekly planning route must preserve the prototype's backlog column, time/day swimlane planner, fixed impact preview, and click-drag drop-target behavior.
 - Run frontend checks before handoff inside Docker only:
 
 ```powershell

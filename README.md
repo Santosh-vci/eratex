@@ -138,12 +138,25 @@ Phase 3 intentionally excludes planning algorithms, daily release execution, cut
 
 Phase 4 / EOS-04 adds weekly planning, plan versions, planned work items, plan freeze/change governance, workcenter capacity/load snapshots, queue visibility, current constraint reporting, daily production release validation, override approval, release completion control, and operations workbenches for weekly planning, workcenter load, queue, and daily release.
 
+UI implementation is prototype-first. The canonical references are the folders under `docs/frontend_ui`; do not invent alternate UI structures where a prototype exists. Phase 4 / EOS-04 routes are governed by these references:
+
+| App Route | Required Prototype Source |
+|---|---|
+| `/planning/weekly` | `docs/frontend_ui/weekly_planning_workbench` with time/day swimlanes, plus compact timeline cues from `docs/frontend_ui/calendar_gantt_planning_dashboard` |
+| `/workcenters/load` | `docs/frontend_ui/workcenter_load_monitor` |
+| `/workcenters/{id}/queue` | Queue drawer/detail pattern from `docs/frontend_ui/workcenter_load_monitor` |
+| `/releases/daily` | `docs/frontend_ui/daily_production_release_dashboard` |
+
+Any UI deviation must be documented as a governance gap before implementation. Handoff evidence must include screenshots from the running app mapped back to the prototype folders.
+
 Additional local seeded users:
 
 | Username | Password | Role |
 |---|---|---|
 | `capacity_manager` | `planning123` | Capacity Manager |
 | `release_coordinator` | `planning123` | Release Coordinator |
+
+EOS-04 includes `ORD-PLAN-001` as a deterministic ready-backlog order for click-drag planning practice. Rerun `seed_eos04` to reset it back into the backlog after assignment tests.
 
 EOS-04 local validation:
 

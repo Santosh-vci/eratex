@@ -10,7 +10,7 @@ import { PermissionGate } from "@/shared/PermissionGate";
 import { RightDrawer } from "@/shared/RightDrawer";
 import { Timeline } from "@/shared/Timeline";
 import { OwnerBadge, RiskBadge, SeverityBadge, StaleDataBadge, StatusBadge, SyncStatusBadge } from "@/shared/badges";
-import { ActionButton, Breadcrumbs, FilterBar, ModuleHeader } from "@/shared/layout";
+import { ActionButton, FilterBar, ModuleHeader, Panel } from "@/shared/layout";
 import { EmptyState } from "@/shared/states/EmptyState";
 import { ErrorState } from "@/shared/states/ErrorState";
 import { LoadingState } from "@/shared/states/LoadingState";
@@ -25,9 +25,9 @@ type Row = {
 };
 
 const rows: Row[] = [
-  { code: "EOS-01", surface: "API Client", status: "READY", risk: "ON_TRACK", owner: "Tech Lead" },
-  { code: "EOS-11", surface: "Permission Gate", status: "READY", risk: "WATCH", owner: "Backend Lead" },
-  { code: "EOS-12", surface: "Test Harness", status: "READY", risk: "ACTION", owner: "QA Lead" },
+  { code: "API", surface: "API Client", status: "READY", risk: "ON_TRACK", owner: "Tech Lead" },
+  { code: "RBAC", surface: "Permission Gate", status: "READY", risk: "WATCH", owner: "Backend Lead" },
+  { code: "QA", surface: "Test Harness", status: "READY", risk: "ACTION", owner: "QA Lead" },
 ];
 
 const columns: ColumnDef<Row>[] = [
@@ -62,9 +62,7 @@ export default function ComponentFoundationPage() {
 
   return (
     <section>
-      <Breadcrumbs items={["Foundation", "Components"]} />
       <ModuleHeader
-        eyebrow="Phase 1 UI System"
         title="Component Foundation"
         description="Shared operational primitives for future Eratex workbenches."
         actions={<ActionButton onClick={() => setConfirmOpen(true)}>Test confirm</ActionButton>}
@@ -79,20 +77,24 @@ export default function ComponentFoundationPage() {
         <StaleDataBadge minutes={3} />
         <SyncStatusBadge status="SYNCED" />
       </FilterBar>
-      <div className="grid gap-4 xl:grid-cols-[1fr_320px]">
+      <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_360px]">
         <DataGrid data={rows} columns={columns} onRowClick={setSelectedRow} />
-        <div className="space-y-4">
+        <div className="space-y-3">
           <PermissionGate permission="foundation.view" fallback={<ErrorState title="Blocked" message="Permission missing." />}>
             <EmptyState title="Empty state" message="Future workbenches reuse this state for clear operational absence." />
           </PermissionGate>
           <LoadingState label="Loading state" />
-          <Timeline
-            items={[
-              { label: "Session loaded", status: "READY", timestamp: "08:00" },
-              { label: "Permissions resolved", status: "READY", timestamp: "08:01" },
-            ]}
-          />
-          <AuditTrailPanel events={auditEvents} />
+          <Panel title="Timeline" eyebrow="Interaction">
+            <Timeline
+              items={[
+                { label: "Session loaded", status: "READY", timestamp: "08:00" },
+                { label: "Permissions resolved", status: "READY", timestamp: "08:01" },
+              ]}
+            />
+          </Panel>
+          <Panel title="Audit" eyebrow="Governance">
+            <AuditTrailPanel events={auditEvents} />
+          </Panel>
         </div>
       </div>
       <RightDrawer

@@ -12,9 +12,17 @@ type DataGridProps<T> = {
   isLoading?: boolean;
   error?: string | null;
   onRowClick?: (row: T) => void;
+  heightClassName?: string;
 };
 
-export function DataGrid<T>({ data, columns, isLoading = false, error, onRowClick }: DataGridProps<T>) {
+export function DataGrid<T>({
+  data,
+  columns,
+  isLoading = false,
+  error,
+  onRowClick,
+  heightClassName,
+}: DataGridProps<T>) {
   const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
 
   if (isLoading) {
@@ -28,13 +36,13 @@ export function DataGrid<T>({ data, columns, isLoading = false, error, onRowClic
   }
 
   return (
-    <div className="overflow-auto border border-grid-border bg-white">
-      <table className="min-w-full border-collapse text-left text-xs">
-        <thead className="sticky top-0 bg-slate-50">
+    <div className={heightClassName ? `ops-grid-wrap ${heightClassName}` : "ops-grid-wrap"}>
+      <table className="ops-grid">
+        <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id} className="border-b border-grid-border px-3 py-2 font-semibold text-slate-600">
+                <th key={header.id}>
                   {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                 </th>
               ))}
@@ -49,7 +57,7 @@ export function DataGrid<T>({ data, columns, isLoading = false, error, onRowClic
               className={onRowClick ? "cursor-pointer hover:bg-slate-50" : undefined}
             >
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="border-b border-grid-border px-3 py-2 text-slate-700">
+                <td key={cell.id} className="text-slate-700">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}

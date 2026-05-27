@@ -6,7 +6,7 @@ import { useCurrentUser } from "@/providers/AuthProvider";
 import { getDepartments, getFactories, getLines, getWorkcenters } from "@/services/api/organization";
 import { queryKeys } from "@/services/query-keys";
 import { DataGrid } from "@/shared/DataGrid";
-import { ModuleHeader } from "@/shared/layout";
+import { ModuleHeader, Panel } from "@/shared/layout";
 import { StatusBadge } from "@/shared/badges";
 
 export default function MePage() {
@@ -19,14 +19,12 @@ export default function MePage() {
   return (
     <section>
       <ModuleHeader
-        eyebrow="EOS-11"
         title="My Access"
         description="Current session, permissions, scopes, and seeded organization records."
       />
-      <div className="grid gap-4 lg:grid-cols-[360px_1fr]">
-        <div className="border border-grid-border bg-white p-4">
-          <h3 className="text-sm font-semibold text-slate-900">{currentUser?.displayName}</h3>
-          <p className="mt-1 text-sm text-slate-500">{currentUser?.username}</p>
+      <div className="grid gap-3 lg:grid-cols-[360px_minmax(0,1fr)]">
+        <Panel title={currentUser?.displayName ?? "Current user"} eyebrow="Session">
+          <p className="text-sm text-slate-500">{currentUser?.username}</p>
           <div className="mt-4 flex flex-wrap gap-2">
             {currentUser?.roles.map((role) => <StatusBadge key={role.code} status={role.code} />)}
           </div>
@@ -40,8 +38,8 @@ export default function MePage() {
               ))}
             </div>
           </div>
-        </div>
-        <div className="space-y-4">
+        </Panel>
+        <div className="space-y-3">
           <DataGrid
             data={factories.data ?? []}
             isLoading={factories.isLoading}
@@ -52,7 +50,7 @@ export default function MePage() {
               { accessorKey: "timezone", header: "Timezone" },
             ]}
           />
-          <div className="grid gap-4 xl:grid-cols-3">
+          <div className="grid gap-3 xl:grid-cols-3">
             <DataGrid
               data={departments.data ?? []}
               isLoading={departments.isLoading}

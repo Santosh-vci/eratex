@@ -33,19 +33,66 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="grid min-h-screen place-items-center bg-surface-muted p-4">
-      <form onSubmit={handleSubmit} className="w-full max-w-sm border border-grid-border bg-white p-5">
-        <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
-          Eratex Phase 3
+    <main className="min-h-screen bg-surface-muted text-slate-950">
+      <div className="flex h-12 items-center border-b border-grid-border bg-white px-4">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-slate-500">
+            ERATEX OPS CONTROL
+          </p>
+          <h1 className="text-sm font-semibold leading-5">Sign in</h1>
+        </div>
+      </div>
+      <div className="grid min-h-[calc(100vh-48px)] gap-3 p-4 lg:grid-cols-[minmax(0,1fr)_380px]">
+        <section className="ops-panel overflow-hidden">
+          <div className="border-b border-grid-border px-3 py-2">
+            <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-slate-500">
+              Access queue
+            </p>
+            <h2 className="text-sm font-semibold">Readiness surfaces</h2>
+          </div>
+          <table className="ops-grid">
+            <thead>
+              <tr>
+                <th>Surface</th>
+                <th>Gate</th>
+                <th>State</th>
+                <th>Owner</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Orders</td>
+                <td>Lifecycle</td>
+                <td>READY</td>
+                <td>Planner</td>
+              </tr>
+              <tr>
+                <td>PCD Readiness</td>
+                <td>Cutting release</td>
+                <td>BLOCKED</td>
+                <td>Planning Head</td>
+              </tr>
+              <tr>
+                <td>Fabric QC</td>
+                <td>Inspection proof</td>
+                <td>WATCH</td>
+                <td>QC Lead</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        <form onSubmit={handleSubmit} className="ops-panel self-start p-5">
+        <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-slate-500">
+          Session Authentication
         </p>
-        <h1 className="mt-2 text-xl font-semibold text-slate-950">Sign in</h1>
-        <p className="mt-1 text-sm text-slate-600">Use seeded Phase 3 credentials for local validation.</p>
+        <h2 className="mt-2 text-xl font-semibold text-slate-950">Credential Gate</h2>
+        <p className="mt-1 text-[13px] leading-[18px] text-slate-600">Use seeded local credentials for validation.</p>
         <label className="mt-5 block text-sm font-medium text-slate-700">
           Username
           <input
             value={username}
             onChange={(event) => setUsername(event.target.value)}
-            className="mt-1 h-9 w-full border border-grid-border px-3 text-sm"
+            className="mt-1 h-8 w-full rounded border border-grid-border px-3 text-sm outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20"
             autoComplete="username"
           />
         </label>
@@ -54,7 +101,7 @@ export default function LoginPage() {
           <input
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            className="mt-1 h-9 w-full border border-grid-border px-3 text-sm"
+            className="mt-1 h-8 w-full rounded border border-grid-border px-3 text-sm outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20"
             type="password"
             autoComplete="current-password"
           />
@@ -63,11 +110,12 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="mt-5 h-9 w-full rounded bg-primary px-3 text-sm font-medium text-white disabled:opacity-60"
+          className="ops-button ops-button-primary mt-5 w-full justify-center disabled:opacity-60"
         >
           {isSubmitting ? "Signing in" : "Sign in"}
         </button>
       </form>
+      </div>
     </main>
   );
 }

@@ -1,6 +1,25 @@
 import { ApiClientError, type ApiResponse } from "@/types/api";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/api/v1";
+const CONFIGURED_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/api/v1";
+
+function getApiBaseUrl(): string {
+  if (typeof window === "undefined") {
+    return CONFIGURED_API_BASE_URL;
+  }
+  try {
+    const apiUrl = new URL(CONFIGURED_API_BASE_URL);
+    if (
+      ["localhost", "127.0.0.1"].includes(apiUrl.hostname) &&
+      ["localhost", "127.0.0.1"].includes(window.location.hostname)
+    ) {
+      apiUrl.hostname = window.location.hostname;
+      return apiUrl.toString().replace(/\/$/, "");
+    }
+  } catch {
+    return CONFIGURED_API_BASE_URL;
+  }
+  return CONFIGURED_API_BASE_URL;
+}
 
 function getCookie(name: string): string | null {
   if (typeof document === "undefined") {
@@ -26,7 +45,7 @@ export async function apiFetch<T>(
     headers.set("X-CSRFToken", csrfToken);
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetch(`${getApiBaseUrl()}${path}`, {
     ...init,
     headers,
     credentials: "include",

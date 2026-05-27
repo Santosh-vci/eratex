@@ -31,7 +31,7 @@ import { ConfirmDialog } from "@/shared/ConfirmDialog";
 import { DataGrid } from "@/shared/DataGrid";
 import { RightDrawer } from "@/shared/RightDrawer";
 import { RiskBadge, StatusBadge } from "@/shared/badges";
-import { ActionButton, Breadcrumbs, FilterBar, ModuleHeader } from "@/shared/layout";
+import { ActionButton, FilterBar, MetricStrip, ModuleHeader, Panel } from "@/shared/layout";
 import { EmptyState } from "@/shared/states/EmptyState";
 import { LoadingState } from "@/shared/states/LoadingState";
 import type {
@@ -57,19 +57,13 @@ type Metric = {
 
 function MetricBand({ metrics }: { metrics: Metric[] }) {
   return (
-    <dl className="mb-4 grid gap-2 md:grid-cols-4">
-      {metrics.map((metric) => (
-        <div key={metric.label} className="border border-grid-border bg-white px-3 py-2">
-          <dt className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
-            {metric.label}
-          </dt>
-          <dd className="mt-1 flex items-center justify-between text-lg font-semibold text-slate-950">
-            {metric.value}
-            {metric.tone ? <RiskBadge risk={metric.tone} /> : null}
-          </dd>
-        </div>
-      ))}
-    </dl>
+    <MetricStrip
+      metrics={metrics.map((metric) => ({
+        label: metric.label,
+        value: metric.value,
+        meta: metric.tone ? <RiskBadge risk={metric.tone} /> : null,
+      }))}
+    />
   );
 }
 
@@ -87,12 +81,19 @@ function ReadinessChecklist({ style }: { style: StyleListItem | StyleDetail }) {
   ];
 
   return (
-    <div className="space-y-2">
+    <div className="divide-y divide-grid-border border border-grid-border bg-white">
       {checks.map(([code, label]) => {
         const blocked = missing.has(code);
         return (
-          <div key={code} className="flex items-center justify-between border-b border-grid-border py-2">
-            <span className="text-sm text-slate-700">{label}</span>
+          <div key={code} className="grid min-h-10 grid-cols-[20px_1fr_auto] items-center gap-2 px-3 py-2">
+            <span
+              className={
+                blocked
+                  ? "h-3 w-3 rounded-full border border-risk-action bg-risk-action/10"
+                  : "h-3 w-3 rounded-full border border-risk-on-track bg-risk-on-track"
+              }
+            />
+            <span className="text-[13px] font-medium text-slate-700">{label}</span>
             <RiskBadge risk={blocked ? "ACTION" : "ON_TRACK"} />
           </div>
         );
@@ -106,7 +107,7 @@ function Feedback({ message }: { message: string | null }) {
     return null;
   }
   return (
-    <div role="status" className="mb-3 border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+    <div role="status" className="mb-3 border border-emerald-200 bg-emerald-50 px-3 py-2 text-[13px] text-emerald-800">
       {message}
     </div>
   );
@@ -136,9 +137,7 @@ export function MasterDataGovernancePage() {
 
   return (
     <section>
-      <Breadcrumbs items={["Master Data", "Governance"]} />
       <ModuleHeader
-        eyebrow="EOS-02"
         title="Master Data Governance"
         description="Controlled technical masters and readiness blockers before order planning begins."
       />
@@ -151,7 +150,7 @@ export function MasterDataGovernancePage() {
         ]}
       />
       <FilterBar>
-        <StatusBadge status="Phase 2" />
+        <StatusBadge status="Technical foundation" />
         <StatusBadge status={`${thresholds.data?.length ?? 0} thresholds`} />
         <StatusBadge status="Admin write surface" />
       </FilterBar>
@@ -208,11 +207,25 @@ export function StyleTechnicalListPage() {
 
   return (
     <section>
-      <Breadcrumbs items={["Technical", "Styles"]} />
       <ModuleHeader
-        eyebrow="Style technical file"
         title="Style Technical File"
         description="Approved style masters, linked BOM, operation bulletin, and wash-route readiness."
+      />
+      <MetricBand
+        metrics={[
+          { label: "Styles", value: styles.data?.length ?? 0 },
+          {
+            label: "Ready",
+            value: styles.data?.filter((style) => style.planningReady).length ?? 0,
+            tone: "ON_TRACK",
+          },
+          {
+            label: "Blocked",
+            value: styles.data?.filter((style) => !style.planningReady).length ?? 0,
+            tone: styles.data?.some((style) => !style.planningReady) ? "ACTION" : "ON_TRACK",
+          },
+          { label: "Product types", value: productTypes.data?.length ?? 0 },
+        ]}
       />
       <FilterBar>
         {(productTypes.data ?? []).map((productType) => <StatusBadge key={productType.id} status={productType.code} />)}
@@ -228,7 +241,7 @@ export function StyleTechnicalListPage() {
         {selected ? (
           <div className="space-y-4">
             <ReadinessChecklist style={selected} />
-            <Link className="inline-flex rounded bg-primary px-3 py-2 text-sm text-white" href={`/technical/styles/${selected.id}`}>
+            <Link className="ops-button ops-button-primary" href={`/technical/styles/${selected.id}`}>
               Open technical file
             </Link>
           </div>
@@ -250,9 +263,7 @@ export function StyleTechnicalDetailPage({ styleId }: { styleId: string }) {
 
   return (
     <section>
-      <Breadcrumbs items={["Technical", "Styles", style.data.styleCode]} />
       <ModuleHeader
-        eyebrow="Style detail"
         title={style.data.styleCode}
         description={style.data.description}
       />
@@ -264,13 +275,10 @@ export function StyleTechnicalDetailPage({ styleId }: { styleId: string }) {
           { label: "Missing", value: style.data.missingItems.length, tone: style.data.missingItems.length ? "ACTION" : "ON_TRACK" },
         ]}
       />
-      <div className="grid gap-4 lg:grid-cols-[360px_1fr]">
-        <div className="border border-grid-border bg-white p-4">
-          <h3 className="text-sm font-semibold text-slate-900">Planning readiness</h3>
-          <div className="mt-3">
-            <ReadinessChecklist style={style.data} />
-          </div>
-        </div>
+      <div className="grid gap-3 lg:grid-cols-[360px_1fr]">
+        <Panel title="Planning readiness" eyebrow="Gate proof">
+          <ReadinessChecklist style={style.data} />
+        </Panel>
         <div className="grid gap-3 md:grid-cols-3">
           <TechnicalRef label="Approved BOM" value={style.data.readiness.approvedBomId} />
           <TechnicalRef label="Approved bulletin" value={style.data.readiness.approvedOperationBulletinId} />
@@ -283,9 +291,9 @@ export function StyleTechnicalDetailPage({ styleId }: { styleId: string }) {
 
 function TechnicalRef({ label, value }: { label: string; value: string | null }) {
   return (
-    <div className="border border-grid-border bg-white p-4">
+    <div className="border border-grid-border bg-white p-3">
       <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">{label}</p>
-      <p className="mt-2 break-all text-sm font-semibold text-slate-900">{value ?? "Missing"}</p>
+      <p className="mt-2 break-all font-mono text-xs font-semibold text-slate-900">{value ?? "Missing"}</p>
     </div>
   );
 }
@@ -308,11 +316,25 @@ export function BomTechnicalPage() {
 
   return (
     <section>
-      <Breadcrumbs items={["Technical", "BOM"]} />
       <ModuleHeader
-        eyebrow="BOM and material planning"
         title="BOM Version Control"
         description="Approved material definitions that later procurement and PCD workflows will consume."
+      />
+      <MetricBand
+        metrics={[
+          { label: "BOM versions", value: boms.data?.length ?? 0 },
+          {
+            label: "Approved",
+            value: boms.data?.filter((bom) => bom.status === "APPROVED").length ?? 0,
+            tone: "ON_TRACK",
+          },
+          {
+            label: "Draft / review",
+            value: boms.data?.filter((bom) => bom.status !== "APPROVED").length ?? 0,
+            tone: boms.data?.some((bom) => bom.status !== "APPROVED") ? "WATCH" : "ON_TRACK",
+          },
+          { label: "Material lines", value: boms.data?.reduce((sum, bom) => sum + bom.lineCount, 0) ?? 0 },
+        ]}
       />
       <DataGrid
         data={boms.data ?? []}
@@ -378,13 +400,31 @@ export function OperationBulletinsPage() {
 
   return (
     <section>
-      <Breadcrumbs items={["Technical", "Operation Bulletins"]} />
       <ModuleHeader
-        eyebrow="Operation bulletin master"
         title="Operation Bulletins"
         description="Versioned IE records that define style SMV, operation sequence, machine need, and skill need."
       />
       <Feedback message={feedback} />
+      <MetricBand
+        metrics={[
+          { label: "Bulletins", value: bulletins.data?.length ?? 0 },
+          {
+            label: "Approved",
+            value: bulletins.data?.filter((bulletin) => bulletin.status === "APPROVED").length ?? 0,
+            tone: "ON_TRACK",
+          },
+          {
+            label: "Draft / review",
+            value: bulletins.data?.filter((bulletin) => bulletin.status !== "APPROVED").length ?? 0,
+            tone: bulletins.data?.some((bulletin) => bulletin.status !== "APPROVED") ? "WATCH" : "ON_TRACK",
+          },
+          {
+            label: "Critical ops",
+            value: bulletins.data?.reduce((sum, bulletin) => sum + bulletin.criticalOperationCount, 0) ?? 0,
+            tone: "WATCH",
+          },
+        ]}
+      />
       <DataGrid
         data={bulletins.data ?? []}
         columns={columns}
@@ -404,9 +444,9 @@ export function OperationBulletinsPage() {
             <TechnicalRef label="Operations" value={String(selected.operationCount)} />
             <div className="flex flex-wrap gap-2">
               <ActionButton onClick={() => setConfirm("approve")}>Approve</ActionButton>
-              <ActionButton onClick={() => setConfirm("clone")}>Clone</ActionButton>
+              <ActionButton onClick={() => setConfirm("clone")} variant="ghost">Clone</ActionButton>
               <Link
-                className="rounded border border-grid-border px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                className="ops-button"
                 href={`/technical/operation-bulletins/${selected.id}/routing`}
               >
                 Open routing
@@ -449,9 +489,7 @@ export function RoutingBuilderPage({ bulletinId }: { bulletinId: string }) {
 
   return (
     <section>
-      <Breadcrumbs items={["Technical", "Operation Bulletins", "Routing"]} />
       <ModuleHeader
-        eyebrow="Routing builder"
         title={bulletin.data ? `${bulletin.data.styleCode} routing` : "Routing builder"}
         description="Operation sequence, machine type, skill level, QC checkpoints, and SMV summary."
       />
@@ -516,9 +554,7 @@ export function OperatorSkillCapacityPage() {
 
   return (
     <section>
-      <Breadcrumbs items={["Technical", "Operator Skill & Capacity"]} />
       <ModuleHeader
-        eyebrow="Line capability foundation"
         title="Operator Skill and Capacity"
         description="Baseline manpower, machine coverage, skill-matrix surface, and workcenter capacity days."
       />
@@ -530,7 +566,7 @@ export function OperatorSkillCapacityPage() {
           { label: "Capacity days", value: capacity.data?.length ?? 0 },
         ]}
       />
-      <div className="grid gap-4 xl:grid-cols-[1fr_360px]">
+      <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_360px]">
         <DataGrid
           data={capability.data ?? []}
           columns={capabilityColumns}
@@ -544,7 +580,7 @@ export function OperatorSkillCapacityPage() {
           error={machines.error ? "Machines failed to load." : null}
         />
       </div>
-      <div className="mt-4">
+      <div className="mt-3">
         <DataGrid
           data={capacity.data ?? []}
           columns={capacityColumns}

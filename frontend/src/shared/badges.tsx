@@ -1,10 +1,10 @@
 type BadgeTone = "green" | "yellow" | "red" | "black" | "slate";
 
 const toneClass: Record<BadgeTone, string> = {
-  green: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  yellow: "bg-amber-50 text-amber-700 border-amber-200",
-  red: "bg-red-50 text-red-700 border-red-200",
-  black: "bg-slate-950 text-white border-slate-950",
+  green: "bg-[#10B981]/10 text-[#047857] border-[#10B981]/20",
+  yellow: "bg-[#F59E0B]/10 text-[#92400E] border-[#F59E0B]/25",
+  red: "bg-[#EF4444]/10 text-[#B91C1C] border-[#EF4444]/25",
+  black: "bg-[#111827] text-white border-[#111827]",
   slate: "bg-slate-100 text-slate-700 border-slate-200",
 };
 

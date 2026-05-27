@@ -3,10 +3,8 @@ import { PlaceholderPage } from "@/components/PlaceholderPage";
 export default function WeeklyPlanningPage() {
   return (
     <PlaceholderPage
-      eyebrow="EOS-04"
       title="Weekly Planning"
-      description="Placeholder route for weekly planning workbench."
+      description="Backlog, weekly plan board, workcenter load, and impact preview pattern from the planning workbench reference."
     />
   );
 }
-

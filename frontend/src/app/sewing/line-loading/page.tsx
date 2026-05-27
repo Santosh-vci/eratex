@@ -3,10 +3,8 @@ import { PlaceholderPage } from "@/components/PlaceholderPage";
 export default function SewingLineLoadingPage() {
   return (
     <PlaceholderPage
-      eyebrow="EOS-05"
       title="Sewing Line Loading"
-      description="Placeholder route for sewing line load and output control."
+      description="Line load, target, actual, defect, net-good output, and bottleneck pattern from the sewing reference."
     />
   );
 }
-

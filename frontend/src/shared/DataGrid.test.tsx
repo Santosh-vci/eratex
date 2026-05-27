@@ -13,12 +13,12 @@ const columns: ColumnDef<Row>[] = [
 
 test("data grid renders rows and handles row click", () => {
   const onRowClick = vi.fn();
-  render(<DataGrid data={[{ code: "EOS-01", name: "Foundation" }]} columns={columns} onRowClick={onRowClick} />);
+  render(<DataGrid data={[{ code: "API", name: "Foundation" }]} columns={columns} onRowClick={onRowClick} />);
 
-  fireEvent.click(screen.getByText("EOS-01"));
+  fireEvent.click(screen.getByText("API"));
 
   expect(screen.getByText("Foundation")).toBeInTheDocument();
-  expect(onRowClick).toHaveBeenCalledWith({ code: "EOS-01", name: "Foundation" });
+  expect(onRowClick).toHaveBeenCalledWith({ code: "API", name: "Foundation" });
 });
 
 test("data grid renders empty state", () => {

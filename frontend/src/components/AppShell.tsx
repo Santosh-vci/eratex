@@ -3,10 +3,13 @@
 import {
   AlertTriangle,
   BarChart3,
+  Bell,
   Boxes,
   CalendarDays,
+  ChevronDown,
   ClipboardCheck,
   ClipboardList,
+  Clock3,
   Database,
   Factory,
   FileText,
@@ -18,6 +21,7 @@ import {
   PanelRight,
   Route,
   ScanLine,
+  Search,
   Settings,
   Shirt,
   User,
@@ -27,7 +31,7 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { ComponentType, ReactNode } from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { useAuth } from "@/providers/AuthProvider";
 import { usePermission } from "@/providers/PermissionProvider";
@@ -39,6 +43,11 @@ type NavItem = {
   permission?: string;
   icon: ComponentType<{ className?: string }>;
   group: string;
+};
+
+type BreadcrumbItem = {
+  label: string;
+  href?: string;
 };
 
 const navItems: NavItem[] = [
@@ -155,12 +164,84 @@ const navItems: NavItem[] = [
   { href: "/mobile/home", label: "Mobile", icon: ScanLine, group: "Capture", permission: "mobile.view" },
 ];
 
+const breadcrumbLabelOverrides: Record<string, string> = {
+  "/": "Home",
+  "/fabric/qc": "Fabric QC",
+  "/foundation/components": "Components",
+  "/master-data/governance": "Master Data Governance",
+  "/pcd-readiness": "PCD Readiness",
+  "/procurement/vendor-follow-up": "Vendor Follow-Up",
+  "/technical/bom": "BOM",
+  "/technical/operation-bulletins": "Operation Bulletins",
+  "/technical/operator-skill-capacity": "Operator Skill Capacity",
+  "/technical/styles": "Styles",
+};
+
+function navLabel(item: NavItem) {
+  return breadcrumbLabelOverrides[item.href] ?? item.label;
+}
+
+function buildShellBreadcrumbs(
+  pathname: string,
+  activeNavItem: NavItem | undefined,
+  groupedNav: Record<string, NavItem[]>,
+): BreadcrumbItem[] {
+  if (pathname === "/") {
+    return [{ label: "Home" }];
+  }
+
+  const crumbs: BreadcrumbItem[] = [{ label: "Home", href: "/" }];
+
+  if (activeNavItem?.group && activeNavItem.group !== "Foundation") {
+    crumbs.push({
+      label: activeNavItem.group,
+      href: groupedNav[activeNavItem.group]?.[0]?.href ?? activeNavItem.href,
+    });
+  }
+
+  if (pathname.startsWith("/orders/") && pathname.endsWith("/trace")) {
+    crumbs.push({ label: "Orders", href: "/orders" }, { label: "Trace" });
+    return crumbs;
+  }
+
+  if (pathname.startsWith("/orders/")) {
+    crumbs.push({ label: "Orders", href: "/orders" }, { label: "Order Detail" });
+    return crumbs;
+  }
+
+  if (pathname.startsWith("/technical/styles/")) {
+    crumbs.push({ label: "Styles", href: "/technical/styles" }, { label: "Style Detail" });
+    return crumbs;
+  }
+
+  if (pathname.startsWith("/technical/operation-bulletins/")) {
+    crumbs.push({ label: "Operation Bulletins", href: "/technical/operation-bulletins" }, { label: "Routing" });
+    return crumbs;
+  }
+
+  if (activeNavItem) {
+    crumbs.push({ label: navLabel(activeNavItem) });
+    return crumbs;
+  }
+
+  crumbs.push({
+    label: pathname
+      .split("/")
+      .filter(Boolean)
+      .map((part) => part.replace(/-/g, " "))
+      .join(" / "),
+  });
+
+  return crumbs;
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { currentUser, isLoading, logout } = useAuth();
   const { hasPermission } = usePermission();
   const isLoginRoute = pathname === "/login";
+  const [isNavExpanded, setNavExpanded] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !currentUser && !isLoginRoute) {
@@ -189,88 +270,179 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
 
   const visibleNavItems = navItems.filter((item) => !item.permission || hasPermission(item.permission));
+  const activeNavItem = [...visibleNavItems]
+    .sort((first, second) => second.href.length - first.href.length)
+    .find((item) => (item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)));
   const groupedNav = visibleNavItems.reduce<Record<string, NavItem[]>>((groups, item) => {
     groups[item.group] = [...(groups[item.group] ?? []), item];
     return groups;
   }, {});
+  const shellBreadcrumbs = buildShellBreadcrumbs(pathname, activeNavItem, groupedNav);
 
   return (
-    <div className="min-h-screen bg-surface-muted text-slate-950">
-      <header className="border-b border-grid-border bg-white px-4 py-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded bg-primary text-white">
-              <Menu className="h-4 w-4" aria-hidden />
-            </div>
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
-                Eratex Phase 3
-              </p>
-              <h1 className="text-lg font-semibold leading-7">Order Readiness Foundation</h1>
-            </div>
+    <div className="ops-shell">
+      <header className="ops-topbar">
+        <div className="flex h-full w-64 items-center gap-3 border-r border-grid-border px-3">
+          <button
+            type="button"
+            onClick={() => setNavExpanded((expanded) => !expanded)}
+            aria-expanded={isNavExpanded}
+            aria-label={isNavExpanded ? "Collapse navigation" : "Expand navigation"}
+            className="flex h-8 w-8 items-center justify-center rounded bg-primary text-white transition-colors hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-secondary/30"
+          >
+            <Menu className="h-4 w-4" aria-hidden />
+          </button>
+          <div className="min-w-0">
+            <p className="truncate text-[11px] font-bold uppercase tracking-[0.05em] text-slate-500">
+              ERATEX OPS CONTROL
+            </p>
+            <h1 className="truncate text-sm font-semibold leading-5 text-slate-950">
+              {activeNavItem?.label ?? "Operating Spine"}
+            </h1>
           </div>
-          <div className="flex items-center gap-2 text-xs text-slate-600">
-            <span className="rounded border border-grid-border px-3 py-1">
-              {currentUser.displayName}
+        </div>
+        <div className="flex h-full min-w-0 flex-1 items-center gap-2 px-3">
+          <button type="button" className="ops-button hidden lg:inline-flex" aria-label="Factory selector">
+            <Factory className="h-3.5 w-3.5" aria-hidden />
+            Unit 01
+            <ChevronDown className="h-3.5 w-3.5" aria-hidden />
+          </button>
+          <button type="button" className="ops-button hidden md:inline-flex" aria-label="Planning horizon selector">
+            <CalendarDays className="h-3.5 w-3.5" aria-hidden />
+            This Week
+            <ChevronDown className="h-3.5 w-3.5" aria-hidden />
+          </button>
+          <div className="relative min-w-[180px] flex-1 max-w-xl">
+            <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" aria-hidden />
+            <input
+              aria-label="Global search"
+              className="h-8 w-full rounded border border-grid-border bg-white pl-8 pr-3 text-xs outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20"
+              placeholder="Search PO, order, style, customer"
+            />
+          </div>
+          <div className="ml-auto flex items-center gap-2">
+            <button type="button" className="ops-button px-2" aria-label="Critical alerts">
+              <Bell className="h-4 w-4 text-risk-action" aria-hidden />
+              <span className="font-mono text-[11px]">03</span>
+            </button>
+            <span className="hidden items-center gap-1 font-mono text-[11px] text-slate-500 md:inline-flex">
+              <Clock3 className="h-3.5 w-3.5" aria-hidden />
+              SYNC 2M AGO
             </span>
-            <span className="rounded border border-grid-border px-3 py-1">
-              ENV: {process.env.NEXT_PUBLIC_APP_ENV ?? "local"}
+            <span className="hidden rounded border border-grid-border px-2 py-1 text-xs text-slate-600 xl:inline">
+              {process.env.NEXT_PUBLIC_APP_ENV ?? "local"}
+            </span>
+            <span className="hidden rounded border border-grid-border px-2 py-1 text-xs font-medium text-slate-700 lg:inline">
+              {currentUser.displayName}
             </span>
             <button
               type="button"
               onClick={() => logout()}
-              className="inline-flex items-center gap-1 rounded border border-grid-border px-3 py-1 font-medium hover:bg-slate-50"
+              className="ops-button px-2"
+              aria-label="Logout"
             >
-              <LogOut className="h-3.5 w-3.5" aria-hidden />
-              Logout
+              <LogOut className="h-4 w-4" aria-hidden />
             </button>
           </div>
         </div>
       </header>
-      <div className="grid min-h-[calc(100vh-65px)] grid-cols-1 md:grid-cols-[248px_1fr]">
-        <nav className="border-b border-grid-border bg-white p-3 md:border-b-0 md:border-r">
-          <div className="space-y-4">
-            {Object.entries(groupedNav).map(([group, items]) => (
-              <div key={group}>
-                <p className="mb-1 px-2 text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
-                  {group}
-                </p>
-                <div className="grid grid-cols-2 gap-1 md:grid-cols-1">
-                  {items.map((item) => {
-                    const Icon = item.icon;
-                    const active =
-                      item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className={
-                          active
-                            ? "flex items-center gap-2 rounded bg-primary px-3 py-2 text-sm font-medium text-white transition-colors"
-                            : "flex items-center gap-2 rounded px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100"
-                        }
-                      >
-                        <Icon className="h-4 w-4" aria-hidden />
-                        {item.label}
-                      </Link>
-                    );
-                  })}
-                </div>
+      <nav
+        className={
+          isNavExpanded
+            ? "ops-rail overflow-visible px-3 py-3 transition-[width,padding] duration-200 ease-out"
+            : "ops-rail overflow-visible px-2 py-3 transition-[width,padding] duration-200 ease-out"
+        }
+        style={{ width: isNavExpanded ? 240 : 64 }}
+        aria-label="Primary navigation"
+      >
+        <div className="space-y-3">
+          {Object.entries(groupedNav).map(([group, items]) => (
+            <div key={group} className="border-b border-grid-border pb-2 last:border-b-0">
+              <p
+                className={
+                  isNavExpanded
+                    ? "mb-1 px-2 text-[10px] font-bold uppercase tracking-[0.05em] text-slate-400"
+                    : "mb-1 text-center text-[9px] font-bold uppercase tracking-[0.05em] text-slate-400"
+                }
+                title={group}
+              >
+                {isNavExpanded ? group : group.slice(0, 2)}
+              </p>
+              <div className="space-y-1">
+                {items.map((item) => {
+                  const Icon = item.icon;
+                  const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+                  const linkClass = active
+                    ? isNavExpanded
+                      ? "group relative flex h-10 w-full items-center gap-3 rounded bg-primary px-3 text-white transition-colors"
+                      : "group relative flex h-10 w-10 items-center justify-center rounded bg-primary text-white transition-colors"
+                    : isNavExpanded
+                      ? "group relative flex h-10 w-full items-center gap-3 rounded px-3 text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950"
+                      : "group relative flex h-10 w-10 items-center justify-center rounded text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950";
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      aria-label={item.label}
+                      className={linkClass}
+                    >
+                      <Icon className="h-4 w-4 shrink-0" aria-hidden />
+                      {active ? <span className="absolute -left-2 top-2 h-6 w-1 rounded-r bg-risk-watch" /> : null}
+                      {isNavExpanded ? (
+                        <span className="truncate text-xs font-semibold">{item.label}</span>
+                      ) : (
+                        <>
+                          <span className="sr-only">{item.label}</span>
+                          <span
+                            role="tooltip"
+                            className="pointer-events-none absolute left-12 z-50 hidden whitespace-nowrap rounded border border-grid-border bg-white px-2 py-1 text-xs font-semibold text-slate-700 shadow-sm group-hover:block group-focus:block"
+                          >
+                            {item.label}
+                          </span>
+                        </>
+                      )}
+                    </Link>
+                  );
+                })}
               </div>
-            ))}
-          </div>
-        </nav>
-        <main className="p-4 md:p-6">
-          <div className="mb-4 flex items-center justify-between border-b border-grid-border pb-3">
-            <div className="text-xs text-slate-500">Role-aware shell / Session auth / API envelope</div>
-            <div className="inline-flex items-center gap-1 text-xs text-slate-500">
-              <PanelRight className="h-3.5 w-3.5" aria-hidden />
-              Drawer ready
             </div>
-          </div>
-          {children}
-        </main>
-      </div>
+          ))}
+        </div>
+      </nav>
+      <main
+        className="ops-workarea transition-[padding-left] duration-200 ease-out"
+        style={{ paddingLeft: isNavExpanded ? 256 : 80 }}
+      >
+        <div className="mb-3 flex items-center justify-between gap-3 font-mono text-[11px] uppercase text-slate-500">
+          <nav aria-label="Breadcrumb" className="flex min-w-0 flex-wrap items-center gap-1">
+            {shellBreadcrumbs.map((crumb, index) => {
+              const isLast = index === shellBreadcrumbs.length - 1;
+              return (
+                <span key={`${crumb.href ?? crumb.label}-${index}`} className="inline-flex items-center gap-1">
+                  {crumb.href && !isLast ? (
+                    <Link
+                      href={crumb.href}
+                      className="rounded-sm text-slate-500 transition-colors hover:text-slate-950 focus:outline-none focus:ring-2 focus:ring-secondary/25"
+                    >
+                      {crumb.label}
+                    </Link>
+                  ) : (
+                    <span aria-current={isLast ? "page" : undefined} className={isLast ? "text-slate-700" : undefined}>
+                      {crumb.label}
+                    </span>
+                  )}
+                  {!isLast ? <span className="text-slate-300">/</span> : null}
+                </span>
+              );
+            })}
+          </nav>
+          <span className="inline-flex items-center gap-1">
+            <PanelRight className="h-3.5 w-3.5" aria-hidden />
+            Drawer pattern active
+          </span>
+        </div>
+        {children}
+      </main>
     </div>
   );
 }

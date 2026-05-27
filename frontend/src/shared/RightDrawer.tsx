@@ -9,9 +9,10 @@ type RightDrawerProps = {
   title: string;
   children: ReactNode;
   onClose: () => void;
+  subtitle?: string;
 };
 
-export function RightDrawer({ open, title, children, onClose }: RightDrawerProps) {
+export function RightDrawer({ open, title, children, onClose, subtitle }: RightDrawerProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -29,10 +30,14 @@ export function RightDrawer({ open, title, children, onClose }: RightDrawerProps
       role="dialog"
       aria-modal="true"
       aria-label={title}
-      className="fixed inset-y-0 right-0 z-40 w-full max-w-[420px] border-l border-grid-border bg-white shadow-xl transition-transform"
+      className="ops-drawer transition-transform"
     >
-      <div className="flex items-center justify-between border-b border-grid-border px-4 py-3">
-        <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
+      <div className="flex min-h-12 items-center justify-between border-b border-grid-border px-4 py-2">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-slate-500">Action Drawer</p>
+          <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
+          {subtitle ? <p className="text-xs text-slate-500">{subtitle}</p> : null}
+        </div>
         <button
           ref={closeRef}
           type="button"
@@ -43,7 +48,7 @@ export function RightDrawer({ open, title, children, onClose }: RightDrawerProps
           <X className="h-4 w-4" aria-hidden />
         </button>
       </div>
-      <div className="p-4">{children}</div>
+      <div className="h-[calc(100vh-96px)] overflow-y-auto p-4">{children}</div>
     </aside>
   );
 }

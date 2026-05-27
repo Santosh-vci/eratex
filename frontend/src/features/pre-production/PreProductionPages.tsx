@@ -23,7 +23,7 @@ import { ConfirmDialog } from "@/shared/ConfirmDialog";
 import { DataGrid } from "@/shared/DataGrid";
 import { RightDrawer } from "@/shared/RightDrawer";
 import { RiskBadge, StatusBadge } from "@/shared/badges";
-import { Breadcrumbs, FilterBar, ModuleHeader } from "@/shared/layout";
+import { ActionButton, FilterBar, MetricStrip, ModuleHeader, Panel } from "@/shared/layout";
 import { EmptyState } from "@/shared/states/EmptyState";
 import { LoadingState } from "@/shared/states/LoadingState";
 import type {
@@ -53,26 +53,20 @@ function riskFromStatus(status: string): Risk {
 
 function MetricBand({ metrics }: { metrics: Array<{ label: string; value: string | number; risk?: Risk }> }) {
   return (
-    <dl className="mb-4 grid gap-2 md:grid-cols-4">
-      {metrics.map((metric) => (
-        <div key={metric.label} className="border border-grid-border bg-white px-3 py-2">
-          <dt className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
-            {metric.label}
-          </dt>
-          <dd className="mt-1 flex items-center justify-between text-lg font-semibold text-slate-950">
-            {metric.value}
-            {metric.risk ? <RiskBadge risk={metric.risk} /> : null}
-          </dd>
-        </div>
-      ))}
-    </dl>
+    <MetricStrip
+      metrics={metrics.map((metric) => ({
+        label: metric.label,
+        value: metric.value,
+        meta: metric.risk ? <RiskBadge risk={metric.risk} /> : null,
+      }))}
+    />
   );
 }
 
 function Feedback({ message }: { message: string | null }) {
   if (!message) return null;
   return (
-    <div role="status" className="mb-3 border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+    <div role="status" className="mb-3 border border-emerald-200 bg-emerald-50 px-3 py-2 text-[13px] text-emerald-800">
       {message}
     </div>
   );
@@ -80,12 +74,21 @@ function Feedback({ message }: { message: string | null }) {
 
 function PcdChecklist({ items }: { items: PcdReadinessItem[] }) {
   return (
-    <div className="space-y-2">
+    <div className="divide-y divide-grid-border border border-grid-border bg-white">
       {items.map((item) => (
-        <div key={item.id} className="flex items-center justify-between border-b border-grid-border py-2">
-          <div>
-            <p className="text-sm font-medium text-slate-800">{item.itemLabel}</p>
-            <p className="text-xs text-slate-500">{item.remarks || item.itemCode}</p>
+        <div key={item.id} className="grid min-h-12 grid-cols-[20px_1fr_auto] items-center gap-2 px-3 py-2">
+          <span
+            className={
+              item.status === "PASSED"
+                ? "h-3 w-3 rounded-full border border-risk-on-track bg-risk-on-track"
+                : item.status === "WAIVED"
+                  ? "h-3 w-3 rounded-full border border-risk-watch bg-risk-watch/20"
+                  : "h-3 w-3 rounded-full border border-risk-action bg-risk-action/10"
+            }
+          />
+          <div className="min-w-0">
+            <p className="truncate text-[13px] font-medium text-slate-800">{item.itemLabel}</p>
+            <p className="truncate text-xs text-slate-500">{item.remarks || item.itemCode}</p>
           </div>
           <RiskBadge risk={riskFromStatus(item.status)} />
         </div>
@@ -136,9 +139,7 @@ export function OrdersWorkbenchPage() {
 
   return (
     <section>
-      <Breadcrumbs items={["Pre-Production", "Orders"]} />
       <ModuleHeader
-        eyebrow="EOS-03"
         title="Order Lifecycle Explorer"
         description="Confirmed orders, readiness gates, blockers, and release eligibility before execution starts."
       />
@@ -195,20 +196,15 @@ export function OrdersWorkbenchPage() {
               </div>
             ) : null}
             <div className="flex flex-wrap gap-2">
-              <Link className="rounded border border-grid-border px-3 py-2 text-sm" href={`/orders/${selected.id}`}>
+              <Link className="ops-button" href={`/orders/${selected.id}`}>
                 Open detail
               </Link>
-              <Link className="rounded border border-grid-border px-3 py-2 text-sm" href={`/orders/${selected.id}/trace`}>
+              <Link className="ops-button" href={`/orders/${selected.id}/trace`}>
                 Trace
               </Link>
-              <button
-                type="button"
-                disabled={!selected.releaseAllowed}
-                onClick={() => setConfirmRelease(true)}
-                className="rounded bg-primary px-3 py-2 text-sm text-white disabled:opacity-40"
-              >
+              <ActionButton disabled={!selected.releaseAllowed} onClick={() => setConfirmRelease(true)}>
                 Release to cutting
-              </button>
+              </ActionButton>
             </div>
           </div>
         ) : null}
@@ -216,7 +212,7 @@ export function OrdersWorkbenchPage() {
       <ConfirmDialog
         open={confirmRelease}
         title="Release to cutting"
-        message="This records the governed release gate only. Execution records start in a later phase."
+        message="This records the governed release gate only. Execution records are handled by the execution workbenches."
         confirmLabel="Release"
         onConfirm={() => selected && release.mutate(selected.id)}
         onCancel={() => setConfirmRelease(false)}
@@ -231,9 +227,7 @@ export function OrderDetailPage({ orderId }: { orderId: string }) {
   if (!order.data) return <EmptyState title="Order not available" message="The selected order could not be loaded." />;
   return (
     <section>
-      <Breadcrumbs items={["Pre-Production", "Orders", order.data.orderNo]} />
       <ModuleHeader
-        eyebrow="Order detail"
         title={order.data.orderNo}
         description={`${order.data.style.styleCode} / ${order.data.customer.name}`}
       />
@@ -245,15 +239,11 @@ export function OrderDetailPage({ orderId }: { orderId: string }) {
           { label: "Fabric QC", value: order.data.fabricQcStatus, risk: riskFromStatus(order.data.fabricQcStatus) },
         ]}
       />
-      <div className="grid gap-4 lg:grid-cols-[1fr_380px]">
-        <div className="border border-grid-border bg-white p-4">
-          <h3 className="text-sm font-semibold text-slate-900">PCD checklist</h3>
-          <div className="mt-3">
-            {order.data.pcdReadiness ? <PcdChecklist items={order.data.pcdReadiness.items} /> : null}
-          </div>
-        </div>
-        <div className="border border-grid-border bg-white p-4">
-          <h3 className="text-sm font-semibold text-slate-900">Release blockers</h3>
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_380px]">
+        <Panel title="PCD checklist" eyebrow="Gate proof">
+          {order.data.pcdReadiness ? <PcdChecklist items={order.data.pcdReadiness.items} /> : null}
+        </Panel>
+        <Panel title="Release blockers" eyebrow="Next action">
           <div className="mt-3 space-y-2">
             {(order.data.releaseBlockers.length ? order.data.releaseBlockers : ["No active blockers"]).map((item) => (
               <p key={item} className="border-b border-grid-border py-2 text-sm text-slate-700">
@@ -261,7 +251,7 @@ export function OrderDetailPage({ orderId }: { orderId: string }) {
               </p>
             ))}
           </div>
-        </div>
+        </Panel>
       </div>
     </section>
   );
@@ -281,9 +271,7 @@ export function OrderTracePage({ orderId }: { orderId: string }) {
   ];
   return (
     <section>
-      <Breadcrumbs items={["Pre-Production", "Orders", "Trace"]} />
       <ModuleHeader
-        eyebrow="Order trace"
         title="Lifecycle Trace"
         description="Read-only order lifecycle events and gate transitions."
       />
@@ -352,9 +340,7 @@ export function PcdReadinessWorkbenchPage() {
   ];
   return (
     <section>
-      <Breadcrumbs items={["Pre-Production", "PCD"]} />
       <ModuleHeader
-        eyebrow="PCD readiness gate"
         title="PCD Readiness"
         description="Checklist blockers, conditional releases, and release-to-cutting gate state."
       />
@@ -380,20 +366,15 @@ export function PcdReadinessWorkbenchPage() {
             <StatusBadge status={selected.readinessStatus} />
             <PcdChecklist items={selected.items} />
             <div className="flex flex-wrap gap-2">
-              <button type="button" onClick={() => setConfirm("request")} className="rounded border border-grid-border px-3 py-2 text-sm">
+              <button type="button" onClick={() => setConfirm("request")} className="ops-button">
                 Request conditional
               </button>
-              <button type="button" onClick={() => setConfirm("approve")} className="rounded border border-grid-border px-3 py-2 text-sm">
+              <button type="button" onClick={() => setConfirm("approve")} className="ops-button">
                 Approve conditional
               </button>
-              <button
-                type="button"
-                disabled={!selected.releaseAllowed}
-                onClick={() => setConfirm("release")}
-                className="rounded bg-primary px-3 py-2 text-sm text-white disabled:opacity-40"
-              >
+              <ActionButton disabled={!selected.releaseAllowed} onClick={() => setConfirm("release")}>
                 Release to cutting
-              </button>
+              </ActionButton>
             </div>
             {selected.releaseBlockers.length ? (
               <div className="space-y-2">
@@ -458,9 +439,7 @@ export function ProcurementVendorFollowUpPage() {
   ];
   return (
     <section>
-      <Breadcrumbs items={["Pre-Production", "Procurement"]} />
       <ModuleHeader
-        eyebrow="Material readiness"
         title="Procurement Vendor Follow-Up"
         description="Material shortages, vendor ETA risk, and PCD-impacting procurement blockers."
       />
@@ -488,9 +467,9 @@ export function ProcurementVendorFollowUpPage() {
             <p>Material: {selected.materialName}</p>
             <p>Expected: {selected.expectedArrivalDate ?? "-"}</p>
             <p>Revised: {selected.revisedEta ?? "-"}</p>
-            <button type="button" className="rounded bg-primary px-3 py-2 text-sm text-white" onClick={() => eta.mutate(selected)}>
+            <ActionButton onClick={() => eta.mutate(selected)}>
               Update ETA
-            </button>
+            </ActionButton>
           </div>
         ) : null}
       </RightDrawer>
@@ -521,9 +500,7 @@ export function FabricQcWorkbenchPage() {
   ];
   return (
     <section>
-      <Breadcrumbs items={["Pre-Production", "Fabric QC"]} />
       <ModuleHeader
-        eyebrow="Fabric inward and QC"
         title="Fabric QC Monitor"
         description="Fabric lot status, failed rolls, holds, waivers, and PCD-impacting QC state."
       />
@@ -535,7 +512,7 @@ export function FabricQcWorkbenchPage() {
           { label: "Pending", value: lots.flatMap((lot) => lot.rolls).filter((roll) => roll.qcStatus === "PENDING").length, risk: "ACTION" },
         ]}
       />
-      <div className="grid gap-4 xl:grid-cols-[1fr_460px]">
+      <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_460px]">
         <DataGrid
           data={lots}
           columns={lotColumns}

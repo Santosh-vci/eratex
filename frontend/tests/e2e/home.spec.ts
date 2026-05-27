@@ -447,7 +447,7 @@ test("home route renders the foundation shell", async ({ page }) => {
   await setupAuthMocks(page, plannerUser);
   await login(page);
 
-  await expect(page.getByRole("heading", { name: "Order Readiness Foundation" })).toBeVisible();
+  await expect(page.getByText("ERATEX OPS CONTROL")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Eratex Operating Spine" })).toBeVisible();
   await expect(page.getByRole("link", { name: /Orders/ })).toBeVisible();
   await expect(page.getByRole("link", { name: /Planning/ })).toBeVisible();
@@ -479,7 +479,8 @@ test("planning head can approve conditional release and release order gate", asy
   await login(page, "planning_head");
 
   await page.getByRole("link", { name: "PCD", exact: true }).click();
-  await page.locator("tbody tr").first().click();
+  await expect(page.getByRole("heading", { name: "PCD Readiness" })).toBeVisible();
+  await page.getByRole("row", { name: /ORD-PCD-001/ }).click();
   await page.getByRole("button", { name: "Approve conditional" }).click();
   await page.getByRole("button", { name: "Confirm" }).click();
   await expect(page.getByRole("status")).toContainText("Conditional release approved.");

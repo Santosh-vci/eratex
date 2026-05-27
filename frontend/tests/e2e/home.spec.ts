@@ -1,11 +1,13 @@
-import { expect, type Page, test } from "@playwright/test";
+import { expect, type Page, type Route, test } from "@playwright/test";
 
-const corsHeaders = {
-  "Access-Control-Allow-Credentials": "true",
-  "Access-Control-Allow-Headers": "Content-Type, X-CSRFToken",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Origin": "http://127.0.0.1:3000",
-};
+function corsHeaders(route: Route) {
+  return {
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Headers": "Content-Type, X-CSRFToken",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Origin": route.request().headers().origin ?? "http://127.0.0.1:3000",
+  };
+}
 
 const plannerUser = {
   id: 1,
@@ -75,7 +77,7 @@ async function setupAuthMocks(page: Page, currentUser: typeof plannerUser) {
     if (isAuthenticated) {
       await route.fulfill({
         contentType: "application/json",
-        headers: corsHeaders,
+        headers: corsHeaders(route),
         body: JSON.stringify({ data: currentUser, meta: {}, errors: [] }),
       });
       return;
@@ -83,7 +85,7 @@ async function setupAuthMocks(page: Page, currentUser: typeof plannerUser) {
 
     await route.fulfill({
       contentType: "application/json",
-      headers: corsHeaders,
+      headers: corsHeaders(route),
       body: JSON.stringify({
         data: null,
         meta: {},
@@ -95,20 +97,20 @@ async function setupAuthMocks(page: Page, currentUser: typeof plannerUser) {
   await page.route("**/api/v1/auth/csrf", async (route) => {
     await route.fulfill({
       contentType: "application/json",
-      headers: corsHeaders,
+      headers: corsHeaders(route),
       body: JSON.stringify({ data: { csrfToken: "test-csrf" }, meta: {}, errors: [] }),
     });
   });
   await page.route("**/api/v1/auth/login", async (route) => {
     if (route.request().method() === "OPTIONS") {
-      await route.fulfill({ status: 204, headers: corsHeaders, body: "" });
+      await route.fulfill({ status: 204, headers: corsHeaders(route), body: "" });
       return;
     }
 
     isAuthenticated = true;
     await route.fulfill({
       contentType: "application/json",
-      headers: corsHeaders,
+      headers: corsHeaders(route),
       body: JSON.stringify({ data: currentUser, meta: {}, errors: [] }),
     });
   });
@@ -225,35 +227,35 @@ async function setupTechnicalMocks(page: Page) {
   await page.route("**/api/v1/styles", async (route) => {
     await route.fulfill({
       contentType: "application/json",
-      headers: corsHeaders,
+      headers: corsHeaders(route),
       body: JSON.stringify({ data: styleList, meta: {}, errors: [] }),
     });
   });
   await page.route("**/api/v1/styles/style-1", async (route) => {
     await route.fulfill({
       contentType: "application/json",
-      headers: corsHeaders,
+      headers: corsHeaders(route),
       body: JSON.stringify({ data: styleDetail, meta: {}, errors: [] }),
     });
   });
   await page.route("**/api/v1/master/product-types", async (route) => {
     await route.fulfill({
       contentType: "application/json",
-      headers: corsHeaders,
+      headers: corsHeaders(route),
       body: JSON.stringify({ data: [{ id: "ptype-1", code: "DENIM", name: "Denim", isActive: true }], meta: {}, errors: [] }),
     });
   });
   await page.route("**/api/v1/operation-bulletins", async (route) => {
     await route.fulfill({
       contentType: "application/json",
-      headers: corsHeaders,
+      headers: corsHeaders(route),
       body: JSON.stringify({ data: [{ ...bulletin, operations: undefined }], meta: {}, errors: [] }),
     });
   });
   await page.route("**/api/v1/operation-bulletins/bulletin-1", async (route) => {
     await route.fulfill({
       contentType: "application/json",
-      headers: corsHeaders,
+      headers: corsHeaders(route),
       body: JSON.stringify({ data: bulletin, meta: {}, errors: [] }),
     });
   });
@@ -346,14 +348,14 @@ async function setupPreProductionMocks(page: Page) {
   await page.route("**/api/v1/orders", async (route) => {
     await route.fulfill({
       contentType: "application/json",
-      headers: corsHeaders,
+      headers: corsHeaders(route),
       body: JSON.stringify({ data: [orderRecord()], meta: {}, errors: [] }),
     });
   });
   await page.route("**/api/v1/orders/order-pcd-1", async (route) => {
     await route.fulfill({
       contentType: "application/json",
-      headers: corsHeaders,
+      headers: corsHeaders(route),
       body: JSON.stringify({
         data: { ...orderRecord(), lines: [{ id: "line-1", size: "32", color: "Indigo", quantity: 1200 }], pcdReadiness: pcdRecord() },
         meta: {},
@@ -364,7 +366,7 @@ async function setupPreProductionMocks(page: Page) {
   await page.route("**/api/v1/orders/order-pcd-1/timeline", async (route) => {
     await route.fulfill({
       contentType: "application/json",
-      headers: corsHeaders,
+      headers: corsHeaders(route),
       body: JSON.stringify({
         data: [
           {
@@ -386,13 +388,13 @@ async function setupPreProductionMocks(page: Page) {
   await page.route("**/api/v1/pcd-readiness", async (route) => {
     await route.fulfill({
       contentType: "application/json",
-      headers: corsHeaders,
+      headers: corsHeaders(route),
       body: JSON.stringify({ data: [pcdRecord()], meta: {}, errors: [] }),
     });
   });
   await page.route("**/api/v1/pcd-readiness/pcd-1/approve-conditional-release", async (route) => {
     if (route.request().method() === "OPTIONS") {
-      await route.fulfill({ status: 204, headers: corsHeaders, body: "" });
+      await route.fulfill({ status: 204, headers: corsHeaders(route), body: "" });
       return;
     }
     pcdStatus = "CONDITIONALLY_READY";
@@ -400,13 +402,13 @@ async function setupPreProductionMocks(page: Page) {
     releaseBlockers = [];
     await route.fulfill({
       contentType: "application/json",
-      headers: corsHeaders,
+      headers: corsHeaders(route),
       body: JSON.stringify({ data: pcdRecord(), meta: {}, errors: [] }),
     });
   });
   await page.route("**/api/v1/orders/order-pcd-1/release-to-cutting", async (route) => {
     if (route.request().method() === "OPTIONS") {
-      await route.fulfill({ status: 204, headers: corsHeaders, body: "" });
+      await route.fulfill({ status: 204, headers: corsHeaders(route), body: "" });
       return;
     }
     pcdStatus = "RELEASED";
@@ -414,28 +416,28 @@ async function setupPreProductionMocks(page: Page) {
     releaseBlockers = ["Order already released to cutting"];
     await route.fulfill({
       contentType: "application/json",
-      headers: corsHeaders,
+      headers: corsHeaders(route),
       body: JSON.stringify({ data: pcdRecord(), meta: {}, errors: [] }),
     });
   });
   await page.route("**/api/v1/material-readiness", async (route) => {
     await route.fulfill({
       contentType: "application/json",
-      headers: corsHeaders,
+      headers: corsHeaders(route),
       body: JSON.stringify({ data: [], meta: {}, errors: [] }),
     });
   });
   await page.route("**/api/v1/procurement/purchase-orders", async (route) => {
     await route.fulfill({
       contentType: "application/json",
-      headers: corsHeaders,
+      headers: corsHeaders(route),
       body: JSON.stringify({ data: [], meta: {}, errors: [] }),
     });
   });
   await page.route("**/api/v1/fabric-qc", async (route) => {
     await route.fulfill({
       contentType: "application/json",
-      headers: corsHeaders,
+      headers: corsHeaders(route),
       body: JSON.stringify({ data: { lots: [], inspections: [] }, meta: {}, errors: [] }),
     });
   });

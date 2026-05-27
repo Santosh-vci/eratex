@@ -23,14 +23,14 @@ Do not add planning algorithms, daily release execution, cutting output, bundles
 - Keep approved BOM, operation bulletin, and wash route versions immutable; clone to a new draft for changes.
 - Release-to-cutting must update only PCD/order lifecycle state and audit. Do not create cutting execution, WIP, bundles, sewing, wash, or production output records.
 - Keep audit events business-readable and append-only.
-- Run backend checks before handoff:
+- Run backend checks before handoff inside Docker only:
 
 ```powershell
-cd backend
-..\.venv\Scripts\python -m ruff check .
-..\.venv\Scripts\python manage.py makemigrations --check --dry-run
-..\.venv\Scripts\python manage.py check
-..\.venv\Scripts\python -m pytest
+docker compose build backend
+docker compose run --rm backend python -m ruff check .
+docker compose run --rm backend python manage.py makemigrations --check --dry-run
+docker compose run --rm backend python manage.py check
+docker compose run --rm backend python -m pytest
 ```
 
 ## Frontend Rules
@@ -41,22 +41,28 @@ cd backend
 - Use semantic risk/status colors only for operational state.
 - Use lucide icons for navigation/actions where an icon is useful.
 - Do not create decorative dashboard card mosaics.
-- Run frontend checks before handoff:
+- Run frontend checks before handoff inside Docker only:
 
 ```powershell
-cd frontend
-npm run lint
-npm run typecheck
-npm run test
-npm run build
-npm run test:e2e
+docker compose build frontend
+docker compose run --rm --no-deps frontend npm run lint
+docker compose run --rm --no-deps frontend npm run typecheck
+docker compose run --rm --no-deps frontend npm run test
+docker compose run --rm --no-deps frontend npm run build
+docker compose up --build -d backend frontend
+docker compose --profile test run --rm frontend_e2e
 ```
 
 ## Docker Commands
 
 ```powershell
 docker compose config
-docker compose up --build
+docker compose up --build -d
+```
+
+Leave the local Docker stack running after validation and git handoff. Use cleanup only when explicitly requested, when resetting state, or in CI:
+
+```powershell
 docker compose down
 ```
 
@@ -85,3 +91,4 @@ docker compose exec backend python manage.py seed_phase3
 - Stage only intended files.
 - Commit with a clear phase-scoped message.
 - Push only to `origin dev` when the user explicitly requests a handoff.
+- Do not stop the local Docker stack during or after handoff unless explicitly requested.

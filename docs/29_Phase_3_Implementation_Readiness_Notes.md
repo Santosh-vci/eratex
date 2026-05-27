@@ -50,17 +50,17 @@ Actual local verification on 2026-05-27:
 
 ```text
 Backend:
-- ..\.venv\Scripts\python -m ruff check . -> passed
-- ..\.venv\Scripts\python manage.py makemigrations --check --dry-run -> passed, no changes detected
-- ..\.venv\Scripts\python manage.py check -> passed, no issues
-- ..\.venv\Scripts\python -m pytest -> passed, 33 tests
+- docker compose run --rm backend python -m ruff check . -> passed
+- docker compose run --rm backend python manage.py makemigrations --check --dry-run -> passed, no changes detected
+- docker compose run --rm backend python manage.py check -> passed, no issues
+- docker compose run --rm backend python -m pytest -> passed, 33 tests
 
 Frontend:
-- npm run lint -> passed
-- npm run typecheck -> passed
-- npm run test -> passed, 8 files / 14 tests
-- npm run build -> passed
-- npm run test:e2e -> passed, 4 Chromium smoke tests
+- docker compose run --rm --no-deps frontend npm run lint -> passed
+- docker compose run --rm --no-deps frontend npm run typecheck -> passed
+- docker compose run --rm --no-deps frontend npm run test -> passed, 8 files / 14 tests
+- docker compose run --rm --no-deps frontend npm run build -> passed
+- docker compose --profile test run --rm frontend_e2e -> passed, 4 Chromium smoke tests
 
 Full stack:
 - docker compose config -> passed
@@ -72,7 +72,8 @@ Full stack:
 - Authenticated GET /api/v1/material-readiness as planner -> 5 readiness records returned
 - Authenticated GET /api/v1/fabric-qc as planner -> lots and inspections payload returned
 - Frontend /orders, /pcd-readiness, /procurement/vendor-follow-up, /fabric/qc -> HTTP 200
-- docker compose down -> passed
+- Local handoff default -> leave Docker stack running after validation
+- docker compose down -> cleanup command only, not part of local handoff
 ```
 
 ---

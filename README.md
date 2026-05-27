@@ -8,18 +8,18 @@ Phase 0 bootstraps the Eratex monorepo into a runnable full-stack foundation. Ph
 - Frontend: Next.js, React, TypeScript, Tailwind CSS, npm
 - DevOps: Docker Compose, GitHub Actions
 
-## Local Setup
+## Docker Setup
 
-Copy the sample environment file before running the stack:
+The repository is Docker-first. Do not install backend or frontend dependencies on the host for normal development, validation, or CI. Copy the sample environment file before running the stack:
 
 ```powershell
 Copy-Item .env.example .env
 ```
 
-Start the full stack:
+Start the full stack in Docker:
 
 ```powershell
-docker compose up --build
+docker compose up --build -d
 ```
 
 Seed Phase 3 data, which idempotently validates/loads the Phase 1 and Phase 2 foundations first:
@@ -37,23 +37,29 @@ Primary local endpoints:
 ## Backend Commands
 
 ```powershell
-cd backend
-python -m pip install -r requirements/local.txt
-python manage.py migrate
-pytest
-ruff check .
+docker compose build backend
+docker compose run --rm backend python -m ruff check .
+docker compose run --rm backend python manage.py makemigrations --check --dry-run
+docker compose run --rm backend python manage.py check
+docker compose run --rm backend python -m pytest
 ```
 
 ## Frontend Commands
 
 ```powershell
-cd frontend
-npm ci
-npm run lint
-npm run typecheck
-npm run test
-npm run build
-npm run test:e2e
+docker compose build frontend
+docker compose run --rm --no-deps frontend npm run lint
+docker compose run --rm --no-deps frontend npm run typecheck
+docker compose run --rm --no-deps frontend npm run test
+docker compose run --rm --no-deps frontend npm run build
+docker compose up --build -d backend frontend
+docker compose --profile test run --rm frontend_e2e
+```
+
+The local stack is intentionally left running after validation and handoff. Clean up only when you want to stop local services or reset the environment:
+
+```powershell
+docker compose down
 ```
 
 ## Phase 0 Boundary
@@ -113,7 +119,11 @@ Phase 3 local validation:
 docker compose config
 docker compose up --build -d
 docker compose exec -T backend python manage.py seed_phase3
-docker compose down
+docker compose run --rm backend python -m pytest
+docker compose run --rm --no-deps frontend npm run test
+docker compose --profile test run --rm frontend_e2e
 ```
+
+Leave the stack running after this validation flow. Use `docker compose down` only as an explicit cleanup step.
 
 Phase 3 intentionally excludes planning algorithms, daily release execution, cutting output, WIP movement, sewing/wash execution, shipment workflow, full exception management, imports, and offline/mobile behavior.

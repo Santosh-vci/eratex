@@ -8,79 +8,44 @@ on:
 
 jobs:
   backend:
-    name: Backend
+    name: Backend in Docker
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_DB: eratex_ci
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres -d eratex_ci"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
-      redis:
-        image: redis:7-alpine
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
-    defaults:
-      run:
-        working-directory: backend
-    env:
-      DJANGO_SECRET_KEY: ci-insecure-secret
-      DJANGO_DEBUG: "true"
-      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
-      DATABASE_URL: postgres://postgres:postgres@localhost:5432/eratex_ci
-      REDIS_URL: redis://localhost:6379/0
-      CELERY_BROKER_URL: redis://localhost:6379/1
-      CELERY_RESULT_BACKEND: redis://localhost:6379/2
-      TIME_ZONE: Asia/Jakarta
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-          cache: "pip"
-          cache-dependency-path: backend/requirements/local.txt
-      - run: python -m pip install --upgrade pip
-      - run: python -m pip install -r requirements/local.txt
-      - run: ruff check .
-      - run: python manage.py makemigrations --check --dry-run
-      - run: pytest
+      - run: docker compose build backend
+      - run: docker compose run --rm backend python -m ruff check .
+      - run: docker compose run --rm backend python manage.py makemigrations --check --dry-run
+      - run: docker compose run --rm backend python manage.py check
+      - run: docker compose run --rm backend python -m pytest
+      - if: always()
+        run: docker compose down -v
 
   frontend:
-    name: Frontend
+    name: Frontend in Docker
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run typecheck
-      - run: npm run test
-      - run: npm run build
+      - run: docker compose build frontend
+      - run: docker compose run --rm --no-deps frontend npm run lint
+      - run: docker compose run --rm --no-deps frontend npm run typecheck
+      - run: docker compose run --rm --no-deps frontend npm run test
+      - run: docker compose run --rm --no-deps frontend npm run build
+      - if: always()
+        run: docker compose down -v
+
+  e2e:
+    name: Playwright in Docker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose up --build -d backend frontend
+      - run: docker compose --profile test run --rm frontend_e2e
+      - if: always()
+        run: docker compose --profile test down -v
 
   compose:
-    name: Docker Compose
+    name: Docker Compose Config
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: docker compose config
-

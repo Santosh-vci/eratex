@@ -4,9 +4,11 @@ from django.utils import timezone
 
 from apps.audit_governance.services.audit import write_audit_event
 from apps.common.models import RiskStatus
+from apps.cutting.services.execution import create_cutting_job_from_release
 from apps.master_data.models import ChecklistTemplate, ChecklistTemplateItem, PlanningThreshold
 from apps.orders.models import OrderStage
 from apps.orders.services.lifecycle import record_lifecycle_event
+from apps.organization.models import Workcenter
 from apps.pcd_readiness.models import (
     ConditionalRelease,
     ConditionalReleaseStatus,
@@ -14,6 +16,12 @@ from apps.pcd_readiness.models import (
     PCDReadiness,
     PCDReadinessItem,
     PCDReadinessStatus,
+)
+from apps.planning.models import PlannedWorkItem
+from apps.production_release.models import (
+    ProductionRelease,
+    ProductionReleaseStatus,
+    ProductionReleaseType,
 )
 
 DEFAULT_PCD_ITEMS = [
@@ -32,6 +40,13 @@ DEFAULT_PCD_ITEMS = [
     ("WASH_CAPACITY_BOOKED", "Wash capacity booked", "WASH", True),
     ("QC_FILE_READY", "QC file ready", "QUALITY", True),
 ]
+
+PCD_CONTROLLED_STAGES = {
+    OrderStage.CREATED,
+    OrderStage.PRE_PRODUCTION,
+    OrderStage.PCD_PENDING,
+    OrderStage.PCD_READY,
+}
 
 
 def ensure_default_pcd_template() -> ChecklistTemplate:
@@ -166,27 +181,29 @@ def calculate_pcd_readiness(readiness: PCDReadiness) -> PCDReadiness:
     readiness.updated_at = timezone.now()
     readiness.save(update_fields=["readiness_status", "updated_at"])
     order = readiness.order
-    if status == PCDReadinessStatus.READY:
-        order.lifecycle_status = OrderStage.PCD_READY
-        order.current_stage = OrderStage.PCD_READY
-        order.risk_status = RiskStatus.ON_TRACK
-    elif status == PCDReadinessStatus.CONDITIONALLY_READY:
-        order.lifecycle_status = OrderStage.PCD_READY
-        order.current_stage = OrderStage.PCD_READY
-        order.risk_status = RiskStatus.WATCH
-    elif status in {PCDReadinessStatus.BLOCKED, PCDReadinessStatus.ESCALATED}:
-        order.lifecycle_status = OrderStage.PCD_PENDING
-        order.current_stage = OrderStage.PCD_PENDING
-        order.risk_status = (
-            RiskStatus.ACTION if status == PCDReadinessStatus.BLOCKED else RiskStatus.CRITICAL
-        )
-    elif status == PCDReadinessStatus.RELEASED:
+    if status == PCDReadinessStatus.RELEASED and order.current_stage in PCD_CONTROLLED_STAGES:
         order.lifecycle_status = OrderStage.CUTTING
         order.current_stage = OrderStage.CUTTING
         order.risk_status = (
             RiskStatus.WATCH if order.risk_status == RiskStatus.WATCH else RiskStatus.ON_TRACK
         )
-    order.save(update_fields=["lifecycle_status", "current_stage", "risk_status", "updated_at"])
+        order.save(update_fields=["lifecycle_status", "current_stage", "risk_status", "updated_at"])
+    elif order.current_stage in PCD_CONTROLLED_STAGES:
+        if status == PCDReadinessStatus.READY:
+            order.lifecycle_status = OrderStage.PCD_READY
+            order.current_stage = OrderStage.PCD_READY
+            order.risk_status = RiskStatus.ON_TRACK
+        elif status == PCDReadinessStatus.CONDITIONALLY_READY:
+            order.lifecycle_status = OrderStage.PCD_READY
+            order.current_stage = OrderStage.PCD_READY
+            order.risk_status = RiskStatus.WATCH
+        elif status in {PCDReadinessStatus.BLOCKED, PCDReadinessStatus.ESCALATED}:
+            order.lifecycle_status = OrderStage.PCD_PENDING
+            order.current_stage = OrderStage.PCD_PENDING
+            order.risk_status = (
+                RiskStatus.ACTION if status == PCDReadinessStatus.BLOCKED else RiskStatus.CRITICAL
+            )
+        order.save(update_fields=["lifecycle_status", "current_stage", "risk_status", "updated_at"])
     if old_status != status:
         write_audit_event(
             event_code=f"pcd.{status.lower()}",
@@ -377,11 +394,109 @@ def validate_release_to_cutting(readiness: PCDReadiness) -> dict[str, object]:
     return {"allowed": False, "blockers": blockers or [f"PCD is {readiness.readiness_status}."]}
 
 
+def _cutting_work_item_for_order(order):
+    return (
+        PlannedWorkItem.objects.filter(
+            order=order,
+            workcenter__workcenter_type=Workcenter.WorkcenterType.CUTTING,
+            is_active=True,
+        )
+        .select_related("workcenter")
+        .order_by("planned_start_date", "sequence_no", "created_at")
+        .first()
+    )
+
+
+def _cutting_workcenter_for_order(order, work_item=None):
+    if work_item:
+        return work_item.workcenter
+    workcenters = Workcenter.objects.filter(
+        workcenter_type=Workcenter.WorkcenterType.CUTTING,
+        is_active=True,
+    )
+    if order.factory_id:
+        workcenters = workcenters.filter(factory=order.factory)
+    workcenter = workcenters.order_by("code").first()
+    if not workcenter:
+        raise ValidationError("No active cutting workcenter is configured.")
+    return workcenter
+
+
+def _release_no_for_order(order, release_date):
+    return f"REL-{order.order_no}-{release_date:%Y%m%d}"
+
+
+def _ensure_cutting_release_and_job(readiness: PCDReadiness, *, released_by=None):
+    order = readiness.order
+    release = (
+        ProductionRelease.objects.filter(
+            order=order,
+            release_type=ProductionReleaseType.CUTTING,
+            is_active=True,
+        )
+        .select_related("planned_work_item", "workcenter")
+        .order_by("-released_at", "-created_at")
+        .first()
+    )
+    if not release:
+        work_item = _cutting_work_item_for_order(order)
+        release_date = timezone.localdate()
+        release = ProductionRelease.objects.create(
+            release_no=_release_no_for_order(order, release_date),
+            planned_work_item=work_item,
+            order=order,
+            workcenter=_cutting_workcenter_for_order(order, work_item),
+            release_date=release_date,
+            release_type=ProductionReleaseType.CUTTING,
+            status=ProductionReleaseStatus.RELEASED,
+            risk_status=order.risk_status,
+            released_by=released_by,
+            released_at=timezone.now(),
+            created_by=released_by,
+            updated_by=released_by,
+        )
+    elif release.status in {
+        ProductionReleaseStatus.DRAFT,
+        ProductionReleaseStatus.READY,
+        ProductionReleaseStatus.OVERRIDE_APPROVED,
+    }:
+        release.status = ProductionReleaseStatus.RELEASED
+        release.released_by = released_by
+        release.released_at = release.released_at or timezone.now()
+        release.updated_by = released_by
+        release.save(
+            update_fields=["status", "released_by", "released_at", "updated_by", "updated_at"]
+        )
+
+    if release.planned_work_item_id and release.planned_work_item.status != "RELEASED":
+        release.planned_work_item.status = "RELEASED"
+        release.planned_work_item.updated_by = released_by
+        release.planned_work_item.save(update_fields=["status", "updated_by", "updated_at"])
+
+    job = create_cutting_job_from_release(release, created_by=released_by)
+    write_audit_event(
+        event_code="PCD_CUTTING_RELEASE_CREATED",
+        entity_type="ProductionRelease",
+        entity_id=str(release.id),
+        entity_display_code=release.release_no,
+        action="create_cutting_release_from_pcd",
+        performed_by=released_by,
+        new_value_json={"orderNo": order.order_no, "cuttingJobNo": job.job_no},
+        source="WEB" if released_by else "SEED",
+    )
+    return release, job
+
+
 @transaction.atomic
 def release_to_cutting(readiness: PCDReadiness, *, released_by=None) -> PCDReadiness:
+    if readiness.readiness_status == PCDReadinessStatus.RELEASED:
+        _ensure_cutting_release_and_job(readiness, released_by=released_by)
+        return readiness
+
     validation = validate_release_to_cutting(readiness)
     if not validation["allowed"]:
         raise ValidationError("; ".join(validation["blockers"]))
+    release, job = _ensure_cutting_release_and_job(readiness, released_by=released_by)
     readiness.released_to_cutting_at = timezone.now()
     readiness.readiness_status = PCDReadinessStatus.RELEASED
     readiness.updated_by = released_by
@@ -394,7 +509,13 @@ def release_to_cutting(readiness: PCDReadiness, *, released_by=None) -> PCDReadi
         to_stage=OrderStage.CUTTING,
         message="PCD released to cutting.",
         performed_by=released_by,
-        metadata={"pcdReadinessId": str(readiness.id)},
+        metadata={
+            "pcdReadinessId": str(readiness.id),
+            "releaseId": str(release.id),
+            "releaseNo": release.release_no,
+            "cuttingJobId": str(job.id),
+            "cuttingJobNo": job.job_no,
+        },
     )
     write_audit_event(
         event_code="PCD_RELEASED_TO_CUTTING",
@@ -403,7 +524,11 @@ def release_to_cutting(readiness: PCDReadiness, *, released_by=None) -> PCDReadi
         entity_display_code=readiness.order.order_no,
         action="release_to_cutting",
         performed_by=released_by,
-        new_value_json={"status": PCDReadinessStatus.RELEASED},
+        new_value_json={
+            "status": PCDReadinessStatus.RELEASED,
+            "releaseNo": release.release_no,
+            "cuttingJobNo": job.job_no,
+        },
         source="WEB" if released_by else "SEED",
     )
     return readiness

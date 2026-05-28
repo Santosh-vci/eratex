@@ -1,0 +1,6 @@
+Ready order OPS-ORD-001: requestDisabled=true, approveDisabled=true, releaseEnabled=true
+Flow order OPS-ORD-015: ESCALATED -> 1 requested -> CONDITIONALLY_READY -> RELEASED
+POST /pcd-readiness/b0632fc4-ac84-44e9-b90a-badec6b0529a/request-conditional-release 201
+POST /pcd-readiness/b0632fc4-ac84-44e9-b90a-badec6b0529a/approve-conditional-release 200
+POST /orders/985d3682-adbb-4be0-9679-84abc6e0c776/release-to-cutting 200
+Cutting grid job CUT-REL-OPS-ORD-015-20260528 for OPS-ORD-015

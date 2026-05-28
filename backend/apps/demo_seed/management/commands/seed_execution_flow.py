@@ -100,9 +100,12 @@ class Command(BaseCommand):
         self._assign_permissions(permissions)
 
         release = (
-            ProductionRelease.objects.filter(status=ProductionReleaseStatus.READY)
+            ProductionRelease.objects.filter(
+                status=ProductionReleaseStatus.READY,
+                order__order_no="ORD-HP-001",
+            )
             .select_related("order", "planned_work_item", "workcenter")
-            .order_by("release_date")
+            .order_by("release_date", "release_no")
             .first()
         )
         if not release:

@@ -24,6 +24,7 @@ import {
 } from "@/services/api/eos04";
 import { getBoundaryCases } from "@/services/api/scheduling-rulebook";
 import { queryKeys } from "@/services/query-keys";
+import { usePermission } from "@/providers/PermissionProvider";
 import { ConfirmDialog } from "@/shared/ConfirmDialog";
 import { DataGrid } from "@/shared/DataGrid";
 import { RightDrawer } from "@/shared/RightDrawer";
@@ -57,6 +58,10 @@ import type {
 const EMPTY_BACKLOG: ProductionOrder[] = [];
 const EMPTY_WORK_ITEMS: PlannedWorkItem[] = [];
 const EMPTY_LOADS: WorkcenterLoad[] = [];
+
+function workcenterLoadKey(load: WorkcenterLoad) {
+  return load.id ?? `${load.workcenterId}-${load.snapshotDate ?? load.workcenterCode}`;
+}
 
 function riskFromState(state: string): RiskStatus {
   if (["NORMAL", "READY", "RELEASE_READY", "RELEASED", "COMPLETED", "ON_TRACK"].includes(state)) {
@@ -274,6 +279,10 @@ export function WeeklyPlanningWorkbenchPage() {
       setConfirmFreeze(false);
       await invalidate();
     },
+    onError: (error) => {
+      setFeedback(error instanceof Error ? error.message : "Plan freeze failed.");
+      setConfirmFreeze(false);
+    },
   });
   const changeRequest = useMutation({
     mutationFn: (item: PlannedWorkItem) =>
@@ -438,7 +447,7 @@ export function WeeklyPlanningWorkbenchPage() {
         <div className="flex min-h-14 items-center gap-6 overflow-x-auto bg-primary px-4 text-white">
           <span className="shrink-0 text-[11px] font-bold uppercase tracking-[0.05em] text-risk-watch">System alert</span>
           {loads.map((load) => (
-            <div key={load.workcenterId} className="flex min-w-32 flex-col">
+            <div key={workcenterLoadKey(load)} className="flex min-w-32 flex-col">
               <span className="text-[10px] uppercase leading-none text-white/60">{load.workcenterCode}</span>
               <span className="font-mono text-[12px]">
                 {load.utilizationPercent}%{" "}
@@ -484,7 +493,7 @@ export function WeeklyPlanningWorkbenchPage() {
             <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.05em] text-slate-600">Unit 01 Load Profile</h3>
             <div className="space-y-4">
               {loads.map((load) => (
-                <div key={load.workcenterId} className="space-y-1">
+                <div key={workcenterLoadKey(load)} className="space-y-1">
                   <div className="flex justify-between text-[12px] font-bold">
                     <span>{load.workcenterCode}</span>
                     <span>{load.utilizationPercent}%</span>
@@ -628,7 +637,7 @@ export function WorkcenterLoadMonitorPage() {
       {load.isLoading ? <LoadingState label="Loading workcenter load" /> : null}
       {load.error ? <EmptyState title="Workcenter load unavailable" message="Load snapshots could not be loaded." /> : null}
       <div className="grid gap-4 pb-12 md:grid-cols-2 xl:grid-cols-4">
-        {rows.map((row) => <WorkcenterLoadCard key={row.workcenterId} load={row} onOpen={setSelected} />)}
+        {rows.map((row) => <WorkcenterLoadCard key={workcenterLoadKey(row)} load={row} onOpen={setSelected} />)}
       </div>
       <RightDrawer open={Boolean(selected)} title={selected?.workcenterCode ?? "Workcenter"} onClose={() => setSelected(null)}>
         {selected ? <QueueDrawerContent load={selected} /> : null}
@@ -725,6 +734,7 @@ export function WorkcenterQueuePage({ workcenterId }: { workcenterId: string }) 
 
 export function DailyReleaseDashboardPage() {
   const queryClient = useQueryClient();
+  const { hasPermission } = usePermission();
   const releases = useQuery({ queryKey: queryKeys.dailyReleases, queryFn: getDailyReleases });
   const weekly = useQuery({ queryKey: queryKeys.weeklyPlanning, queryFn: getWeeklyPlanning });
   const boundaryCases = useQuery({ queryKey: queryKeys.boundaryCases, queryFn: getBoundaryCases });
@@ -739,6 +749,11 @@ export function DailyReleaseDashboardPage() {
   const readyWorkItem = (weekly.data as WeeklyPlanningPayload | undefined)?.workItems.find(
     (item) => item.status === "RELEASE_READY",
   );
+  const canCreateRelease = hasPermission("release.create");
+  const canValidateRelease = hasPermission("release.validate");
+  const canRequestOverride = hasPermission("release.request_override");
+  const canApproveOverride = hasPermission("release.approve_override");
+  const canCompleteRelease = hasPermission("release.complete");
   const invalidate = async () => {
     await queryClient.invalidateQueries({ queryKey: queryKeys.dailyReleases });
     await queryClient.invalidateQueries({ queryKey: queryKeys.weeklyPlanning });
@@ -798,7 +813,7 @@ export function DailyReleaseDashboardPage() {
         subtitle="Ready, blocked, and released production controls with release readiness gate validation."
         actions={
           <>
-            <ActionButton disabled={!readyWorkItem} onClick={() => setConfirmAction("release")}>
+            <ActionButton disabled={!readyWorkItem || !canCreateRelease} onClick={() => setConfirmAction("release")}>
               <Play className="h-3.5 w-3.5" aria-hidden />
               Bulk Release
             </ActionButton>
@@ -845,10 +860,13 @@ export function DailyReleaseDashboardPage() {
                     type="button"
                     onClick={(event) => {
                       event.stopPropagation();
+                      if (release.status === "READY" && !canCompleteRelease) return;
+                      if (release.status !== "READY" && !canRequestOverride) return;
                       openRelease(release);
                       setConfirmAction(release.status === "READY" ? "complete" : "override");
                     }}
-                    className="font-bold text-primary hover:underline"
+                    disabled={release.status === "READY" ? !canCompleteRelease : !canRequestOverride}
+                    className="font-bold text-primary hover:underline disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {release.status === "READY" ? "Release" : "Review"}
                   </button>
@@ -878,18 +896,18 @@ export function DailyReleaseDashboardPage() {
               <InfoRow label="Override reason" value={selected.overrideReason || "-"} />
             </section>
             <div className="flex flex-wrap gap-2">
-              <ActionButton variant="ghost" onClick={() => validate.mutate(selected)}>
+              <ActionButton disabled={!canValidateRelease} variant="ghost" onClick={() => validate.mutate(selected)}>
                 <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />
                 Validate
               </ActionButton>
-              <ActionButton variant="ghost" onClick={() => setConfirmAction("override")}>
+              <ActionButton disabled={!canRequestOverride} variant="ghost" onClick={() => setConfirmAction("override")}>
                 <AlertTriangle className="h-3.5 w-3.5" aria-hidden />
                 Request Override
               </ActionButton>
-              <ActionButton variant="ghost" onClick={() => setConfirmAction("approve")}>
+              <ActionButton disabled={!canApproveOverride} variant="ghost" onClick={() => setConfirmAction("approve")}>
                 Approve Override
               </ActionButton>
-              <ActionButton onClick={() => setConfirmAction("complete")}>
+              <ActionButton disabled={!canCompleteRelease} onClick={() => setConfirmAction("complete")}>
                 Release to Floor
               </ActionButton>
             </div>

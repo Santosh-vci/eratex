@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import { usePermission } from "@/providers/PermissionProvider";
 import {
   approveConditionalRelease,
   getFabricQc,
@@ -91,6 +92,28 @@ function Feedback({ message }: { message: string | null }) {
 function readinessPercent(items: PcdReadinessItem[]) {
   if (!items.length) return 0;
   return Math.round((items.filter((item) => ["PASSED", "WAIVED", "NOT_APPLICABLE"].includes(item.status)).length / items.length) * 100);
+}
+
+function hasOpenMandatoryPcdItems(row: PcdReadiness) {
+  return row.items.some(
+    (item) =>
+      item.isMandatory &&
+      ["PENDING", "FAILED", "WAIVED"].includes(item.status),
+  );
+}
+
+function hasRequestedConditionalRelease(row: PcdReadiness) {
+  return row.conditionalReleases.some((conditional) => conditional.status === "REQUESTED");
+}
+
+function hasActiveConditionalRelease(row: PcdReadiness) {
+  return row.conditionalReleases.some((conditional) =>
+    ["REQUESTED", "APPROVED"].includes(conditional.status),
+  );
+}
+
+function actionErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
 }
 
 function pcdChecklistRows(items: PcdReadinessItem[]) {
@@ -185,10 +208,12 @@ export function OrdersWorkbenchPage() {
   const release = useMutation({
     mutationFn: (orderId: string) => releaseOrderToCutting(orderId),
     onSuccess: async () => {
-      setFeedback("Order released to cutting.");
+      setFeedback("Cutting release created and job sent to cutting room.");
       setConfirmRelease(false);
       await queryClient.invalidateQueries({ queryKey: queryKeys.orders });
       await queryClient.invalidateQueries({ queryKey: queryKeys.pcdReadiness });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.dailyReleases });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.cuttingJobs });
     },
   });
   const rows = orders.data ?? [];
@@ -249,7 +274,7 @@ export function OrdersWorkbenchPage() {
       <ConfirmDialog
         open={confirmRelease}
         title="Release to cutting"
-        message="This records the governed release gate only. Execution records are handled by the execution workbenches."
+        message="Create the governed cutting release and send the cutting job to the cutting room."
         confirmLabel="Release"
         onConfirm={() => selected && release.mutate(selected.id)}
         onCancel={() => setConfirmRelease(false)}
@@ -259,8 +284,22 @@ export function OrdersWorkbenchPage() {
 }
 
 export function OrderDetailPage({ orderId }: { orderId: string }) {
+  const queryClient = useQueryClient();
   const order = useQuery({ queryKey: [...queryKeys.orders, orderId], queryFn: () => getOrder(orderId) });
   const timeline = useQuery({ queryKey: [...queryKeys.orders, orderId, "timeline"], queryFn: () => getOrderTimeline(orderId) });
+  const [confirmRelease, setConfirmRelease] = useState(false);
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const release = useMutation({
+    mutationFn: (releaseOrderId: string) => releaseOrderToCutting(releaseOrderId),
+    onSuccess: async () => {
+      setFeedback("Cutting release created and job sent to cutting room.");
+      setConfirmRelease(false);
+      await queryClient.invalidateQueries({ queryKey: queryKeys.orders });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.pcdReadiness });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.dailyReleases });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.cuttingJobs });
+    },
+  });
   if (order.isLoading) return <LoadingState label="Loading order detail" />;
   if (!order.data) return <EmptyState title="Order not available" message="The selected order could not be loaded." />;
   return (
@@ -270,6 +309,7 @@ export function OrderDetailPage({ orderId }: { orderId: string }) {
         subtitle={`${order.data.style.styleCode} / ${order.data.customer.name}`}
         actions={<RiskBadge risk={order.data.riskStatus} />}
       />
+      <Feedback message={feedback} />
       <KpiGrid>
         <KpiTile label="Quantity" value={order.data.orderQty.toLocaleString()} />
         <KpiTile label="PCD status" value={order.data.pcdStatus} risk={riskFromStatus(order.data.pcdStatus)} />
@@ -281,9 +321,17 @@ export function OrderDetailPage({ orderId }: { orderId: string }) {
           <Timeline rows={orderTimelineRows(order.data, timeline.data ?? [])} />
         </Panel>
         <Panel title="Gate Detail">
-          <OrderDrawerContent order={order.data} timeline={timeline.data ?? []} />
+          <OrderDrawerContent order={order.data} timeline={timeline.data ?? []} onRelease={() => setConfirmRelease(true)} />
         </Panel>
       </div>
+      <ConfirmDialog
+        open={confirmRelease}
+        title="Release to cutting"
+        message="Create the governed cutting release and send the cutting job to the cutting room."
+        confirmLabel="Release"
+        onConfirm={() => release.mutate(order.data.id)}
+        onCancel={() => setConfirmRelease(false)}
+      />
     </section>
   );
 }
@@ -315,12 +363,29 @@ export function OrderTracePage({ orderId }: { orderId: string }) {
 
 export function PcdReadinessWorkbenchPage() {
   const queryClient = useQueryClient();
+  const { hasPermission } = usePermission();
   const readiness = useQuery({ queryKey: queryKeys.pcdReadiness, queryFn: getPcdReadiness });
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [confirm, setConfirm] = useState<"request" | "approve" | "release" | null>(null);
   const rows = readiness.data ?? [];
   const selected = rows.find((row) => row.id === selectedId) ?? rows[0] ?? null;
+  const selectedHasOpenMandatoryItems = selected ? hasOpenMandatoryPcdItems(selected) : false;
+  const selectedHasRequestedConditional = selected ? hasRequestedConditionalRelease(selected) : false;
+  const selectedHasActiveConditional = selected ? hasActiveConditionalRelease(selected) : false;
+  const canRequestConditional =
+    Boolean(selected) &&
+    hasPermission("pcd.request_conditional_release") &&
+    selectedHasOpenMandatoryItems &&
+    !selectedHasActiveConditional &&
+    selected?.readinessStatus !== "RELEASED";
+  const canApproveConditional =
+    Boolean(selected) &&
+    hasPermission("pcd.approve_conditional_release") &&
+    selectedHasRequestedConditional &&
+    selected?.readinessStatus !== "RELEASED";
+  const canReleaseToCutting =
+    Boolean(selected) && hasPermission("pcd.release_to_cutting") && Boolean(selected?.releaseAllowed);
   const request = useMutation({
     mutationFn: (item: PcdReadiness) =>
       requestConditionalRelease(item.id, {
@@ -332,6 +397,10 @@ export function PcdReadinessWorkbenchPage() {
       setFeedback("Conditional release requested.");
       setConfirm(null);
       await queryClient.invalidateQueries({ queryKey: queryKeys.pcdReadiness });
+    },
+    onError: (error) => {
+      setFeedback(actionErrorMessage(error, "Conditional release request failed."));
+      setConfirm(null);
     },
   });
   const approve = useMutation({
@@ -348,15 +417,25 @@ export function PcdReadinessWorkbenchPage() {
       await queryClient.invalidateQueries({ queryKey: queryKeys.pcdReadiness });
       await queryClient.invalidateQueries({ queryKey: queryKeys.orders });
     },
+    onError: (error) => {
+      setFeedback(actionErrorMessage(error, "Conditional release approval failed."));
+      setConfirm(null);
+    },
   });
   const release = useMutation({
     mutationFn: (item: PcdReadiness) => releaseOrderToCutting(item.orderId),
     onSuccess: async (updated) => {
-      setFeedback("Order released to cutting.");
+      setFeedback("Cutting release created and job sent to cutting room.");
       setSelectedId(updated.id);
       setConfirm(null);
       await queryClient.invalidateQueries({ queryKey: queryKeys.pcdReadiness });
       await queryClient.invalidateQueries({ queryKey: queryKeys.orders });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.dailyReleases });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.cuttingJobs });
+    },
+    onError: (error) => {
+      setFeedback(actionErrorMessage(error, "Release to cutting failed."));
+      setConfirm(null);
     },
   });
 
@@ -405,7 +484,7 @@ export function PcdReadinessWorkbenchPage() {
                   <span className="text-[11px] font-bold uppercase tracking-[0.05em] text-primary">Unit 01 / Gate 1</span>
                   <h1 className="mt-1 text-[28px] font-extrabold tracking-tight text-primary">PCD Readiness Checklist</h1>
                   <p className="mt-2 max-w-xl text-sm text-slate-600">
-                    Order <span className="font-bold">{selected.orderNo}</span> is {selected.readinessStatus.toLowerCase().replaceAll("_", " ")}.
+                    Order <span className="font-bold">{selected.orderNo}</span> PCD gate is {selected.readinessStatus.toLowerCase().replaceAll("_", " ")}.
                   </p>
                 </div>
                 <div className="text-right">
@@ -433,13 +512,23 @@ export function PcdReadinessWorkbenchPage() {
                 </Panel>
               ) : null}
               <div className="flex flex-wrap justify-end gap-2">
-                <button type="button" onClick={() => setConfirm("request")} className="ops-button">
+                <button
+                  type="button"
+                  onClick={() => setConfirm("request")}
+                  disabled={!canRequestConditional}
+                  className="ops-button"
+                >
                   Request Conditional Release
                 </button>
-                <button type="button" onClick={() => setConfirm("approve")} className="ops-button">
+                <button
+                  type="button"
+                  onClick={() => setConfirm("approve")}
+                  disabled={!canApproveConditional}
+                  className="ops-button"
+                >
                   Approve Conditional Release
                 </button>
-                <ActionButton disabled={!selected.releaseAllowed} onClick={() => setConfirm("release")}>
+                <ActionButton disabled={!canReleaseToCutting} onClick={() => setConfirm("release")}>
                   Release to Cutting
                 </ActionButton>
               </div>
@@ -457,7 +546,7 @@ export function PcdReadinessWorkbenchPage() {
             ? "Request conditional release for the current open mandatory items."
             : confirm === "approve"
               ? "Approve conditional release through the configured expiry."
-              : "Release the order to cutting after backend gate validation."
+              : "Create the governed cutting release and send the cutting job to the cutting room."
         }
         confirmLabel={confirm === "release" ? "Release" : "Confirm"}
         onConfirm={() => {

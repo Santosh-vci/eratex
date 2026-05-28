@@ -491,6 +491,7 @@ async function setupPreProductionMocks(page: Page) {
   let pcdStatus = "BLOCKED";
   let releaseAllowed = false;
   let releaseBlockers = ["TRIMS_AVAILABLE: PENDING"];
+  let conditionalRequested = false;
   const pcdItems = [
     {
       id: "pcd-item-1",
@@ -535,7 +536,19 @@ async function setupPreProductionMocks(page: Page) {
     releaseAllowed,
     releaseBlockers,
     items: pcdItems,
-    conditionalReleases: [],
+    conditionalReleases: conditionalRequested || pcdStatus === "CONDITIONALLY_READY" ? [
+      {
+        id: "conditional-1",
+        status: pcdStatus === "CONDITIONALLY_READY" ? "APPROVED" : "REQUESTED",
+        openItemCodes: ["TRIMS_AVAILABLE"],
+        reason: "Trim arrival confirmed before sewing start.",
+        riskNote: "Cutting only; sewing waits for trims.",
+        expiryDate: "2099-01-01",
+        requestedBy: 4,
+        approvedBy: pcdStatus === "CONDITIONALLY_READY" ? 4 : null,
+        approvedAt: pcdStatus === "CONDITIONALLY_READY" ? "2026-05-27T00:00:00Z" : null,
+      },
+    ] : [],
   });
 
   const orderRecord = () => ({
@@ -618,6 +631,33 @@ async function setupPreProductionMocks(page: Page) {
       body: JSON.stringify({ data: [pcdRecord()], meta: {}, errors: [] }),
     });
   });
+  await page.route("**/api/v1/pcd-readiness/pcd-1/request-conditional-release", async (route) => {
+    if (route.request().method() === "OPTIONS") {
+      await route.fulfill({ status: 204, headers: corsHeaders(route), body: "" });
+      return;
+    }
+    conditionalRequested = true;
+    await route.fulfill({
+      status: 201,
+      contentType: "application/json",
+      headers: corsHeaders(route),
+      body: JSON.stringify({
+        data: {
+          id: "conditional-1",
+          status: "REQUESTED",
+          openItemCodes: ["TRIMS_AVAILABLE"],
+          reason: "Trim arrival confirmed before sewing start.",
+          riskNote: "Cutting only; sewing waits for trims.",
+          expiryDate: "2099-01-01",
+          requestedBy: 4,
+          approvedBy: null,
+          approvedAt: null,
+        },
+        meta: {},
+        errors: [],
+      }),
+    });
+  });
   await page.route("**/api/v1/pcd-readiness/pcd-1/approve-conditional-release", async (route) => {
     if (route.request().method() === "OPTIONS") {
       await route.fulfill({ status: 204, headers: corsHeaders(route), body: "" });
@@ -626,6 +666,7 @@ async function setupPreProductionMocks(page: Page) {
     pcdStatus = "CONDITIONALLY_READY";
     releaseAllowed = true;
     releaseBlockers = [];
+    conditionalRequested = false;
     await route.fulfill({
       contentType: "application/json",
       headers: corsHeaders(route),
@@ -890,6 +931,40 @@ async function setupEos04Mocks(page: Page) {
       topAffectedOrderId: "order-fab-1",
       topAffectedOrderNo: "ORD-FABQC-001",
       suggestedAction: "Approve capacity action before daily release.",
+      capacityDefinition: {
+        id: "cap-def-wash",
+        workcenterType: "WASH",
+        capacityUnit: "BATCH_MINUTES",
+        planningBucket: "DAY",
+        primaryConstraintResource: "WASHER_TIME",
+        secondaryConstraintResource: "",
+        normalCapacityValue: 25000,
+        normalCapacityUnit: "minutes",
+        overtimeAllowed: true,
+        approvedOvertimeCapacityValue: 3750,
+        capacityLossTriggers: ["machine_breakdown"],
+        recoveryLevers: ["overtime", "load_move"],
+      },
+    },
+    {
+      id: "load-3",
+      workcenterId: "wc-wash",
+      workcenterCode: "WASH-WC",
+      workcenterName: "Wet Wash",
+      workcenterType: "WASH",
+      factoryCode: "UNIT-04",
+      snapshotDate: "2026-05-26",
+      availableMinutes: 25000,
+      plannedLoadMinutes: 31000,
+      actualLoadMinutes: 0,
+      utilizationPercent: 124,
+      queueQuantity: 5200,
+      oldestQueueAgeHours: 18,
+      constraintStatus: "CRITICAL",
+      riskStatus: "ACTION",
+      topAffectedOrderId: "order-fab-1",
+      topAffectedOrderNo: "ORD-FABQC-001",
+      suggestedAction: "Move load or add approved capacity.",
       capacityDefinition: {
         id: "cap-def-wash",
         workcenterType: "WASH",
@@ -1221,6 +1296,12 @@ test("planning head can approve conditional release and release order gate", asy
   await page.goto("/pcd-readiness");
   await expect(page.getByRole("heading", { name: "PCD Readiness Gate" })).toBeVisible();
   await page.getByRole("button", { name: /ORD-PCD-001/ }).click();
+  await expect(page.getByRole("button", { name: /Approve Conditional Release/i })).toBeDisabled();
+  await page.getByRole("button", { name: /Request Conditional Release/i }).click();
+  await page.getByRole("button", { name: "Confirm" }).click();
+  await expect(page.getByRole("status")).toContainText("Conditional release requested.");
+  await expect(page.getByRole("button", { name: /Request Conditional Release/i })).toBeDisabled();
+  await expect(page.getByRole("button", { name: /Approve Conditional Release/i })).toBeEnabled();
   await page.getByRole("button", { name: /Approve Conditional Release/i }).click();
   await page.getByRole("button", { name: "Confirm" }).click();
   await expect(page.getByRole("status")).toContainText("Conditional release approved.");
@@ -1228,7 +1309,7 @@ test("planning head can approve conditional release and release order gate", asy
 
   await page.getByRole("button", { name: /Release to Cutting/i }).click();
   await page.getByRole("button", { name: "Release", exact: true }).click();
-  await expect(page.getByRole("status")).toContainText("Order released to cutting.");
+  await expect(page.getByRole("status")).toContainText("Cutting release created and job sent to cutting room.");
 });
 
 test("ie user can open technical style and routing workbenches", async ({ page }) => {
@@ -1288,11 +1369,21 @@ test("planner can use EOS-04 planning load and release surfaces", async ({ page 
   await page.getByRole("button", { name: "Assign Selected" }).click();
   await expect(page.getByRole("status")).toContainText("Backlog order assigned");
 
+  const consoleMessages: string[] = [];
+  page.on("console", (message) => {
+    consoleMessages.push(message.text());
+  });
   await page.goto("/workcenters/load");
   await expect(page.getByRole("heading", { name: "Workcenter Load & Constraint Monitor" })).toBeVisible();
-  await expect(page.getByRole("button", { name: /WASH-WC/ })).toBeVisible();
+  const washCards = page.getByRole("button", { name: /WASH-WC/ });
+  await expect(washCards).toHaveCount(2);
+  await expect(washCards.first()).toBeVisible();
+  expect(consoleMessages.join("\n")).not.toContain("Encountered two children with the same key");
   await captureParity(page, "workcenters-load");
-  await page.getByRole("link", { name: "Open Queue" }).click();
+  await Promise.all([
+    page.waitForURL("**/workcenters/wc-wash/queue", { timeout: 15000 }),
+    page.getByRole("link", { name: "Open Queue" }).click(),
+  ]);
   await expect(page.getByRole("heading", { name: "Workcenter Queue" })).toBeVisible();
   await expect(page.getByText("ORD-FABQC-001")).toBeVisible();
   await captureParity(page, "workcenter-queue");

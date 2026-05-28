@@ -100,6 +100,7 @@ class Command(BaseCommand):
         )
 
         start, end = default_plan_dates()
+        today = timezone.localdate()
         horizon, _ = PlanningHorizon.objects.update_or_create(
             code=f"WEEK-{start:%Y%m%d}",
             defaults={
@@ -160,7 +161,7 @@ class Command(BaseCommand):
             draft,
             fabric_blocked_order,
             wash,
-            start + timedelta(days=2),
+            today,
             7000,
             PlannedWorkItemStatus.BLOCKED,
             RiskStatus.CRITICAL,
@@ -440,6 +441,7 @@ class Command(BaseCommand):
             )
 
     def _seed_releases(self, start, ready_item, blocked_item, release_user, planning_head):
+        blocked_date = blocked_item.planned_start_date
         ready_release, _ = ProductionRelease.objects.update_or_create(
             release_no=f"REL-{ready_item.order.order_no}-{start:%Y%m%d}",
             defaults={
@@ -456,12 +458,12 @@ class Command(BaseCommand):
             },
         )
         blocked_release, _ = ProductionRelease.objects.update_or_create(
-            release_no=f"REL-{blocked_item.order.order_no}-{start:%Y%m%d}",
+            release_no=f"REL-{blocked_item.order.order_no}-{blocked_date:%Y%m%d}",
             defaults={
                 "planned_work_item": blocked_item,
                 "order": blocked_item.order,
                 "workcenter": blocked_item.workcenter,
-                "release_date": start + timedelta(days=2),
+                "release_date": blocked_date,
                 "status": ProductionReleaseStatus.OVERRIDE_REQUESTED,
                 "risk_status": RiskStatus.CRITICAL,
                 "override_requested_by": release_user,

@@ -1,0 +1,130 @@
+{
+  "readyOrder": {
+    "orderNo": "OPS-ORD-001",
+    "readinessStatus": "READY",
+    "openMandatoryItemCount": 0,
+    "requestDisabled": true,
+    "approveDisabled": true,
+    "releaseEnabled": true
+  },
+  "flowOrder": {
+    "orderNo": "OPS-ORD-015",
+    "before": {
+      "readinessStatus": "ESCALATED",
+      "releaseAllowed": false,
+      "openMandatoryItems": [
+        "FABRIC_QC_PASSED:FAILED",
+        "SHADE_LOTS_MAPPED:FAILED"
+      ]
+    },
+    "requestEndpoint": {
+      "method": "POST",
+      "path": "/pcd-readiness/b0632fc4-ac84-44e9-b90a-badec6b0529a/request-conditional-release",
+      "status": 201
+    },
+    "afterRequest": {
+      "readinessStatus": "ESCALATED",
+      "requestedCount": 1
+    },
+    "approveEndpoint": {
+      "method": "POST",
+      "path": "/pcd-readiness/b0632fc4-ac84-44e9-b90a-badec6b0529a/approve-conditional-release",
+      "status": 200
+    },
+    "afterApproval": {
+      "readinessStatus": "CONDITIONALLY_READY",
+      "releaseAllowed": true
+    },
+    "releaseEndpoint": {
+      "method": "POST",
+      "path": "/orders/985d3682-adbb-4be0-9679-84abc6e0c776/release-to-cutting",
+      "status": 200
+    },
+    "afterRelease": {
+      "readinessStatus": "RELEASED",
+      "releasedToCuttingAt": "2026-05-27T18:19:34.225492+00:00",
+      "releaseAllowed": false
+    },
+    "cuttingGrid": {
+      "jobNo": "CUT-REL-OPS-ORD-015-20260528",
+      "releaseNo": "REL-OPS-ORD-015-20260528",
+      "status": "RELEASED",
+      "plannedQuantity": 9825
+    }
+  },
+  "captured": [
+    {
+      "method": "GET",
+      "path": "/me",
+      "status": 401
+    },
+    {
+      "method": "GET",
+      "path": "/auth/csrf",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/auth/login",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/pcd-readiness",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/pcd-readiness/b0632fc4-ac84-44e9-b90a-badec6b0529a/request-conditional-release",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/pcd-readiness",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/pcd-readiness/b0632fc4-ac84-44e9-b90a-badec6b0529a/approve-conditional-release",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/pcd-readiness",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/orders/985d3682-adbb-4be0-9679-84abc6e0c776/release-to-cutting",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/pcd-readiness",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/cutting/jobs",
+      "status": 200
+    }
+  ],
+  "screenshots": [
+    "01_ready_order_state.png",
+    "02_conditional_order_before_request.png",
+    "03_after_request.png",
+    "04_after_approval.png",
+    "05_after_release.png",
+    "06_cutting_grid_contains_released_order.png"
+  ]
+}

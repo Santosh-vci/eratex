@@ -8,13 +8,14 @@ from django.core.management import call_command
 from django.utils import timezone
 
 from apps.audit_governance.models import AuditEvent
+from apps.cutting.models import CuttingJob
 from apps.fabric_qc.models import FabricQCInspection, FabricQcStatus
 from apps.materials_procurement.models import MaterialPurchaseOrder, MaterialRequirementStatus
 from apps.materials_procurement.services.readiness import (
     calculate_material_readiness,
     update_material_eta,
 )
-from apps.orders.models import ProductionOrder
+from apps.orders.models import OrderStage, ProductionOrder
 from apps.pcd_readiness.models import PCDItemStatus, PCDReadiness, PCDReadinessItem
 from apps.pcd_readiness.services.readiness import (
     approve_conditional_release,
@@ -23,6 +24,8 @@ from apps.pcd_readiness.services.readiness import (
     request_conditional_release,
     validate_release_to_cutting,
 )
+from apps.production_release.models import ProductionRelease
+from apps.wip_inventory.models import WipLot, WipStage
 
 
 @pytest.fixture
@@ -94,6 +97,18 @@ def test_conditional_release_allows_release_to_cutting_and_writes_audit(phase3_d
     released = release_to_cutting(readiness, released_by=planner)
     assert released.readiness_status == "RELEASED"
     assert released.order.current_stage == "CUTTING"
+    release = ProductionRelease.objects.get(order=released.order)
+    job = CuttingJob.objects.get(release=release)
+    assert release.status == "RELEASED"
+    assert release.release_type == "CUTTING"
+    assert job.order == released.order
+    assert job.status == "RELEASED"
+    assert WipLot.objects.filter(
+        order=released.order,
+        release=release,
+        cutting_job=job,
+        stage=WipStage.CUTTING,
+    ).exists()
     assert AuditEvent.objects.filter(event_code="PCD_RELEASED_TO_CUTTING").exists()
 
 
@@ -118,6 +133,21 @@ def test_expired_conditional_release_blocks_release(phase3_data):
     assert readiness.readiness_status in {"BLOCKED", "ESCALATED"}
     with pytest.raises(ValidationError):
         release_to_cutting(readiness, released_by=planning_head)
+
+
+@pytest.mark.django_db
+def test_pcd_recalculation_does_not_regress_execution_lifecycle_stage(phase3_data):
+    order = ProductionOrder.objects.get(order_no="ORD-HP-001")
+    readiness = order.pcd_readiness
+    order.current_stage = OrderStage.SEWING
+    order.lifecycle_status = OrderStage.SEWING
+    order.save(update_fields=["current_stage", "lifecycle_status", "updated_at"])
+
+    calculate_pcd_readiness(readiness)
+    order.refresh_from_db()
+
+    assert order.current_stage == OrderStage.SEWING
+    assert order.lifecycle_status == OrderStage.SEWING
 
 
 @pytest.mark.django_db

@@ -131,10 +131,10 @@ export function Timeline({
 }) {
   return (
     <div className="relative space-y-5 pl-6 before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-px before:bg-grid-border">
-      {rows.map((row) => {
+      {rows.map((row, index) => {
         const dot = row.tone === "CRITICAL" ? "bg-risk-critical" : row.tone === "ACTION" ? "bg-risk-action" : row.tone === "WATCH" ? "bg-risk-watch" : "bg-risk-on-track";
         return (
-          <div key={`${row.title}-${row.meta}`} className="relative">
+          <div key={`${row.title}-${row.meta}-${index}`} className="relative">
             <span className={`absolute -left-[22px] top-1 h-3 w-3 rounded-full border-2 border-white ${dot}`} />
             <p className="text-[13px] font-bold text-primary">{row.title}</p>
             <p className="text-[11px] text-slate-500">{row.meta}</p>

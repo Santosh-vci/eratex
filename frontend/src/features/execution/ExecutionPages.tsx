@@ -18,6 +18,7 @@ import {
   requestLineRealignment,
 } from "@/services/api/execution";
 import { queryKeys } from "@/services/query-keys";
+import { usePermission } from "@/providers/PermissionProvider";
 import { ConfirmDialog } from "@/shared/ConfirmDialog";
 import { DataGrid } from "@/shared/DataGrid";
 import { RightDrawer } from "@/shared/RightDrawer";
@@ -532,6 +533,7 @@ function formatPercent(value: number) {
 
 export function LineRealignmentWorkbenchPage() {
   const queryClient = useQueryClient();
+  const { hasPermission } = usePermission();
   const loadings = useQuery({ queryKey: queryKeys.sewingLineLoadings, queryFn: getSewingLineLoadings });
   const [selected, setSelected] = useState<SewingLineLoading | null>(null);
   const [preview, setPreview] = useState<LineRealignmentPreview | null>(null);
@@ -573,6 +575,8 @@ export function LineRealignmentWorkbenchPage() {
   });
 
   const currentPreview = preview ?? (realignment as LineRealignmentPreview | null);
+  const canApproveRealignment = hasPermission("sewing.approve_realignment");
+  const canApplyRealignment = hasPermission("sewing.apply_realignment");
 
   return (
     <section>
@@ -633,8 +637,8 @@ export function LineRealignmentWorkbenchPage() {
               <GapList title="Skill Gaps" rows={currentPreview.skillGaps} />
               <div className="grid grid-cols-3 gap-2">
                 <ActionButton disabled={!active} onClick={() => active && requestMutation.mutate(active)}>Request</ActionButton>
-                <ActionButton disabled={!realignment} variant="ghost" onClick={() => realignment && approveMutation.mutate(realignment.id)}>Approve</ActionButton>
-                <ActionButton disabled={!realignment} variant="ghost" onClick={() => realignment && applyMutation.mutate(realignment.id)}>Apply</ActionButton>
+                <ActionButton disabled={!realignment || !canApproveRealignment} variant="ghost" onClick={() => realignment && approveMutation.mutate(realignment.id)}>Approve</ActionButton>
+                <ActionButton disabled={!realignment || !canApplyRealignment} variant="ghost" onClick={() => realignment && applyMutation.mutate(realignment.id)}>Apply</ActionButton>
               </div>
             </div>
           ) : null}

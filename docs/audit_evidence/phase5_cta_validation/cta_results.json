@@ -1,0 +1,1392 @@
+{
+  "generatedAt": "2026-05-27T16:38:21.745Z",
+  "baseUrl": "http://localhost:3000",
+  "apiBaseUrl": "http://localhost:8000/api/v1",
+  "results": [
+    {
+      "phase": "Phase 1",
+      "surface": "Login",
+      "cta": "Sign in",
+      "role": null,
+      "expects": [
+        "GET /^\\/auth\\/csrf$/",
+        "POST /^\\/auth\\/login$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "GET",
+          "path": "/me",
+          "status": 401
+        },
+        {
+          "method": "GET",
+          "path": "/auth/csrf",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "GET",
+          "path": "/auth/csrf",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 2",
+      "surface": "Master Data Governance",
+      "cta": "Audit Log",
+      "role": "business_admin",
+      "expects": [],
+      "notes": "No handler implemented.",
+      "captured": [],
+      "matched": [],
+      "status": "INERT_CONFIRMED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 2",
+      "surface": "Technical Styles",
+      "cta": "Open technical file",
+      "role": "business_admin",
+      "expects": [
+        "GET /^\\/styles\\/[0-9a-f-]+$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "GET",
+          "path": "/styles/d9b6947d-1cb9-4144-8b0b-f91d7be6497a",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/operation-bulletins",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/operation-bulletins/6de163c7-7ed6-4a4f-a8b4-243747fde5bb",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "GET",
+          "path": "/styles/d9b6947d-1cb9-4144-8b0b-f91d7be6497a",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": "cta_technical_style_detail.png"
+    },
+    {
+      "phase": "Phase 2",
+      "surface": "BOM",
+      "cta": "Export",
+      "role": "business_admin",
+      "expects": [],
+      "notes": "No handler implemented.",
+      "captured": [],
+      "matched": [],
+      "status": "INERT_CONFIRMED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 2",
+      "surface": "BOM",
+      "cta": "Filter",
+      "role": "business_admin",
+      "expects": [],
+      "notes": "No handler implemented.",
+      "captured": [],
+      "matched": [],
+      "status": "INERT_CONFIRMED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 2",
+      "surface": "Operation Bulletins",
+      "cta": "Create New Bulletin",
+      "role": "business_admin",
+      "expects": [],
+      "notes": "No handler implemented.",
+      "captured": [],
+      "matched": [],
+      "status": "INERT_CONFIRMED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 2",
+      "surface": "Operation Bulletins",
+      "cta": "Clone",
+      "role": "business_admin",
+      "expects": [
+        "POST /^\\/operation-bulletins\\/[0-9a-f-]+\\/clone$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/operation-bulletins/6de163c7-7ed6-4a4f-a8b4-243747fde5bb/clone",
+          "status": 201
+        },
+        {
+          "method": "GET",
+          "path": "/operation-bulletins",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/operation-bulletins/6de163c7-7ed6-4a4f-a8b4-243747fde5bb",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/operation-bulletins/6de163c7-7ed6-4a4f-a8b4-243747fde5bb/clone",
+          "status": 201
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 2",
+      "surface": "Operation Bulletins",
+      "cta": "Approve Bulletin",
+      "role": "business_admin",
+      "expects": [
+        "POST /^\\/operation-bulletins\\/[0-9a-f-]+\\/approve$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "GET",
+          "path": "/operation-bulletins/65ace911-32d8-402a-9b11-3361f1a75d24",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/operation-bulletins/65ace911-32d8-402a-9b11-3361f1a75d24/performance",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/operation-bulletins/65ace911-32d8-402a-9b11-3361f1a75d24/approve",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/operation-bulletins",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/operation-bulletins/65ace911-32d8-402a-9b11-3361f1a75d24",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/operation-bulletins/65ace911-32d8-402a-9b11-3361f1a75d24/approve",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 2",
+      "surface": "Operation Bulletins",
+      "cta": "Open routing",
+      "role": "business_admin",
+      "expects": [
+        "GET /^\\/operation-bulletins\\/[0-9a-f-]+$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "GET",
+          "path": "/operation-bulletins/6de163c7-7ed6-4a4f-a8b4-243747fde5bb",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "GET",
+          "path": "/operation-bulletins/6de163c7-7ed6-4a4f-a8b4-243747fde5bb",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": "cta_routing_builder.png"
+    },
+    {
+      "phase": "Phase 2",
+      "surface": "Routing Builder",
+      "cta": "Release Routing",
+      "role": "business_admin",
+      "expects": [],
+      "notes": "No handler implemented.",
+      "captured": [],
+      "matched": [],
+      "status": "INERT_CONFIRMED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 2",
+      "surface": "Operator Skill",
+      "cta": "Add Operator",
+      "role": "business_admin",
+      "expects": [],
+      "notes": "No handler implemented.",
+      "captured": [],
+      "matched": [],
+      "status": "INERT_CONFIRMED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 2",
+      "surface": "Operator Skill",
+      "cta": "Export Report",
+      "role": "business_admin",
+      "expects": [],
+      "notes": "No handler implemented.",
+      "captured": [],
+      "matched": [],
+      "status": "INERT_CONFIRMED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 3",
+      "surface": "Orders",
+      "cta": "Open order detail",
+      "role": "planning_head",
+      "expects": [
+        "GET /^\\/orders\\/[0-9a-f-]+$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "GET",
+          "path": "/orders/fceb3ae1-8e42-46d4-aa93-b29b05af8277",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/orders/fceb3ae1-8e42-46d4-aa93-b29b05af8277/timeline",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "GET",
+          "path": "/orders/fceb3ae1-8e42-46d4-aa93-b29b05af8277",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": "cta_order_detail.png"
+    },
+    {
+      "phase": "Phase 3",
+      "surface": "Orders",
+      "cta": "Open Trace",
+      "role": "planning_head",
+      "expects": [
+        "GET /^\\/orders\\/[0-9a-f-]+\\/timeline$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "GET",
+          "path": "/orders/fceb3ae1-8e42-46d4-aa93-b29b05af8277/timeline",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "GET",
+          "path": "/orders/fceb3ae1-8e42-46d4-aa93-b29b05af8277/timeline",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 3",
+      "surface": "Orders",
+      "cta": "Release to Cutting",
+      "role": "planning_head",
+      "expects": [
+        "POST /^\\/orders\\/[0-9a-f-]+\\/release-to-cutting$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/orders/843a8e16-e866-414c-bfcd-f27a69b71289/release-to-cutting",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/orders/843a8e16-e866-414c-bfcd-f27a69b71289",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/orders/843a8e16-e866-414c-bfcd-f27a69b71289/timeline",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/orders/843a8e16-e866-414c-bfcd-f27a69b71289/release-to-cutting",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 3",
+      "surface": "Procurement",
+      "cta": "Export Report",
+      "role": "procurement_user",
+      "expects": [],
+      "notes": "No handler implemented.",
+      "captured": [],
+      "matched": [],
+      "status": "INERT_CONFIRMED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 3",
+      "surface": "Procurement",
+      "cta": "Log Follow-Up",
+      "role": "procurement_user",
+      "expects": [],
+      "notes": "No handler implemented.",
+      "captured": [],
+      "matched": [],
+      "status": "INERT_CONFIRMED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 3",
+      "surface": "Procurement",
+      "cta": "Escalate",
+      "role": "procurement_user",
+      "expects": [],
+      "notes": "No handler implemented.",
+      "captured": [],
+      "matched": [],
+      "status": "INERT_CONFIRMED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 3",
+      "surface": "Procurement",
+      "cta": "Expedite",
+      "role": "procurement_user",
+      "expects": [],
+      "notes": "No handler implemented.",
+      "captured": [],
+      "matched": [],
+      "status": "INERT_CONFIRMED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 3",
+      "surface": "Procurement",
+      "cta": "Save Updates",
+      "role": "procurement_user",
+      "expects": [
+        "POST /^\\/procurement\\/purchase-orders\\/[0-9a-f-]+\\/eta-updates$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/procurement/purchase-orders/8a732294-194f-41f3-bbe3-9c21b1ff55f4/eta-updates",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/procurement/purchase-orders",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/procurement/purchase-orders/8a732294-194f-41f3-bbe3-9c21b1ff55f4/eta-updates",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 3",
+      "surface": "Fabric QC",
+      "cta": "Release to Cutting",
+      "role": "fabric_qc_user",
+      "expects": [],
+      "notes": "No handler implemented.",
+      "captured": [],
+      "matched": [],
+      "status": "INERT_CONFIRMED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 3",
+      "surface": "Fabric QC",
+      "cta": "QC Exception",
+      "role": "fabric_qc_user",
+      "expects": [],
+      "notes": "No handler implemented.",
+      "captured": [],
+      "matched": [],
+      "status": "INERT_CONFIRMED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 3",
+      "surface": "PCD Readiness",
+      "cta": "Filter",
+      "role": "planning_head",
+      "expects": [],
+      "notes": "No handler implemented.",
+      "captured": [],
+      "matched": [],
+      "status": "INERT_CONFIRMED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 3",
+      "surface": "PCD Readiness",
+      "cta": "Request Conditional Release",
+      "role": "planning_head",
+      "expects": [
+        "POST /^\\/pcd-readiness\\/[0-9a-f-]+\\/request-conditional-release$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/pcd-readiness/5b54b7d5-fb9a-4863-be72-7871033a4084/request-conditional-release",
+          "status": 201
+        },
+        {
+          "method": "GET",
+          "path": "/pcd-readiness",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/pcd-readiness/5b54b7d5-fb9a-4863-be72-7871033a4084/request-conditional-release",
+          "status": 201
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 3",
+      "surface": "PCD Readiness",
+      "cta": "Approve Conditional Release",
+      "role": "planning_head",
+      "expects": [
+        "POST /^\\/pcd-readiness\\/[0-9a-f-]+\\/approve-conditional-release$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/pcd-readiness/5b54b7d5-fb9a-4863-be72-7871033a4084/approve-conditional-release",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/pcd-readiness/5b54b7d5-fb9a-4863-be72-7871033a4084/approve-conditional-release",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "Phase 3",
+      "surface": "PCD Readiness",
+      "cta": "Release to Cutting",
+      "role": "planning_head",
+      "expects": [
+        "POST /^\\/orders\\/[0-9a-f-]+\\/release-to-cutting$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/orders/ab27a065-495d-4177-8ebd-75b5813be94f/release-to-cutting",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/pcd-readiness",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/orders/ab27a065-495d-4177-8ebd-75b5813be94f/release-to-cutting",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-04",
+      "surface": "Weekly Planning",
+      "cta": "By Style segmented control",
+      "role": "planner",
+      "expects": [],
+      "notes": "Visual segmented control has no state change handler.",
+      "captured": [],
+      "matched": [],
+      "status": "INERT_CONFIRMED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-04",
+      "surface": "Weekly Planning",
+      "cta": "Backlog order preview",
+      "role": "planner",
+      "expects": [
+        "POST /^\\/planning\\/weekly\\/[0-9a-f-]+\\/impact-preview$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/planning/weekly/a0af6258-642c-4138-9ed4-aa7e6f01a9c7/impact-preview",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/planning/weekly/a0af6258-642c-4138-9ed4-aa7e6f01a9c7/impact-preview",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": "cta_weekly_impact_preview.png"
+    },
+    {
+      "phase": "EOS-04",
+      "surface": "Weekly Planning",
+      "cta": "Assign Selected",
+      "role": "planner",
+      "expects": [
+        "POST /^\\/planning\\/weekly\\/[0-9a-f-]+\\/assign-item$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/planning/weekly/a0af6258-642c-4138-9ed4-aa7e6f01a9c7/assign-item",
+          "status": 201
+        },
+        {
+          "method": "GET",
+          "path": "/planning/weekly",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/planning/weekly/a0af6258-642c-4138-9ed4-aa7e6f01a9c7/assign-item",
+          "status": 201
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-04",
+      "surface": "Weekly Planning",
+      "cta": "Freeze Plan",
+      "role": "planner",
+      "expects": [
+        "POST /^\\/planning\\/weekly\\/[0-9a-f-]+\\/freeze$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/planning/weekly/a0af6258-642c-4138-9ed4-aa7e6f01a9c7/freeze",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/planning/weekly",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/planning/weekly/a0af6258-642c-4138-9ed4-aa7e6f01a9c7/freeze",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-04",
+      "surface": "Weekly Planning",
+      "cta": "Request Change",
+      "role": "planner",
+      "expects": [
+        "POST /^\\/planning\\/change-requests$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/planning/change-requests",
+          "status": 201
+        },
+        {
+          "method": "GET",
+          "path": "/planning/weekly",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/planning/change-requests",
+          "status": 201
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-04",
+      "surface": "Workcenter Load",
+      "cta": "Export Logs",
+      "role": "planner",
+      "expects": [],
+      "notes": "No handler implemented.",
+      "captured": [],
+      "matched": [],
+      "status": "INERT_CONFIRMED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-04",
+      "surface": "Workcenter Load",
+      "cta": "Reevaluate All Loads",
+      "role": "planner",
+      "expects": [],
+      "notes": "No handler implemented.",
+      "captured": [],
+      "matched": [],
+      "status": "INERT_CONFIRMED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-04",
+      "surface": "Workcenter Load",
+      "cta": "Open Queue",
+      "role": "planner",
+      "expects": [
+        "GET /^\\/workcenters\\/[0-9a-f-]+\\/queue$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "GET",
+          "path": "/workcenters/23e6603d-632a-4d75-a9c0-1d1b5ffdd592/queue",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "GET",
+          "path": "/workcenters/23e6603d-632a-4d75-a9c0-1d1b5ffdd592/queue",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": "cta_workcenter_load_queue.png"
+    },
+    {
+      "phase": "EOS-04",
+      "surface": "Daily Release",
+      "cta": "Export",
+      "role": "planner",
+      "expects": [],
+      "notes": "No handler implemented.",
+      "captured": [],
+      "matched": [],
+      "status": "INERT_CONFIRMED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-04",
+      "surface": "Daily Release",
+      "cta": "Bulk Release",
+      "role": "planner",
+      "expects": [
+        "POST /^\\/releases$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/releases",
+          "status": 201
+        },
+        {
+          "method": "GET",
+          "path": "/releases/daily",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/planning/weekly",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/releases",
+          "status": 201
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-04",
+      "surface": "Daily Release",
+      "cta": "Validate",
+      "role": "planner",
+      "expects": [
+        "POST /^\\/releases\\/validate$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/releases/validate",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/releases/validate",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": "cta_daily_release_validation.png"
+    },
+    {
+      "phase": "EOS-04",
+      "surface": "Daily Release",
+      "cta": "Request Override",
+      "role": "planner",
+      "expects": [
+        "POST /^\\/releases\\/[0-9a-f-]+\\/request-override$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/releases/7dc5ff3c-35aa-4c29-bb46-555cba2a7adf/request-override",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/releases/daily",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/planning/weekly",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/releases/7dc5ff3c-35aa-4c29-bb46-555cba2a7adf/request-override",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-04",
+      "surface": "Daily Release",
+      "cta": "Approve Override",
+      "role": "planning_head",
+      "expects": [
+        "POST /^\\/releases\\/[0-9a-f-]+\\/approve-override$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/releases/7dc5ff3c-35aa-4c29-bb46-555cba2a7adf/approve-override",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/releases/daily",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/planning/weekly",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/releases/7dc5ff3c-35aa-4c29-bb46-555cba2a7adf/approve-override",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-04",
+      "surface": "Daily Release",
+      "cta": "Release to Floor",
+      "role": "planning_head",
+      "expects": [
+        "POST /^\\/releases\\/[0-9a-f-]+\\/complete$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/releases/7dc5ff3c-35aa-4c29-bb46-555cba2a7adf/complete",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/releases/daily",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/planning/weekly",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/releases/7dc5ff3c-35aa-4c29-bb46-555cba2a7adf/complete",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-04",
+      "surface": "Boundary Cases",
+      "cta": "Search boundary cases",
+      "role": "planning_head",
+      "expects": [],
+      "notes": "Client-side filter only.",
+      "captured": [
+        {
+          "method": "GET",
+          "path": "/boundary-cases",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/workcenters/load",
+          "status": 200
+        }
+      ],
+      "matched": [],
+      "status": "INERT_CONFIRMED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-04",
+      "surface": "Boundary Cases",
+      "cta": "Open event / Impact preview",
+      "role": "planning_head",
+      "expects": [
+        "POST /^\\/boundary-cases\\/impact-preview$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/boundary-cases/impact-preview",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/boundary-cases/impact-preview",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": "cta_boundary_impact_preview.png"
+    },
+    {
+      "phase": "EOS-04",
+      "surface": "Boundary Cases",
+      "cta": "Approve",
+      "role": "planning_head",
+      "expects": [
+        "POST /^\\/boundary-cases\\/[0-9a-f-]+\\/approve-action$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/boundary-cases/61266f3a-9845-409b-8128-a017b56c2e05/approve-action",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/boundary-cases",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/boundary-cases/61266f3a-9845-409b-8128-a017b56c2e05/approve-action",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-04",
+      "surface": "Boundary Cases",
+      "cta": "Apply",
+      "role": "planning_head",
+      "expects": [
+        "POST /^\\/boundary-cases\\/[0-9a-f-]+\\/apply-action$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/boundary-cases/61266f3a-9845-409b-8128-a017b56c2e05/apply-action",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/boundary-cases",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/workcenters/load",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/boundary-cases/61266f3a-9845-409b-8128-a017b56c2e05/apply-action",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-05",
+      "surface": "Cutting Room",
+      "cta": "Record Output",
+      "role": "cutting_user",
+      "expects": [],
+      "notes": "No handler implemented.",
+      "captured": [
+        {
+          "method": "GET",
+          "path": "/cutting/jobs",
+          "status": 200
+        }
+      ],
+      "matched": [],
+      "status": "INERT_CONFIRMED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-05",
+      "surface": "Sewing Line Loading",
+      "cta": "Approve Reassignment",
+      "role": "line_supervisor",
+      "expects": [
+        "POST /^\\/sewing\\/line-realignment$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/sewing/line-realignment",
+          "status": 201
+        },
+        {
+          "method": "GET",
+          "path": "/sewing/line-loading-board",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/sewing/line-realignment",
+          "status": 201
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-05",
+      "surface": "Line Realignment",
+      "cta": "Preview",
+      "role": "line_supervisor",
+      "expects": [
+        "POST /^\\/sewing\\/line-realignment\\/preview$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/sewing/line-realignment/preview",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/sewing/line-realignment/preview",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": "cta_line_realignment_preview.png"
+    },
+    {
+      "phase": "EOS-05",
+      "surface": "Line Realignment",
+      "cta": "Request",
+      "role": "line_supervisor",
+      "expects": [
+        "POST /^\\/sewing\\/line-realignment$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/sewing/line-realignment",
+          "status": 201
+        },
+        {
+          "method": "GET",
+          "path": "/sewing/line-loadings",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/sewing/line-realignment",
+          "status": 201
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-05",
+      "surface": "Line Realignment",
+      "cta": "Approve",
+      "role": "line_supervisor",
+      "expects": [],
+      "notes": "Approve is disabled for line_supervisor; sewing_mgr owns approval.",
+      "captured": [],
+      "matched": [],
+      "status": "RBAC_GATED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-05",
+      "surface": "Line Realignment",
+      "cta": "Apply",
+      "role": "line_supervisor",
+      "expects": [],
+      "notes": "Apply is disabled for line_supervisor; sewing_mgr owns application.",
+      "captured": [],
+      "matched": [],
+      "status": "RBAC_GATED",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-05",
+      "surface": "Line Realignment",
+      "cta": "Approve as sewing manager",
+      "role": "sewing_mgr",
+      "expects": [
+        "POST /^\\/sewing\\/line-realignment\\/[0-9a-f-]+\\/approve$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/sewing/line-realignment/preview",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/sewing/line-realignment",
+          "status": 201
+        },
+        {
+          "method": "GET",
+          "path": "/sewing/line-loadings",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/sewing/line-realignment/f42815ec-2801-46ba-b965-f49e374015d5/approve",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/sewing/line-realignment/f42815ec-2801-46ba-b965-f49e374015d5/approve",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-05",
+      "surface": "Line Realignment",
+      "cta": "Apply as sewing manager",
+      "role": "sewing_mgr",
+      "expects": [
+        "POST /^\\/sewing\\/line-realignment\\/[0-9a-f-]+\\/apply$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/sewing/line-realignment/f42815ec-2801-46ba-b965-f49e374015d5/apply",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/sewing/line-realignment/f42815ec-2801-46ba-b965-f49e374015d5/apply",
+          "status": 200
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": null
+    },
+    {
+      "phase": "EOS-05",
+      "surface": "Sewing Output",
+      "cta": "Submit Output",
+      "role": "line_supervisor",
+      "expects": [
+        "POST /^\\/sewing\\/output$/"
+      ],
+      "notes": "",
+      "captured": [
+        {
+          "method": "POST",
+          "path": "/sewing/output",
+          "status": 201
+        },
+        {
+          "method": "GET",
+          "path": "/sewing/output",
+          "status": 200
+        }
+      ],
+      "matched": [
+        {
+          "method": "POST",
+          "path": "/sewing/output",
+          "status": 201
+        }
+      ],
+      "status": "PASS",
+      "missing": [],
+      "failures": [],
+      "screenshot": "cta_sewing_output_submit.png"
+    }
+  ],
+  "consoleIssues": [],
+  "counts": {
+    "PASS": 31,
+    "INERT_CONFIRMED": 20,
+    "RBAC_GATED": 2
+  }
+}

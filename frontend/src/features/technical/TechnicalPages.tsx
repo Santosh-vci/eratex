@@ -84,6 +84,11 @@ function formatDate(value: string | null | undefined) {
   return new Date(value).toLocaleDateString("en-US", { month: "short", day: "2-digit" });
 }
 
+function nextDraftVersion(version: string) {
+  const suffix = Date.now().toString(36).toUpperCase();
+  return `${version}-D${suffix}`.slice(0, 32);
+}
+
 function readinessRows(style: StyleListItem | StyleDetail) {
   const missing = new Set(style.missingItems);
   return [
@@ -549,7 +554,7 @@ export function OperationBulletinsPage() {
     },
   });
   const clone = useMutation({
-    mutationFn: (bulletin: OperationBulletin) => cloneOperationBulletin(bulletin.id, `${bulletin.version}-NEXT`),
+    mutationFn: (bulletin: OperationBulletin) => cloneOperationBulletin(bulletin.id, nextDraftVersion(bulletin.version)),
     onSuccess: async () => {
       setFeedback("Operation bulletin cloned as a new draft.");
       setConfirm(null);

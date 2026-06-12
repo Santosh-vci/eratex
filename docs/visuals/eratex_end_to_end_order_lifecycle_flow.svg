@@ -1,0 +1,425 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="2160" viewBox="0 0 3840 2160" role="img" aria-labelledby="title desc">
+  <title id="title">Eratex end-to-end order lifecycle operating flow</title>
+  <desc id="desc">Landscape process flow from customer inquiry through sampling, inventory receipts, PCD readiness, planning, cutting, sewing, laundry scheduling, finishing, shipment readiness, and dispatch.</desc>
+  <defs>
+    <filter id="softShadow" x="-10%" y="-15%" width="120%" height="135%">
+      <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#1f2933" flood-opacity="0.13"/>
+    </filter>
+    <marker id="arrow" markerWidth="34" markerHeight="34" refX="31" refY="17" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M3 3 L31 17 L3 31 Z" fill="#4b5563"/>
+    </marker>
+    <marker id="arrowRed" markerWidth="30" markerHeight="30" refX="27" refY="15" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M3 3 L27 15 L3 27 Z" fill="#b42318"/>
+    </marker>
+    <style>
+      .bg { fill: #f5f7f8; }
+      .title { font-family: "Segoe UI", Arial, sans-serif; font-size: 68px; font-weight: 760; fill: #172026; letter-spacing: 0; }
+      .subtitle { font-family: "Segoe UI", Arial, sans-serif; font-size: 30px; font-weight: 420; fill: #52616b; letter-spacing: 0; }
+      .small { font-family: "Segoe UI", Arial, sans-serif; font-size: 21px; font-weight: 420; fill: #66737d; letter-spacing: 0; }
+      .lane-label { font-family: "Segoe UI", Arial, sans-serif; font-size: 28px; font-weight: 760; fill: #1f2933; letter-spacing: 0; }
+      .lane-note { font-family: "Segoe UI", Arial, sans-serif; font-size: 20px; font-weight: 430; fill: #5b6670; letter-spacing: 0; }
+      .node rect.card { rx: 8; fill: #ffffff; stroke-width: 4; filter: url(#softShadow); }
+      .node.milestone rect.card { stroke: #697887; stroke-dasharray: 9 9; }
+      .node.current rect.card { stroke: #0f5d66; }
+      .node.target rect.card { stroke: #a75f13; stroke-dasharray: 16 10; }
+      .node-title { font-family: "Segoe UI", Arial, sans-serif; font-size: 26px; font-weight: 760; fill: #172026; letter-spacing: 0; }
+      .node-copy { font-family: "Segoe UI", Arial, sans-serif; font-size: 20px; font-weight: 430; fill: #34434d; letter-spacing: 0; }
+      .num { font-family: "Segoe UI", Arial, sans-serif; font-size: 18px; font-weight: 780; fill: #ffffff; letter-spacing: 0; }
+      .milestone .num-dot { fill: #697887; }
+      .current .num-dot { fill: #0f5d66; }
+      .target .num-dot { fill: #a75f13; }
+      .arrow { fill: none; stroke: #4b5563; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow); }
+      .loop { fill: none; stroke: #b42318; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrowRed); }
+      .loop-label { font-family: "Segoe UI", Arial, sans-serif; font-size: 19px; font-weight: 680; fill: #9b1c16; letter-spacing: 0; }
+      .pill { rx: 8; fill: #ffffff; stroke: #c9d2d8; stroke-width: 2; }
+      .pill-title { font-family: "Segoe UI", Arial, sans-serif; font-size: 24px; font-weight: 760; fill: #172026; letter-spacing: 0; }
+      .pill-copy { font-family: "Segoe UI", Arial, sans-serif; font-size: 20px; font-weight: 430; fill: #3c4852; letter-spacing: 0; }
+      .legend-text { font-family: "Segoe UI", Arial, sans-serif; font-size: 19px; font-weight: 460; fill: #34434d; letter-spacing: 0; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="3840" height="2160"/>
+  <rect x="0" y="0" width="3840" height="214" fill="#ffffff"/>
+  <rect x="0" y="212" width="3840" height="2" fill="#d8e0e5"/>
+
+  <text class="title" x="118" y="88">Eratex End-to-End Order Lifecycle Operating Flow</text>
+  <text class="subtitle" x="122" y="138">Customer inquiry to dispatch, combining current build, BRD, solution-deck context, research documents, and garment operating knowledge</text>
+  <text class="small" x="122" y="178">Scope note: current implementation is proven through Phase 5 / EOS-05 execution WIP; laundry, finishing, shipment readiness, and dispatch are target/specification flow nodes.</text>
+
+  <g transform="translate(2660 50)">
+    <rect x="0" y="0" width="1060" height="116" rx="8" fill="#f8fafb" stroke="#d7dfe4" stroke-width="2"/>
+    <g transform="translate(28 24)">
+      <rect x="0" y="0" width="42" height="26" rx="5" fill="#ffffff" stroke="#697887" stroke-width="3" stroke-dasharray="7 7"/>
+      <text class="legend-text" x="58" y="20">Upstream milestone visibility / prototype context</text>
+    </g>
+    <g transform="translate(28 64)">
+      <rect x="0" y="0" width="42" height="26" rx="5" fill="#ffffff" stroke="#0f5d66" stroke-width="3"/>
+      <text class="legend-text" x="58" y="20">Current build or governed implementation surface</text>
+    </g>
+    <g transform="translate(535 24)">
+      <rect x="0" y="0" width="42" height="26" rx="5" fill="#ffffff" stroke="#a75f13" stroke-width="3" stroke-dasharray="10 7"/>
+      <text class="legend-text" x="58" y="20">Target/specification flow beyond current boundary</text>
+    </g>
+    <g transform="translate(535 64)">
+      <path d="M0 14 L42 14" class="loop" marker-end="url(#arrowRed)"/>
+      <text class="legend-text" x="58" y="20">Approval, exception, rework, or recovery loop</text>
+    </g>
+  </g>
+
+  <rect x="100" y="280" width="3640" height="330" rx="8" fill="#eef6f7" stroke="#d6e7ea" stroke-width="2"/>
+  <text class="lane-label" x="132" y="322">1. Demand, sampling, and pre-production readiness</text>
+  <text class="lane-note" x="880" y="322">Commercial intent becomes a governed production order only after approvals, material visibility, and PCD readiness are clear.</text>
+
+  <rect x="100" y="780" width="3640" height="330" rx="8" fill="#f1f5f0" stroke="#dbe6d8" stroke-width="2"/>
+  <text class="lane-label" x="132" y="822">2. Governed planning, cutting, and sewing execution</text>
+  <text class="lane-note" x="920" y="822">Plan truth, release gates, output capture, line loading, and WIP movement control the bulk production spine.</text>
+
+  <rect x="100" y="1280" width="3640" height="430" rx="8" fill="#f7f3ea" stroke="#e8ddc8" stroke-width="2"/>
+  <text class="lane-label" x="132" y="1322">3. Laundry, finishing, shipment readiness, and dispatch</text>
+  <text class="lane-note" x="930" y="1322">Wash is modeled as a first-class capacity and quality domain, not as a passive downstream finishing step.</text>
+
+  <!-- Row 1 arrows -->
+  <path class="arrow" d="M560 455 L640 455"/>
+  <path class="arrow" d="M1060 455 L1140 455"/>
+  <path class="arrow" d="M1560 455 L1640 455"/>
+  <path class="arrow" d="M2060 455 L2140 455"/>
+  <path class="arrow" d="M2560 455 L2640 455"/>
+  <path class="arrow" d="M3060 455 L3140 455"/>
+  <path class="arrow" d="M3350 560 C3350 650 3350 760 3350 840"/>
+
+  <!-- Row 2 arrows, right to left -->
+  <path class="arrow" d="M3140 955 L3060 955"/>
+  <path class="arrow" d="M2640 955 L2560 955"/>
+  <path class="arrow" d="M2140 955 L2060 955"/>
+  <path class="arrow" d="M1640 955 L1560 955"/>
+  <path class="arrow" d="M1140 955 L1060 955"/>
+  <path class="arrow" d="M640 955 L560 955"/>
+  <path class="arrow" d="M350 1060 C350 1160 350 1240 350 1340"/>
+
+  <!-- Row 3 arrows -->
+  <path class="arrow" d="M560 1465 L640 1465"/>
+  <path class="arrow" d="M1060 1465 L1140 1465"/>
+  <path class="arrow" d="M1560 1465 L1640 1465"/>
+  <path class="arrow" d="M2060 1465 L2140 1465"/>
+  <path class="arrow" d="M2560 1465 L2640 1465"/>
+  <path class="arrow" d="M3060 1465 L3140 1465"/>
+
+  <!-- Governance loops -->
+  <path class="loop" d="M1850 350 C1850 270 1350 270 1350 350"/>
+  <text class="loop-label" x="1398" y="288">revise sample / wash standard</text>
+  <path class="loop" d="M850 850 C850 770 1350 770 1350 850"/>
+  <text class="loop-label" x="922" y="788">line change or realignment approval</text>
+  <path class="loop" d="M2350 1580 C2350 1696 850 1696 850 1580"/>
+  <text class="loop-label" x="1284" y="1692">rewash / touch-up consumes capacity and updates shipment risk</text>
+
+  <!-- Row 1 nodes -->
+  <g class="node milestone" transform="translate(140 350)">
+    <rect class="card" x="0" y="0" width="420" height="210"/>
+    <circle class="num-dot" cx="34" cy="35" r="24"/>
+    <text class="num" x="34" y="42" text-anchor="middle">01</text>
+    <text class="node-title" x="72" y="42">Customer inquiry</text>
+    <text class="node-copy" x="30" y="84">
+      <tspan x="30" dy="0">Buyer brief, style,</tspan>
+      <tspan x="30" dy="29">quantity, delivery intent,</tspan>
+      <tspan x="30" dy="29">wash/product expectations</tspan>
+      <tspan x="30" dy="29">and export commitment.</tspan>
+    </text>
+  </g>
+
+  <g class="node milestone" transform="translate(640 350)">
+    <rect class="card" x="0" y="0" width="420" height="210"/>
+    <circle class="num-dot" cx="34" cy="35" r="24"/>
+    <text class="num" x="34" y="42" text-anchor="middle">02</text>
+    <text class="node-title" x="72" y="42">Due-date quote</text>
+    <text class="node-copy" x="30" y="84">
+      <tspan x="30" dy="0">Check capacity, critical</tspan>
+      <tspan x="30" dy="29">resources, wash complexity,</tspan>
+      <tspan x="30" dy="29">material lead times, and</tspan>
+      <tspan x="30" dy="29">customer commitment risk.</tspan>
+    </text>
+  </g>
+
+  <g class="node milestone" transform="translate(1140 350)">
+    <rect class="card" x="0" y="0" width="420" height="210"/>
+    <circle class="num-dot" cx="34" cy="35" r="24"/>
+    <text class="num" x="34" y="42" text-anchor="middle">03</text>
+    <text class="node-title" x="72" y="42">Sampling package</text>
+    <text class="node-copy" x="30" y="84">
+      <tspan x="30" dy="0">Tech file, BOM draft,</tspan>
+      <tspan x="30" dy="29">operation bulletin, wash</tspan>
+      <tspan x="30" dy="29">route, sample request,</tspan>
+      <tspan x="30" dy="29">sample make and submit.</tspan>
+    </text>
+  </g>
+
+  <g class="node milestone" transform="translate(1640 350)">
+    <rect class="card" x="0" y="0" width="420" height="210"/>
+    <circle class="num-dot" cx="34" cy="35" r="24"/>
+    <text class="num" x="34" y="42" text-anchor="middle">04</text>
+    <text class="node-title" x="72" y="42">Buyer approvals</text>
+    <text class="node-copy" x="30" y="84">
+      <tspan x="30" dy="0">Fit, PPS or PP sample,</tspan>
+      <tspan x="30" dy="29">garment test sample,</tspan>
+      <tspan x="30" dy="29">wash approval, shade</tspan>
+      <tspan x="30" dy="29">standard and comments.</tspan>
+    </text>
+  </g>
+
+  <g class="node current" transform="translate(2140 350)">
+    <rect class="card" x="0" y="0" width="420" height="210"/>
+    <circle class="num-dot" cx="34" cy="35" r="24"/>
+    <text class="num" x="34" y="42" text-anchor="middle">05</text>
+    <text class="node-title" x="72" y="42">Confirmed order</text>
+    <text class="node-copy" x="30" y="84">
+      <tspan x="30" dy="0">Customer PO, size/color</tspan>
+      <tspan x="30" dy="29">breakdown, shipment</tspan>
+      <tspan x="30" dy="29">commitment, lifecycle</tspan>
+      <tspan x="30" dy="29">status and order risk.</tspan>
+    </text>
+  </g>
+
+  <g class="node current" transform="translate(2640 350)">
+    <rect class="card" x="0" y="0" width="420" height="210"/>
+    <circle class="num-dot" cx="34" cy="35" r="24"/>
+    <text class="num" x="34" y="42" text-anchor="middle">06</text>
+    <text class="node-title" x="72" y="42">Inventory receipts</text>
+    <text class="node-copy" x="30" y="84">
+      <tspan x="30" dy="0">Fabric/trims PO, vendor</tspan>
+      <tspan x="30" dy="29">follow-up, inbound receipt,</tspan>
+      <tspan x="30" dy="29">barcode lot/roll identity,</tspan>
+      <tspan x="30" dy="29">and stock availability.</tspan>
+    </text>
+  </g>
+
+  <g class="node current" transform="translate(3140 350)">
+    <rect class="card" x="0" y="0" width="420" height="210"/>
+    <circle class="num-dot" cx="34" cy="35" r="24"/>
+    <text class="num" x="34" y="42" text-anchor="middle">07</text>
+    <text class="node-title" x="72" y="42">PCD readiness gate</text>
+    <text class="node-copy" x="30" y="84">
+      <tspan x="30" dy="0">Fabric inward QC, full kit,</tspan>
+      <tspan x="30" dy="29">approval milestones, open</tspan>
+      <tspan x="30" dy="29">blockers, conditional</tspan>
+      <tspan x="30" dy="29">release or hold decision.</tspan>
+    </text>
+  </g>
+
+  <!-- Row 2 nodes, process direction is right to left -->
+  <g class="node current" transform="translate(3140 850)">
+    <rect class="card" x="0" y="0" width="420" height="210"/>
+    <circle class="num-dot" cx="34" cy="35" r="24"/>
+    <text class="num" x="34" y="42" text-anchor="middle">08</text>
+    <text class="node-title" x="72" y="42">Plan and capacity</text>
+    <text class="node-copy" x="30" y="84">
+      <tspan x="30" dy="0">Planning zones, weekly</tspan>
+      <tspan x="30" dy="29">workbench, line and</tspan>
+      <tspan x="30" dy="29">workcenter load, impact</tspan>
+      <tspan x="30" dy="29">preview before commit.</tspan>
+    </text>
+  </g>
+
+  <g class="node current" transform="translate(2640 850)">
+    <rect class="card" x="0" y="0" width="420" height="210"/>
+    <circle class="num-dot" cx="34" cy="35" r="24"/>
+    <text class="num" x="34" y="42" text-anchor="middle">09</text>
+    <text class="node-title" x="72" y="42">Daily release</text>
+    <text class="node-copy" x="30" y="84">
+      <tspan x="30" dy="0">Validate PCD, material,</tspan>
+      <tspan x="30" dy="29">capacity, QC holds, input</tspan>
+      <tspan x="30" dy="29">availability, overrides and</tspan>
+      <tspan x="30" dy="29">governed release audit.</tspan>
+    </text>
+  </g>
+
+  <g class="node current" transform="translate(2140 850)">
+    <rect class="card" x="0" y="0" width="420" height="210"/>
+    <circle class="num-dot" cx="34" cy="35" r="24"/>
+    <text class="num" x="34" y="42" text-anchor="middle">10</text>
+    <text class="node-title" x="72" y="42">Cutting execution</text>
+    <text class="node-copy" x="30" y="84">
+      <tspan x="30" dy="0">Cutting job from governed</tspan>
+      <tspan x="30" dy="29">release, marker/spreading,</tspan>
+      <tspan x="30" dy="29">cut output capture, loss,</tspan>
+      <tspan x="30" dy="29">and bundle creation.</tspan>
+    </text>
+  </g>
+
+  <g class="node current" transform="translate(1640 850)">
+    <rect class="card" x="0" y="0" width="420" height="210"/>
+    <circle class="num-dot" cx="34" cy="35" r="24"/>
+    <text class="num" x="34" y="42" text-anchor="middle">11</text>
+    <text class="node-title" x="72" y="42">Cut QC and handover</text>
+    <text class="node-copy" x="30" y="84">
+      <tspan x="30" dy="0">Cut panel QC, recut or</tspan>
+      <tspan x="30" dy="29">replacement if needed,</tspan>
+      <tspan x="30" dy="29">formal handover into</tspan>
+      <tspan x="30" dy="29">sewing-ready WIP.</tspan>
+    </text>
+  </g>
+
+  <g class="node current" transform="translate(1140 850)">
+    <rect class="card" x="0" y="0" width="420" height="210"/>
+    <circle class="num-dot" cx="34" cy="35" r="24"/>
+    <text class="num" x="34" y="42" text-anchor="middle">12</text>
+    <text class="node-title" x="72" y="42">Line loading</text>
+    <text class="node-copy" x="30" y="84">
+      <tspan x="30" dy="0">Approved operation</tspan>
+      <tspan x="30" dy="29">bulletin, line capability,</tspan>
+      <tspan x="30" dy="29">active loading by line,</tspan>
+      <tspan x="30" dy="29">date, shift and order.</tspan>
+    </text>
+  </g>
+
+  <g class="node current" transform="translate(640 850)">
+    <rect class="card" x="0" y="0" width="420" height="210"/>
+    <circle class="num-dot" cx="34" cy="35" r="24"/>
+    <text class="num" x="34" y="42" text-anchor="middle">13</text>
+    <text class="node-title" x="72" y="42">Sewing output</text>
+    <text class="node-copy" x="30" y="84">
+      <tspan x="30" dy="0">Output across lines, gross</tspan>
+      <tspan x="30" dy="29">quantity, defects, rework,</tspan>
+      <tspan x="30" dy="29">net-good, efficiency and</tspan>
+      <tspan x="30" dy="29">shortfall exceptions.</tspan>
+    </text>
+  </g>
+
+  <g class="node current" transform="translate(140 850)">
+    <rect class="card" x="0" y="0" width="420" height="210"/>
+    <circle class="num-dot" cx="34" cy="35" r="24"/>
+    <text class="num" x="34" y="42" text-anchor="middle">14</text>
+    <text class="node-title" x="72" y="42">Before laundry QC</text>
+    <text class="node-copy" x="30" y="84">
+      <tspan x="30" dy="0">Sewn goods availability,</tspan>
+      <tspan x="30" dy="29">inline/endline QC status,</tspan>
+      <tspan x="30" dy="29">repair holds, shade lot,</tspan>
+      <tspan x="30" dy="29">sewn waiting wash WIP.</tspan>
+    </text>
+  </g>
+
+  <!-- Row 3 nodes -->
+  <g class="node target" transform="translate(140 1350)">
+    <rect class="card" x="0" y="0" width="420" height="230"/>
+    <circle class="num-dot" cx="34" cy="35" r="24"/>
+    <text class="num" x="34" y="42" text-anchor="middle">15</text>
+    <text class="node-title" x="72" y="42">Wash queue</text>
+    <text class="node-copy" x="30" y="86">
+      <tspan x="30" dy="0">Pre-wash QC, sewn lot</tspan>
+      <tspan x="30" dy="29">availability, shade-lot</tspan>
+      <tspan x="30" dy="29">grouping, dry-process</tspan>
+      <tspan x="30" dy="29">readiness, shipment risk.</tspan>
+    </text>
+  </g>
+
+  <g class="node target" transform="translate(640 1350)">
+    <rect class="card" x="0" y="0" width="420" height="230"/>
+    <circle class="num-dot" cx="34" cy="35" r="24"/>
+    <text class="num" x="34" y="42" text-anchor="middle">16</text>
+    <text class="node-title" x="72" y="42">Laundry schedule</text>
+    <text class="node-copy" x="30" y="86">
+      <tspan x="30" dy="0">Batch creation, lot making,</tspan>
+      <tspan x="30" dy="29">machine group, preferred</tspan>
+      <tspan x="30" dy="29">machine, changeover, shift</tspan>
+      <tspan x="30" dy="29">plan and bottleneck check.</tspan>
+    </text>
+  </g>
+
+  <g class="node target" transform="translate(1140 1350)">
+    <rect class="card" x="0" y="0" width="420" height="230"/>
+    <circle class="num-dot" cx="34" cy="35" r="24"/>
+    <text class="num" x="34" y="42" text-anchor="middle">17</text>
+    <text class="node-title" x="72" y="42">Dry process</text>
+    <text class="node-copy" x="30" y="86">
+      <tspan x="30" dy="0">Laser, whisker, scraping,</tspan>
+      <tspan x="30" dy="29">grinding, PP/local spray,</tspan>
+      <tspan x="30" dy="29">destroy/repair effects,</tspan>
+      <tspan x="30" dy="29">template or file control.</tspan>
+    </text>
+  </g>
+
+  <g class="node target" transform="translate(1640 1350)">
+    <rect class="card" x="0" y="0" width="420" height="230"/>
+    <circle class="num-dot" cx="34" cy="35" r="24"/>
+    <text class="num" x="34" y="42" text-anchor="middle">18</text>
+    <text class="node-title" x="72" y="42">Wet wash route</text>
+    <text class="node-copy" x="30" y="86">
+      <tspan x="30" dy="0">Desize, rinse, enzyme,</tspan>
+      <tspan x="30" dy="29">stone, bleach, dye/tint,</tspan>
+      <tspan x="30" dy="29">softener, hydro extraction,</tspan>
+      <tspan x="30" dy="29">drying or curing.</tspan>
+    </text>
+  </g>
+
+  <g class="node target" transform="translate(2140 1350)">
+    <rect class="card" x="0" y="0" width="420" height="230"/>
+    <circle class="num-dot" cx="34" cy="35" r="24"/>
+    <text class="num" x="34" y="42" text-anchor="middle">19</text>
+    <text class="node-title" x="72" y="42">Post-wash QC</text>
+    <text class="node-copy" x="30" y="86">
+      <tspan x="30" dy="0">Shade, hand feel, effect,</tspan>
+      <tspan x="30" dy="29">measurement, fastness,</tspan>
+      <tspan x="30" dy="29">defect hold, rewash reason</tspan>
+      <tspan x="30" dy="29">and release to finishing.</tspan>
+    </text>
+  </g>
+
+  <g class="node target" transform="translate(2640 1350)">
+    <rect class="card" x="0" y="0" width="420" height="230"/>
+    <circle class="num-dot" cx="34" cy="35" r="24"/>
+    <text class="num" x="34" y="42" text-anchor="middle">20</text>
+    <text class="node-title" x="72" y="42">Finishing stage</text>
+    <text class="node-copy" x="30" y="86">
+      <tspan x="30" dy="0">Finishing input/output,</tspan>
+      <tspan x="30" dy="29">repair, pressing, final QC</tspan>
+      <tspan x="30" dy="29">or AQL, packing quantity,</tspan>
+      <tspan x="30" dy="29">cartons and FG receipt.</tspan>
+    </text>
+  </g>
+
+  <g class="node target" transform="translate(3140 1350)">
+    <rect class="card" x="0" y="0" width="420" height="230"/>
+    <circle class="num-dot" cx="34" cy="35" r="24"/>
+    <text class="num" x="34" y="42" text-anchor="middle">21</text>
+    <text class="node-title" x="72" y="42">Dispatch</text>
+    <text class="node-copy" x="30" y="86">
+      <tspan x="30" dy="0">Shipment readiness, docs,</tspan>
+      <tspan x="30" dy="29">packed quantity, shortage</tspan>
+      <tspan x="30" dy="29">or split approval, forwarder,</tspan>
+      <tspan x="30" dy="29">dispatch event and OTIF.</tspan>
+    </text>
+  </g>
+
+  <!-- Control rails -->
+  <rect x="100" y="1740" width="3640" height="290" rx="8" fill="#ffffff" stroke="#d7dfe4" stroke-width="2"/>
+  <text class="lane-label" x="132" y="1790">Control rails across the full lifecycle</text>
+  <text class="lane-note" x="690" y="1790">These controls turn the process from a status tracker into a governed operating spine.</text>
+
+  <g transform="translate(140 1830)">
+    <rect class="pill" x="0" y="0" width="850" height="142"/>
+    <text class="pill-title" x="30" y="42">Source-of-truth inputs</text>
+    <text class="pill-copy" x="30" y="82">Datatex order/procurement/shipment, TMS or PLM milestones,</text>
+    <text class="pill-copy" x="30" y="112">FastReact or platform plan, MES/laundry/WMS/FG events.</text>
+  </g>
+
+  <g transform="translate(1040 1830)">
+    <rect class="pill" x="0" y="0" width="850" height="142"/>
+    <text class="pill-title" x="30" y="42">Approval gates</text>
+    <text class="pill-copy" x="30" y="82">Sample and wash approval, PCD/conditional release, plan change,</text>
+    <text class="pill-copy" x="30" y="112">line realignment, rewash, QC waiver and split shipment.</text>
+  </g>
+
+  <g transform="translate(1940 1830)">
+    <rect class="pill" x="0" y="0" width="850" height="142"/>
+    <text class="pill-title" x="30" y="42">Quantity and WIP integrity</text>
+    <text class="pill-copy" x="30" y="82">Cut qty to issued qty to net-good sewing to sewn waiting wash,</text>
+    <text class="pill-copy" x="30" y="112">then packed, shipment-ready, and dispatched quantities.</text>
+  </g>
+
+  <g transform="translate(2840 1830)">
+    <rect class="pill" x="0" y="0" width="850" height="142"/>
+    <text class="pill-title" x="30" y="42">Risk and recovery engine</text>
+    <text class="pill-copy" x="30" y="82">BRYG priority, buffer health, workcenter load, wash bottleneck,</text>
+    <text class="pill-copy" x="30" y="112">exception owner/SLA, shipment risk and OTIF learning.</text>
+  </g>
+
+  <text class="small" x="122" y="2086">Prepared as an editable SVG and 4K PNG. Source basis: Eratex Operating Spine, BRD reconciliation, Phase 0-5 build state, wash/WIP specifications, solution deck synthesis, laundry process research, and UI prototype catalogue.</text>
+</svg>

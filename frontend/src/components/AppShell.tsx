@@ -161,6 +161,13 @@ const navItems: NavItem[] = [
   },
   { href: "/sewing/line-realignment", label: "Realignment", icon: Route, group: "Execution", permission: "sewing.realign_line" },
   { href: "/sewing/output", label: "Output", icon: ClipboardCheck, group: "Execution", permission: "sewing.record_output" },
+  {
+    href: "/wash/scheduler",
+    label: "Laundry Scheduler",
+    icon: Waves,
+    group: "Execution",
+    permission: "wash.view",
+  },
   { href: "/wash/planning", label: "Wash", icon: Waves, group: "Execution", permission: "wash.view" },
   { href: "/wip/pipeline", label: "WIP", icon: Boxes, group: "Execution", permission: "wip.view" },
   {
@@ -199,10 +206,38 @@ const breadcrumbLabelOverrides: Record<string, string> = {
   "/sewing/line-loading": "Sewing Line Loading",
   "/sewing/line-realignment": "Line Realignment",
   "/sewing/output": "Sewing Output",
+  "/wash/scheduler": "Laundry Scheduler",
 };
+
+const publicMockRoutes = new Set(["/wash/scheduler"]);
 
 function navLabel(item: NavItem) {
   return breadcrumbLabelOverrides[item.href] ?? item.label;
+}
+
+function PublicMockShell({ children }: { children: ReactNode }) {
+  return (
+    <div className="ops-shell">
+      <header className="ops-topbar">
+        <div className="flex h-full w-full items-center justify-between gap-3 px-3">
+          <div className="min-w-0">
+            <p className="truncate text-[11px] font-bold uppercase tracking-[0.05em] text-slate-500">
+              ERATEX OPS CONTROL
+            </p>
+            <h1 className="truncate text-sm font-semibold leading-5 text-slate-950">
+              Laundry Scheduler Mock
+            </h1>
+          </div>
+          <span className="hidden rounded border border-grid-border px-2 py-1 font-mono text-[11px] uppercase text-slate-500 sm:inline">
+            Preview / no backend login
+          </span>
+        </div>
+      </header>
+      <main className="min-h-screen bg-surface-muted px-3 pb-3 pt-16 text-slate-950">
+        {children}
+      </main>
+    </div>
+  );
 }
 
 function buildShellBreadcrumbs(
@@ -270,16 +305,21 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { currentUser, isLoading, logout } = useAuth();
   const { hasPermission } = usePermission();
   const isLoginRoute = pathname === "/login";
+  const isPublicMockRoute = publicMockRoutes.has(pathname);
   const [isNavExpanded, setNavExpanded] = useState(false);
 
   useEffect(() => {
-    if (!isLoading && !currentUser && !isLoginRoute) {
+    if (!isLoading && !currentUser && !isLoginRoute && !isPublicMockRoute) {
       router.replace("/login");
     }
-  }, [currentUser, isLoading, isLoginRoute, router]);
+  }, [currentUser, isLoading, isLoginRoute, isPublicMockRoute, router]);
 
   if (isLoginRoute) {
     return <div className="min-h-screen bg-surface-muted text-slate-950">{children}</div>;
+  }
+
+  if (isPublicMockRoute) {
+    return <PublicMockShell>{children}</PublicMockShell>;
   }
 
   if (isLoading) {

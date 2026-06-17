@@ -1249,6 +1249,15 @@ test("home route renders the foundation shell", async ({ page }) => {
   await expect(page.getByRole("link", { name: /Planning/ })).toBeVisible();
 });
 
+test("laundry scheduler mock opens without backend login", async ({ page }) => {
+  await page.goto("/wash/scheduler");
+
+  await expect(page.getByRole("heading", { name: "Laundry Scheduler", exact: true })).toBeVisible();
+  await expect(page.getByLabel("Laundry KPI strip")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Laundry flow map" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Live Flow" })).toHaveAttribute("aria-selected", "true");
+});
+
 test("planner can inspect blocked order and PCD readiness gate", async ({ page }) => {
   await setupAuthMocks(page, plannerUser);
   await setupPreProductionMocks(page);
@@ -1327,7 +1336,10 @@ test("ie user can open technical style and routing workbenches", async ({ page }
   await expect(page.getByRole("link", { name: "STY-DEN-BASIC" })).toBeVisible();
   await captureParity(page, "technical-styles");
 
-  await page.getByRole("link", { name: "STY-DEN-BASIC" }).click();
+  await Promise.all([
+    page.waitForURL("**/technical/styles/style-1", { timeout: 15000 }),
+    page.getByRole("link", { name: "STY-DEN-BASIC" }).click(),
+  ]);
   await expect(page.getByRole("heading", { name: "STY-DEN-BASIC" })).toBeVisible();
   await expect(page.getByText("Operation Bulletin Grid")).toBeVisible();
   await captureParity(page, "technical-style-detail");
@@ -1340,7 +1352,10 @@ test("ie user can open technical style and routing workbenches", async ({ page }
   await page.goto("/technical/operation-bulletins");
   await expect(page.getByRole("heading", { name: "Operation Bulletins (OB)" })).toBeVisible();
   await page.locator("tbody tr").first().click();
-  await page.getByRole("link", { name: "Open routing" }).click();
+  await Promise.all([
+    page.waitForURL("**/technical/operation-bulletins/bulletin-1/routing", { timeout: 15000 }),
+    page.getByRole("link", { name: "Open routing" }).click(),
+  ]);
   await expect(page.getByRole("heading", { name: "Routing: STY-DEN-BASIC" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Front pocket attach" })).toBeVisible();
   await captureParity(page, "routing-builder");

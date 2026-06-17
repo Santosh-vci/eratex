@@ -4,9 +4,10 @@
 
 This document takes stock of:
 
-1. The three newly explored feature tracks:
+1. The four newly explored feature tracks:
    - T&A governance capability.
    - Due-date quotation and capable-to-promise capability.
+   - Sewing operating surface and line-loading intelligence.
    - Wash-heavy route planning and execution capability.
 2. The already planned but deferred EOS surfaces beyond the current implementation boundary.
 3. The current repo state through Phase 5 / EOS-05.
@@ -62,6 +63,8 @@ Explicitly deferred in the current boundary:
 - Production-grade hardening and rollout operations.
 
 The current product has a strong foundation, but it is not yet a full production-grade factory operating system. It controls the path up to sewing-to-wash queue. The remaining roadmap must convert that into complete order-to-shipment operational truth.
+
+Sewing deserves a specific production-grade clarification. The current Phase 5 / EOS-05 implementation has an operating board, line loading, realignment, output capture, and net-good efficiency primitives. It does not yet have the full planning intelligence required to convert route, SMV/SAM, line capability, line efficiency, learning curve, manpower, machine/skill fit, and line-spread policy into a generated daily or weekly sewing plan. The roadmap therefore must treat sewing line planning and execution control as a production-grade feature family, not only as an already-complete Phase 5 surface.
 
 ---
 
@@ -158,7 +161,7 @@ The roadmap therefore treats plan-versus-actual and recovery as cross-cutting pr
 
 ## 4. Newly Explored Feature Inventory
 
-### 3.1 T&A Governance Capability
+### 4.1 T&A Governance Capability
 
 Research source:
 
@@ -185,9 +188,18 @@ Production-grade capability needed:
 - Mandatory closure requirements.
 - Alert generation.
 - FKD and PCD criticality mapping.
+- Production-release, laundry, finishing, packing, and shipment criticality mapping.
 - PCD readiness integration.
+- Shipment readiness integration once EOS-07 is built.
 - Planning-zone based governance.
 - External event consumption from Datatex/PLM/TMS-style systems where available.
+
+Scope clarification:
+
+- T&A is not intended to stop at FKD, PCD, or release-to-cutting.
+- The first implementation wave emphasizes FKD, PCD, and release blockers because those objects exist in the current Phase 0-5 codebase.
+- The target production-grade T&A scope is order-to-dispatch readiness: order confirmation, procurement, approvals, PCD, cutting release, sewing start/end, laundry in/out, finishing, packing, shipment readiness, and dispatch reconciliation.
+- Shipment-side T&A actions should become active when EOS-06 and EOS-07 provide wash, WIP, quality, finishing, packing, and shipment readiness objects to attach to.
 
 Architectural stance:
 
@@ -211,7 +223,7 @@ Primary UI surfaces to add:
 - Lightweight alert center.
 - PCD readiness T&A linkage.
 
-### 3.2 Due-Date Quotation And Capable-To-Promise
+### 4.2 Due-Date Quotation And Capable-To-Promise
 
 Research source:
 
@@ -273,7 +285,119 @@ Primary UI surfaces to add or extend:
 - Capacity consumption explanation.
 - Planning-zone capacity reservation view.
 
-### 3.3 Wash-Heavy Route Planning And Execution
+### 4.3 Sewing Operating Surface And Line-Loading Intelligence
+
+Research source:
+
+- `docs/research/Eratex_Consolidated_Solution_Synthesis_With_Presenter_Notes.md`
+- `docs/research/Eratex_Due_Date_Quotation_Capability_Evaluation.md`
+- `docs/research/Eratex_Planning_Zones_Due_Date_Promising_CCR_Implementation_Plan.md`
+- `docs/research/pre_blueprinting/01_scenario_tool_owned_factory_event_capture.md`
+- `docs/research/pre_blueprinting/02_scenario_external_factory_event_consumption.md`
+- `docs/09_Line_Routing_Operation_Bulletin_Specification_Eratex.md`
+- `docs/frontend_ui/sewing_line_loading_dashboard`
+- `docs/frontend_ui/line_realignment_workbench`
+- `docs/frontend_ui/operation_bulletin_detail_routing_builder`
+
+Current repo status:
+
+- `OperationBulletin` and operation bulletin lines exist as approved technical masters.
+- Sewing line loading requires an approved operation bulletin or approved governed exception.
+- `SewingLineLoading` stores order, release, line, workcenter, bulletin, planned quantity, target output per day, target efficiency, expected defect rate, planning zone, shift, fit status, and risk.
+- `preview_line_loading` calculates line available minutes, total SMV, target output per day, machine gaps, skill gaps, fit status, and risk for a selected release-line-bulletin combination.
+- `LineRealignmentRequest` and gap records support governed machine/skill/bottleneck realignment.
+- Sewing output capture records gross, defect, rework, and net-good output; net-good updates execution WIP and line efficiency.
+- `/sewing/line-loading` has a dense operating board with line, PO, style, SMV, target, actual, efficiency, defect, net-good, planned/actual manpower, status, risk, hourly output, bottleneck operation, operator allocation, and recovery action.
+
+Current gaps:
+
+- Weekly planning can assign an order to a workcenter/date range, but it does not generate a line-by-line sewing plan.
+- The system does not yet search across eligible sewing lines and dates to recommend the best line allocation.
+- The system does not yet maintain a finite line/day/shift allocation ledger that subtracts already committed load by line.
+- The system does not yet apply customer/style-line fit, star-rated line preference, line-spread limits, learning curve, changeover penalty, absenteeism, machine availability, and historical efficiency together as planning policy.
+- Sewing completion projection is not recalculated continuously from live net-good output, absenteeism, downtime, defects, rework, and recovery actions.
+- Current operating board fallback values and snapshots are useful for operational visibility, but they are not a full plan-generation engine.
+
+Production-grade capability needed:
+
+- Sewing route explosion from approved operation bulletin.
+- Sewing line capability master:
+  - product/category fit
+  - customer/style fit
+  - machine type availability
+  - attachment/folder availability
+  - operator skill coverage
+  - baseline efficiency
+  - historical style/customer performance
+- Line fit scoring and candidate ranking.
+- Line spread policy:
+  - preferred line count
+  - maximum line count
+  - exception approval for excess split
+  - efficiency penalty for over-splitting
+- Finite line capacity ledger by line, date, shift, and planning zone.
+- Daily and weekly sewing allocation generation.
+- Target output calculation using SMV/SAM, manpower, working minutes, target efficiency, learning curve, absenteeism, machine availability, and expected defect rate.
+- Changeover and realignment impact preview.
+- Plan-versus-actual sewing control loop:
+  - hourly/shift target versus actual
+  - net-good efficiency
+  - shortfall detection
+  - bottleneck operation
+  - operator absence impact
+  - recovery recommendation
+  - projected sewing completion date
+- Feedback of actual efficiency into future planning assumptions.
+
+Recommended implementation location:
+
+```text
+backend/apps/sewing
+backend/apps/planning
+backend/apps/capacity_promising
+backend/apps/workcenters
+backend/apps/style_technical
+```
+
+Additive services:
+
+```text
+sewing.services.line_fit
+sewing.services.line_scheduling
+sewing.services.completion_projection
+sewing.services.efficiency_feedback
+planning.services.line_allocation
+capacity_promising.services.sewing_capacity_search
+```
+
+Possible new or extended models:
+
+- `SewingLineCapabilityProfile`
+- `SewingLineFitRule`
+- `SewingLineScheduleBucket`
+- `SewingLineAllocationCandidate`
+- `SewingCompletionProjection`
+- `SewingEfficiencyAssumption`
+- `SewingPlanDeviation`
+
+Primary UI surfaces:
+
+- Weekly Planning Workbench line-allocation mode.
+- Sewing Line Loading Dashboard.
+- Sewing line detail and action drawer.
+- Line Realignment Workbench.
+- Operation Bulletin Detail Routing Builder.
+- Sewing Output Capture.
+- Future daily sewing plan board if the existing line-loading board cannot carry both planning and execution control cleanly.
+
+Scope boundary:
+
+- This wave should not attempt an opaque optimizer first.
+- First build an explainable planner-assist engine: candidate lines, capacity fit, expected completion, risk, and recommendation.
+- Automated allocation can come only after planners trust the candidate ranking, line-spread policy, and actual-output feedback loop.
+- Wash should remain a separate downstream constraint; sewing allocation must expose sewn handoff confidence but must not claim shipment promise without wash/finishing/shipment truth.
+
+### 4.4 Wash-Heavy Route Planning And Execution
 
 Research source:
 
@@ -539,6 +663,7 @@ This means T&A and due-date quotation should not be treated as late analytics fe
 | Wave 0 | Baseline consolidation | EOS-00 to EOS-05, EOS-11, EOS-12 | Protect what is already built before adding new domain load. |
 | Wave 1 | T&A and planning-zone governance | EOS-03, EOS-04, EOS-10, EOS-11 | Creates dependency-based readiness truth before promising and production expansion. |
 | Wave 2 | Due-date quotation and capacity promising foundation | EOS-03, EOS-04, EOS-09, EOS-10 | Adds date-finding, not only date-validation. |
+| Wave 2A | Sewing operating surface and finite line planning | EOS-04, EOS-05, EOS-09, EOS-11 | Converts route, SMV/SAM, line efficiency, and line capability into an explainable daily/weekly sewing plan and execution-control surface. |
 | Wave 3 | Wash-heavy planning and WIP truth | EOS-06, EOS-08, EOS-11 | Converts sewn waiting wash into a real production constraint. |
 | Wave 4 | Quality, exceptions, recovery, shipment | EOS-07, EOS-09, EOS-11 | Closes the order-to-shipment control loop. |
 | Wave 5 | Shopfloor live capture and offline sync | EOS-08, EOS-05, EOS-06, EOS-07 | Makes actuals live enough for planning to stay trusted. |
@@ -622,6 +747,10 @@ Build the dependency-based readiness and action-control layer that the current P
 
 Wash execution and due-date promising both need trustworthy readiness dates. Without T&A, the system only knows planned PCD and checklist status. It does not know the dependency path, ownership, baseline movement, or blockers that create readiness risk.
 
+This wave is sequenced early because the existing code already has order, PCD readiness, planning zone, release, cutting, sewing, and minimal WIP primitives. That does not define the final T&A boundary. It defines the safest first implementation boundary.
+
+The end-state T&A plan should continue beyond production release into production execution, wash, finishing, packing, shipment readiness, and dispatch reconciliation. Those later action groups should be activated as EOS-06 and EOS-07 domain objects become available.
+
 ### Backend Scope
 
 New app:
@@ -652,6 +781,7 @@ Services:
 - Status and health calculation.
 - Alert generation.
 - PCD/FKD integration.
+- Release, laundry, finishing, packing, and shipment milestone integration as later domain modules mature.
 - Planning-zone revision governance.
 - Source-event processing.
 
@@ -670,6 +800,7 @@ Enhance:
 - PCD readiness gate with linked T&A blockers.
 - Order lifecycle with T&A health.
 - Planning workbench with readiness confidence.
+- Shipment readiness with linked T&A blockers once EOS-07 is implemented.
 
 ### Production-Grade Rules
 
@@ -687,6 +818,7 @@ Enhance:
 - Mandatory closure rules prevent false completion.
 - Due-soon and overdue alerts are generated.
 - Critical T&A blocker can feed PCD readiness.
+- T&A template supports downstream milestones even if shipment-side completion remains inactive until EOS-07.
 - Firm-zone date revision requires reason and approval.
 - T&A can accept a Datatex/external event in a controlled way.
 
@@ -772,6 +904,169 @@ New or enhanced surfaces:
 - System records reservation status.
 - System explains the main constraint.
 - Promise confidence reflects missing or stale readiness data.
+
+---
+
+## 10A. Wave 2A: Sewing Operating Surface And Finite Line Planning
+
+### Objective
+
+Turn the current sewing execution board into a production-grade sewing planning and execution-control system that can translate approved route, SMV/SAM, line capability, line efficiency, manpower, machine/skill fit, and planning-zone rules into daily and weekly sewing line allocations.
+
+This wave closes the gap between:
+
+```text
+"this order can be loaded on this selected line"
+```
+
+and:
+
+```text
+"these are the best candidate lines and dates, with expected output, completion date, risk, and recovery path."
+```
+
+### Why This Comes After Capacity Promising
+
+Wave 2 creates the capacity ledger and promise foundation. Wave 2A turns the sewing portion of that promise into a real operating surface.
+
+It should come before full wash/WIP expansion because wash demand quality depends on realistic sewing output and sewn handoff timing. If the sewing plan is only a manually selected line date, downstream wash planning will inherit weak assumptions.
+
+### Implementation Phases
+
+| Phase | Theme | Main outcome |
+|---|---|---|
+| 2A.1 | Line capability and fit foundation | Approved operation bulletin can be matched against line machines, skills, attachments, baseline efficiency, and customer/style fit. |
+| 2A.2 | Finite sewing line allocation | System can recommend candidate lines/dates and calculate target output, completion, load, risk, and line-spread impact. |
+| 2A.3 | Daily sewing operating board | Existing board becomes plan-versus-actual control with hourly target/actual, net-good efficiency, bottleneck, operator allocation, and recovery action. |
+| 2A.4 | Efficiency feedback loop | Actual output, shortfall, downtime, defects, rework, and recovery actions update future planning assumptions and promise confidence. |
+
+### Backend Scope
+
+Extend existing apps rather than creating a parallel sewing domain:
+
+```text
+backend/apps/sewing
+backend/apps/planning
+backend/apps/capacity_promising
+backend/apps/workcenters
+backend/apps/style_technical
+```
+
+Core model additions or extensions:
+
+- `SewingLineCapabilityProfile`
+- `SewingLineFitRule`
+- `SewingLineScheduleBucket`
+- `SewingLineAllocationCandidate`
+- `SewingCompletionProjection`
+- `SewingEfficiencyAssumption`
+- `SewingPlanDeviation`
+
+Core services:
+
+- `sewing.services.line_fit`
+  - Compare approved operation bulletin to line capability.
+  - Score machine availability, attachment/folder availability, skill availability, historical performance, product specialization, and quality risk.
+  - Return fit status: good fit, acceptable with realignment, risky, blocked.
+- `sewing.services.line_scheduling`
+  - Search eligible lines and date/shift buckets.
+  - Apply line-spread policy.
+  - Calculate expected daily output and completion date.
+  - Penalize changeover and excessive line splits.
+  - Generate candidate allocations for planner approval.
+- `capacity_promising.services.sewing_capacity_search`
+  - Use the same finite line buckets for promise scenarios.
+  - Return sewing handoff date and confidence.
+- `sewing.services.completion_projection`
+  - Recalculate projected sewing completion from live net-good output, remaining quantity, shift capacity, absenteeism, downtime, rework, and recovery action.
+- `sewing.services.efficiency_feedback`
+  - Capture actual line efficiency by style/customer/line.
+  - Propose updated planning assumptions without silently changing approved masters.
+
+Required calculations:
+
+```text
+gross_capacity =
+(line_manpower x working_minutes x target_efficiency) / style_smv
+
+adjusted_capacity =
+gross_capacity
+x learning_curve_factor
+x absenteeism_factor
+x machine_availability_factor
+
+net_good_capacity =
+adjusted_capacity x (1 - expected_defect_rate)
+
+remaining_sewing_days =
+remaining_quantity / expected_net_good_capacity_per_day
+```
+
+Line fit scoring should consider:
+
+- product type fit
+- customer/style historical fit
+- required machine match
+- required attachment/folder match
+- critical operation skill match
+- line baseline efficiency
+- learning curve state
+- changeover penalty
+- quality risk
+- wash-sensitive construction risk where relevant
+
+Line spread policy should define:
+
+- preferred number of lines for the order
+- maximum allowed lines without approval
+- minimum run length by line
+- efficiency penalty for split loading
+- exception approval path when shipment pressure requires extra lines
+
+### Frontend Scope
+
+Enhance or add these surfaces:
+
+- `/planning/weekly`
+  - line-allocation mode in addition to workcenter/date placement
+  - candidate line panel
+  - sewing handoff date preview
+  - line-spread warning
+  - before/after line bucket utilization
+- `/sewing/line-loading`
+  - current dense operating board remains the main execution surface
+  - rows continue to show line, PO, style, SMV, target, actual, efficiency, defect, net-good, manpower, status, and risk
+  - drawer shows hourly target versus actual, bottleneck operation, operator allocation, absence impact, and recommended recovery
+  - add planned completion and projected completion where backend projection is available
+- `/sewing/line-realignment`
+  - use line-fit gaps and schedule impact from the same services used by planning
+  - show expected output before/after realignment
+- `/technical/operation-bulletins/{id}/routing`
+  - keep approved bulletin read-only
+  - expose route, SMV, critical operation, machine, attachment, and skill details that feed line fit
+
+If a separate daily sewing plan board is needed, prototype it before implementation. Do not overload `/sewing/line-loading` with planning controls if it weakens the execution-control workflow.
+
+### Production-Grade Rules
+
+- No line loading without approved operation bulletin or approved governed exception.
+- A recommended line allocation is not committed until the planner confirms it.
+- Candidate ranking must be explainable; do not introduce an opaque optimizer before planner-assist trust is established.
+- Firm/frozen-zone line changes require impact preview, reason, and approval.
+- Net-good output, not gross output, is the execution quantity that updates WIP and efficiency.
+- Efficiency feedback should propose planning-assumption updates; it should not mutate approved technical masters silently.
+- Sewing handoff confidence must be labeled as sewing-only until wash, finishing, packing, and shipment truth are modeled.
+
+### Exit Criteria
+
+- Planner can request candidate sewing line allocations for a PCD-ready order.
+- System returns ranked line/date candidates with fit score, target output, projected completion, line-spread warning, and main constraint.
+- Planner can commit an allocation into finite line/date/shift buckets.
+- Existing `/sewing/line-loading` board shows committed plan versus actual execution state.
+- Board projection updates from net-good output and open shortfall/downtime signals.
+- Line realignment uses the same machine/skill/bottleneck gap logic as candidate planning.
+- Seed data includes at least one good-fit line, one realignment-required line, one split-line case, one underperforming line, and one recovery-action case.
+- E2E assertions prove board density, candidate allocation, line-spread warning, row-click drawer, recovery action, and projected completion display.
 
 ---
 
@@ -1303,6 +1598,8 @@ Every new feature must write business-readable audit for:
 - T&A completion/revision/waiver.
 - Promise request and decision.
 - Capacity reservation.
+- Sewing line candidate allocation and planner decision.
+- Sewing line spread exception and realignment decision.
 - Wash batch creation and rewash.
 - WIP adjustment.
 - QC hold/release.
@@ -1319,6 +1616,10 @@ Examples:
 - `time_action.complete`
 - `time_action.revise_firm_date`
 - `capacity_promising.reserve`
+- `sewing.recommend_line_allocation`
+- `sewing.commit_line_allocation`
+- `sewing.approve_line_spread_exception`
+- `sewing.apply_realignment`
 - `wash.create_batch`
 - `wash.mark_rewash`
 - `quality.release_hold`
@@ -1333,6 +1634,9 @@ Seed data must evolve from demo data to production-like scenarios:
 - T&A blocked by wash approval.
 - T&A blocked by fabric QC.
 - Quote scenario with sewing bottleneck.
+- Sewing line candidate ranking with one good fit and one risky fit.
+- Sewing line split requiring approval because it exceeds the preferred line-spread policy.
+- Sewing line completion projection changing after hourly net-good shortfall.
 - Quote scenario with wash bottleneck.
 - Rewash consuming capacity.
 - WIP ageing.
@@ -1388,7 +1692,7 @@ Build:
 
 - Promise request.
 - Capacity ledger.
-- Sewing handoff promise.
+- Sewing handoff promise using finite line capacity assumptions.
 - Promise alternatives.
 - Reservation state.
 - Promise UI.
@@ -1397,6 +1701,24 @@ Why second:
 
 - Gives immediate value for order acceptance without waiting for full wash.
 - Clearly labels scope as "to sewing handoff" until downstream modules mature.
+
+### Slice B2: Sewing Line Planning And Operating Surface
+
+Build:
+
+- Line capability and fit scoring.
+- Candidate line/date allocation.
+- Line-spread policy and warnings.
+- Daily/weekly finite line buckets.
+- Sewing operating board plan-versus-actual projection.
+- Realignment preview tied to planning impact.
+- Efficiency feedback into planning assumptions.
+
+Why immediately after Slice B:
+
+- Turns the sewing handoff promise into a planner-operable daily and weekly sewing plan.
+- Gives wash planning a more reliable sewn-handoff signal.
+- Uses existing Phase 5 sewing surfaces instead of waiting for downstream wash or shipment modules.
 
 ### Slice C: Wash Demand And Batch Planning
 
@@ -1490,6 +1812,7 @@ Why later:
 |---|---|---|
 | T&A governance | Orders, PCD, planning zones, audit | PCD, FKD, due-date promise, release blockers |
 | Due-date promise | T&A readiness, route, capacity, current plan | order acceptance, planning, customer commitment |
+| Sewing line planning | Operation bulletin, SMV/SAM, line capability, capacity ledger, manpower, machine/skill fit | sewing handoff promise, line loading, realignment, sewn WIP timing, wash demand |
 | Wash planning | sewn WIP, wash route, workcenter/machine capacity | due-date promise, WIP truth, shipment risk |
 | WIP reconciliation | WIP movements, handovers, holds | wash, quality, shipment, analytics |
 | Quality control | WIP stages, defect masters, process checkpoints | recovery, shipment readiness, analytics |
@@ -1512,6 +1835,11 @@ Why later:
 | Capacity ledger for promise | P0 | Wave 2 | Date-finding foundation. |
 | Sewing handoff promise | P0 | Wave 2 | First due-date quote scope. |
 | Promise alternatives and confidence | P1 | Wave 2 | Explainable customer commitment. |
+| Sewing line capability and fit scoring | P0 | Wave 2A | Approved route and SMV/SAM become line-fit logic. |
+| Finite sewing line allocation | P0 | Wave 2A | Candidate line/date plan with target output and completion. |
+| Sewing operating board projection | P0 | Wave 2A | Daily plan-versus-actual control for line loading. |
+| Line-spread and realignment governance | P1 | Wave 2A | Efficiency-aware split loading and governed line changes. |
+| Sewing efficiency feedback loop | P1 | Wave 2A | Actual net-good output improves future planning assumptions. |
 | Wash demand and batch planning | P0 | Wave 3 | Sewn WIP becomes wash load. |
 | Wash machine compatibility | P0 | Wave 3 | Prevent infeasible laundry scheduling. |
 | Wash execution and post-wash QC | P0 | Wave 3 | Laundry truth. |
@@ -1541,15 +1869,19 @@ Avoid implementing only cards and boards for wash. The hard part is batch logic,
 
 Do not expose promised shipment dates until capacity ledger, readiness, wash, finishing, and packing assumptions are explicit. If only sewing is modeled, label the output as sewing handoff promise.
 
-### 20.3 Risk: T&A Becomes Ticketing Overhead
+### 20.3 Risk: Sewing Board Becomes A Dashboard, Not A Planning Surface
+
+Do not stop at showing target, actual, efficiency, and risk. The production-grade build must connect the board to route, SMV/SAM, line capability, finite line buckets, candidate allocation, line-spread policy, realignment impact, and projected completion. Otherwise the tool will still rely on manual sewing planning outside the platform.
+
+### 20.4 Risk: T&A Becomes Ticketing Overhead
 
 Keep T&A as action plan plus dependencies plus alerts. Do not make every milestone a ticket with unnecessary ceremony.
 
-### 20.4 Risk: Analytics Before Operational Truth
+### 20.5 Risk: Analytics Before Operational Truth
 
 Control tower and simulation should not outrun WIP, wash, QC, and shipment truth. Otherwise the dashboards will amplify stale assumptions.
 
-### 21.5 Risk: Integration Creates Duplicate Truth
+### 20.6 Risk: Integration Creates Duplicate Truth
 
 Datatex and the planning platform must have explicit source-of-truth rules. Any optional legacy file or external event input needs source, timestamp, and confidence. FastReact should not be represented as a dependency in the production operating model.
 
@@ -1563,6 +1895,7 @@ Confirm that production-grade build order is:
 
 ```text
 T&A + promise foundation
+-> sewing line planning and operating surface
 -> wash/WIP truth
 -> quality/recovery/shipment
 -> mobile actuals
@@ -1577,6 +1910,7 @@ Create epics:
 
 - `EOS-13 / time-action-governance`
 - `EOS-14 / capacity-promising`
+- `EOS-05A / sewing-line-planning-operating-surface`
 - `EOS-06 / wash-wip-truth`
 - `EOS-07 / quality-recovery-shipment`
 - `EOS-08 / shopfloor-live-capture`
@@ -1626,6 +1960,8 @@ After approval, update:
 
 The update should insert T&A and capacity promising as explicit production-grade feature families, not hidden sub-items under existing phases.
 
+It should also insert sewing line planning and the sewing operating surface as an explicit EOS-05A-style production-grade extension. The current Phase 5 implementation should be treated as the base execution bridge; the EOS-05A extension should own finite line allocation, candidate ranking, line-spread policy, projected sewing completion, and feedback from net-good actuals into future planning assumptions.
+
 ---
 
 ## 23. Final Roadmap Position
@@ -1636,6 +1972,7 @@ The critical insight is that the new research tracks are not peripheral enhancem
 
 - T&A makes readiness governable.
 - Due-date quotation makes customer commitment capacity-aware.
+- Sewing line planning turns route, SMV/SAM, line capability, and actual output into a daily/weekly operating surface.
 - Wash-heavy architecture makes Eratex's actual production constraint visible.
 
 Together, they should be treated as the bridge between the current Phase 5 implementation and the deferred EOS-06 to EOS-12 roadmap.
@@ -1646,6 +1983,7 @@ The recommended roadmap is therefore:
 Current Phase 0-5 foundation
 -> T&A readiness governance
 -> Capacity promise and due-date quotation
+-> Sewing line planning and operating surface
 -> Wash and WIP truth
 -> Quality, recovery, and shipment readiness
 -> Shopfloor live capture
